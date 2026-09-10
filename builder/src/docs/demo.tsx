@@ -13,6 +13,8 @@ import { CompareCard } from '../components/CompareCard.js';
 import { SourceCard } from '../components/SourceCard.js';
 import { PanelGrid, Panel } from '../components/PanelGrid.js';
 import { KeyBox } from '../components/KeyBox.js';
+import { Phases } from '../components/Phases.js';
+import { Flow } from '../components/Flow.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -118,6 +120,34 @@ export default (
       </PanelGrid>
       <KeyBox role="negative" k="Gap 1 — no results" v="Tool output is absent end to end." />
       <KeyBox role="positive" k="Fix — result capture" v="Captured and rendered in the tool row." />
+    </Section>
+
+    <Section
+      eyebrow="Sequencing"
+      title="Phases & flow"
+      deck="Phases order the work; flow lanes read today against target."
+    >
+      <Phases
+        items={[
+          { idx: '0', title: 'Foundations', body: 'Result capture end to end; unified row + router.' },
+          { idx: '1', title: 'Tool-row system', body: 'Pure presenter, collapsed rows, result view.' },
+          { idx: '7', title: 'Discovery', body: 'Independent of the render work; can start immediately.', parallel: true },
+        ]}
+      />
+      <Flow
+        lanes={[
+          {
+            tag: 'today',
+            tone: 'bad',
+            steps: [{ text: 'parser' }, { text: 'drops results', tone: 'bad' }, { text: 'raw JSON', tone: 'bad' }],
+          },
+          {
+            tag: 'target',
+            tone: 'good',
+            steps: [{ text: 'parser + result', tone: 'good' }, { text: 'router' }, { text: 'presenter', tone: 'good' }],
+          },
+        ]}
+      />
     </Section>
 
     <Footer

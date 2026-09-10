@@ -12,3 +12,5 @@ export { CompareCard } from './components/CompareCard.js';
 export { SourceCard } from './components/SourceCard.js';
 export { PanelGrid, Panel } from './components/PanelGrid.js';
 export { KeyBox } from './components/KeyBox.js';
+export { Phases } from './components/Phases.js';
+export { Flow } from './components/Flow.js';
