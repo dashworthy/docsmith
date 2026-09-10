@@ -5,6 +5,8 @@ import { Doc } from '../components/Doc.js';
 import { Cover } from '../components/Cover.js';
 import { Section } from '../components/Section.js';
 import { Footer } from '../components/Footer.js';
+import { Callout } from '../components/Callout.js';
+import { Badge } from '../components/Badge.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -31,6 +33,22 @@ export default (
         Later increments hang the rest of the component library — callouts, badges, tables, compare
         cards, panels, phases, flow lanes, code blocks, and diagrams — off this same spine.
       </p>
+    </Section>
+
+    <Section
+      eyebrow="Inline elements"
+      title="Callouts & badges"
+      deck="Admonition callouts carry a role tint; badges are inline status pills."
+    >
+      <p>
+        Status pills: <Badge>Neutral</Badge> <Badge role="accent">Accent</Badge>{' '}
+        <Badge role="positive">Stable</Badge> <Badge role="warning">Beta</Badge>{' '}
+        <Badge role="negative">Deprecated</Badge>.
+      </p>
+      <Callout role="note">A note in the accent role.</Callout>
+      <Callout role="tip">A tip in the positive role.</Callout>
+      <Callout role="warning">A warning in the amber role.</Callout>
+      <Callout role="caution">A caution in the negative role.</Callout>
     </Section>
 
     <Footer
