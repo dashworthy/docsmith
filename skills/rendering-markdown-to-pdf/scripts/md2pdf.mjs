@@ -40,20 +40,27 @@ const LIBS = {
 };
 
 // Accent presets. `text` drives the design-system --accent; the rest style the
-// diagram-card header band and its tinted dot-grid canvas.
+// diagram-card header band and its tinted dot-grid canvas. Light and dark variants.
 const ACCENTS = {
   blue:   { text: '#1e5fbf', soft: '#e9eefb', band1: '#eef4fd', band2: '#e4edfb', border: '#d3e0f5', canvas: '#f5f8fe', dot: 'rgba(20,60,140,0.07)' },
   green:  { text: '#0a7a52', soft: '#d9f2e8', band1: '#f0f6f3', band2: '#e9f1ec', border: '#d3e4db', canvas: '#f6faf8', dot: 'rgba(20,80,60,0.07)' },
   slate:  { text: '#475569', soft: '#e8eef4', band1: '#f1f5f9', band2: '#e8eef4', border: '#dbe3ec', canvas: '#f8fafc', dot: 'rgba(30,41,59,0.06)' },
   purple: { text: '#6d28d9', soft: '#efe8fb', band1: '#f5f1fd', band2: '#efe8fb', border: '#e0d5f5', canvas: '#faf8fe', dot: 'rgba(80,40,140,0.07)' },
 };
+const ACCENTS_DARK = {
+  blue:   { text: '#7ba3f8', soft: '#1b2742', band1: '#1a2440', band2: '#151d33', border: '#2b3550', canvas: '#141a24', dot: 'rgba(150,180,255,0.12)' },
+  green:  { text: '#37c99a', soft: '#0f2a22', band1: '#12241d', band2: '#0f1e18', border: '#20362c', canvas: '#141a24', dot: 'rgba(90,220,180,0.12)' },
+  slate:  { text: '#a3b3c6', soft: '#1b2430', band1: '#19212c', band2: '#151c26', border: '#2c3644', canvas: '#141a24', dot: 'rgba(180,200,220,0.10)' },
+  purple: { text: '#a78bfa', soft: '#241b3a', band1: '#1f1930', band2: '#181327', border: '#33294d', canvas: '#141a24', dot: 'rgba(180,150,255,0.12)' },
+};
 
 function parseArgs(argv) {
-  const a = { _: [], design: 'designed', accent: 'blue', theme: 'default', cards: true, keepHtml: false, title: null, help: false };
+  const a = { _: [], design: 'designed', mode: 'dark', accent: 'blue', theme: 'default', cards: true, keepHtml: false, title: null, help: false };
   for (let i = 0; i < argv.length; i++) {
     const t = argv[i];
     if (t === '--no-cards') a.cards = false;
     else if (t === '--design') a.design = argv[++i];
+    else if (t === '--mode') a.mode = argv[++i];
     else if (t === '--accent') a.accent = argv[++i];
     else if (t === '--theme') a.theme = argv[++i];
     else if (t === '--title') a.title = argv[++i];
@@ -67,7 +74,7 @@ function parseArgs(argv) {
 function usage() {
   process.stdout.write(
     'Usage: node md2pdf.mjs <input.md> [output.pdf]\n' +
-    '       [--design designed|plain] [--accent blue|green|slate|purple]\n' +
+    '       [--design designed|plain] [--mode dark|light] [--accent blue|green|slate|purple]\n' +
     '       [--theme default|neutral|forest|dark|base] [--no-cards] [--title "…"] [--keep-html]\n'
   );
 }
@@ -194,6 +201,48 @@ function preprocess(md, { cards: cardsOn, designed }) {
   return { md: out.join('\n'), cards };
 }
 
+// Designed theme: a 2-column table reads better as a grid of reference cards than as a
+// table with a cramped, hyphenated first column. Wrap each 2-column table in a ```cards
+// fence (rendered client-side). Precede a table with `<!-- table -->` to force a plain table.
+function cardifyTables(md, designed) {
+  if (!designed) return md;
+  const isSep = (s) => /\|/.test(s) && /-/.test(s) && /^[\s|:-]+$/.test(s.trim());
+  const isRow = (s) => /\|/.test(s) && s.trim() !== '';
+  const colCount = (sep) => sep.split('|').map((c) => c.trim()).filter((c) => c.length).length;
+
+  const lines = md.split('\n');
+  const out = [];
+  let inFence = false;
+  let forcePlain = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*```/.test(line)) { inFence = !inFence; out.push(line); continue; }
+    if (inFence) { out.push(line); continue; }
+
+    if (/^\s*<!--\s*table\s*-->\s*$/i.test(line)) { forcePlain = true; continue; }
+
+    if (isRow(line) && i + 1 < lines.length && isSep(lines[i + 1])) {
+      const block = [line, lines[i + 1]];
+      let j = i + 2;
+      while (j < lines.length && isRow(lines[j])) { block.push(lines[j]); j++; }
+      if (colCount(lines[i + 1]) === 2 && !forcePlain) {
+        out.push('```cards');
+        block.forEach((b) => out.push(b));
+        out.push('```');
+      } else {
+        block.forEach((b) => out.push(b));
+      }
+      forcePlain = false;
+      i = j - 1;
+      continue;
+    }
+
+    if (line.trim() !== '') forcePlain = false;
+    out.push(line);
+  }
+  return out.join('\n');
+}
+
 // ---- Stylesheets -----------------------------------------------------------
 
 // Shared page-fit rules for diagrams, tables and code (both themes).
@@ -211,8 +260,7 @@ function fitCss() {
   .diagram-card__canvas { padding: 16px 14px; text-align: center; background-color: var(--card-canvas); background-image: radial-gradient(var(--card-dot) 1px, transparent 1px); background-size: 14px 14px; }
   .diagram-card__desc { font-size: 11.5px; font-style: italic; color: var(--ink-2); line-height: 1.5; padding: 9px 14px; background: var(--surface); border-top: 1px solid var(--card-border); }
   .mermaid { text-align: center; margin: 0; overflow: hidden; }
-  .mermaid svg { display: block; margin: 0 auto; max-width: 100% !important; width: auto !important; height: auto !important; max-height: 105mm !important; }
-  @page { size: A4; margin: 12mm 12mm; }`;
+  .mermaid svg { display: block; margin: 0 auto; max-width: 100% !important; width: auto !important; height: auto !important; max-height: 105mm !important; }`;
 }
 
 function plainCss(accent) {
@@ -241,39 +289,55 @@ function plainCss(accent) {
   th { background: var(--surface-2); }
   blockquote { border-left: 3px solid var(--border); margin: 0; padding: 2px 16px; color: var(--ink-2); }
   .eyebrow { display:block; font-family: var(--mono); font-size: 11px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color: var(--ink-3); }
+  @page { size: A4; margin: 12mm 12mm; }
   ${fitCss()}`;
 }
 
-function designedCss(accent) {
+function designedCss(accent, mode) {
+  const dark = mode === 'dark';
+  const tokens = dark ? `
+    --ground:#0c0f15; --surface:#141922; --surface-2:#1b212c;
+    --ink:#e7eaef; --ink-2:#a7b0bd; --ink-3:#79828f;
+    --border:#242c38; --border-strong:#333d4c;
+    --positive:#34c99a; --positive-soft:#103028;
+    --negative:#e2685e; --negative-soft:#341c1a;
+    --warning:#dca34a; --warning-soft:#33280f;
+    --neutral:#79828f; --neutral-soft:#1b212c;
+    --shadow: 0 1px 2px rgba(0,0,0,.30), 0 12px 32px -14px rgba(0,0,0,.72);
+  ` : `
+    --ground:#e9edf3; --surface:#ffffff; --surface-2:#e3e8f0;
+    --ink:#141821; --ink-2:#43505f; --ink-3:#6b7482;
+    --border:#d1d8e2; --border-strong:#b7c0cc;
+    --positive:#0f7a5a; --positive-soft:#d9f2e8;
+    --negative:#b83f36; --negative-soft:#f7e2df;
+    --warning:#a76d12; --warning-soft:#f8eeda;
+    --neutral:#6b7482; --neutral-soft:#e3e8f0;
+    --shadow: 0 1px 2px rgba(20,24,33,.07), 0 10px 26px -14px rgba(20,24,33,.32);
+  `;
   return `
   :root {
     --sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
     --display: "Familjen Grotesk", system-ui, sans-serif;
-    --ground:#f5f6f9; --surface:#ffffff; --surface-2:#eef0f5;
-    --ink:#171b22; --ink-2:#4a5462; --ink-3:#79828f;
-    --border:#e0e4ea; --border-strong:#cdd3dc;
+    color-scheme: ${dark ? 'dark' : 'light'};
+    ${tokens}
     --accent:${accent.text}; --accent-soft:${accent.soft};
-    --positive:#0f7a5a; --positive-soft:#d9f2e8;
-    --negative:#b83f36; --negative-soft:#f7e2df;
-    --warning:#a76d12; --warning-soft:#f8eeda;
-    --neutral:#79828f; --neutral-soft:#eef0f5;
-    --shadow: 0 1px 2px rgba(20,24,33,.04), 0 8px 24px -14px rgba(20,24,33,.18);
     --card-accent:${accent.text}; --card-band1:${accent.band1}; --card-band2:${accent.band2};
     --card-border:${accent.border}; --card-canvas:${accent.canvas}; --card-dot:${accent.dot};
   }
   * { box-sizing: border-box; }
-  body { font-family: var(--sans); font-size: 14px; line-height: 1.62; color: var(--ink); margin: 0; background: var(--ground); -webkit-font-smoothing: antialiased; }
-  .page { max-width: 820px; margin: 0 auto; padding: 28px 40px 40px; background: var(--ground); }
+  html, body { background: var(--ground); }
+  body { font-family: var(--sans); font-size: 14px; line-height: 1.62; color: var(--ink); margin: 0; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 900px; margin: 0 auto; padding: 15mm 15mm 18mm; }
   h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -.01em; text-wrap: balance; }
   h1 { font-size: 30px; margin: 8px 0 4px; page-break-after: avoid; }
-  h2 { font-size: 22px; font-weight: 700; margin-top: 34px; padding-bottom: 6px; border-bottom: 1px solid var(--border); page-break-after: avoid; }
+  h2 { font-size: 22px; font-weight: 700; margin-top: 34px; padding-bottom: 6px; border-bottom: 1px solid var(--border-strong); page-break-after: avoid; }
   h3 { font-size: 16.5px; font-weight: 600; margin-top: 22px; page-break-after: avoid; }
   h4 { font-size: 14.5px; font-weight: 600; page-break-after: avoid; }
   p, li { orphans: 3; widows: 3; }
   a { color: var(--accent); text-decoration: none; }
   hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
-  code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); color: var(--ink-2); padding: .12em .42em; border-radius: 5px; border: 1px solid var(--border); }
+  code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); color: var(--ink); padding: .12em .42em; border-radius: 5px; border: 1px solid var(--border); }
   blockquote { border-left: 3px solid var(--border-strong); margin: 14px 0; padding: 2px 16px; color: var(--ink-2); }
 
   /* Eyebrow kicker */
@@ -312,12 +376,92 @@ function designedCss(accent) {
   thead th { background: var(--accent-soft); color: var(--accent); font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
   tbody tr:nth-child(even) { background: var(--surface-2); }
 
+  /* Reference cards — a 2-column table becomes these in the designed theme */
+  .cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 16px 0; }
+  .refcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; box-shadow: var(--shadow); page-break-inside: avoid; }
+  .refcard-title { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; margin-bottom: 6px; }
+  .refcard-body { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .refcard-body > div + div { margin-top: 4px; }
+  .refcard-k { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin-right: 6px; }
+
+  /* Key/stat boxes — a small tinted metric grid */
+  .keygrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+  .keybox { background: var(--role-soft, var(--surface-2)); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; page-break-inside: avoid; }
+  .keybox .k { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--role, var(--ink-3)); }
+  .keybox .v { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .keybox.accent { --role: var(--accent); --role-soft: var(--accent-soft); }
+  .keybox.positive { --role: var(--positive); --role-soft: var(--positive-soft); }
+  .keybox.negative { --role: var(--negative); --role-soft: var(--negative-soft); }
+  .keybox.warning { --role: var(--warning); --role-soft: var(--warning-soft); }
+
+  /* Tint / role legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0; }
+  .legend .t { display: inline-flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: var(--ink-2); }
+  .legend .dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* Panels — side-by-side cards */
+  .panelgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); page-break-inside: avoid; }
+  .panel > :first-child { margin-top: 0; }
+
+  /* Comparison cards */
+  .compare { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; margin: 14px 0; page-break-inside: avoid; }
+  .compare__head { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .compare__num { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .compare__head h3 { margin: 0; font-size: 15px; }
+  .compare__cols { display: grid; grid-template-columns: 1fr 1fr; }
+  .compare__col { padding: 12px 16px; }
+  .compare__col + .compare__col { border-left: 1px solid var(--border); }
+  .compare__label { display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; margin-bottom: 8px; color: var(--role, var(--ink-2)); }
+  .compare__label .swatch { width: 9px; height: 9px; border-radius: 50%; background: var(--role, var(--ink-3)); }
+  .compare__col.is-a { --role: var(--warning); }
+  .compare__col.is-b { --role: var(--positive); }
+  .compare__col ul { margin: 0; padding-left: 16px; }
+  .compare__col li { font-size: 12px; color: var(--ink-2); margin: 4px 0; }
+  .compare__target { padding: 10px 16px; border-top: 1px dashed var(--border-strong); background: var(--accent-soft); font-size: 12px; color: var(--ink-2); }
+  .compare__target b { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-right: 6px; }
+
+  /* Flow lanes */
+  .flow { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+  .lane .tag { display: inline-block; font-family: var(--mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-bottom: 6px; background: var(--surface-2); color: var(--ink-2); }
+  .lane.bad .tag { background: var(--negative-soft); color: var(--negative); }
+  .lane.good .tag { background: var(--positive-soft); color: var(--positive); }
+  .lane .steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .step { font-family: var(--mono); font-size: 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 4px 9px; color: var(--ink-2); }
+  .step.bad { border-color: color-mix(in srgb, var(--negative) 40%, var(--border)); color: var(--negative); }
+  .step.good { border-color: color-mix(in srgb, var(--positive) 45%, var(--border)); color: var(--positive); }
+  .arr { color: var(--ink-3); }
+
+  /* Phase cards */
+  .phases { display: grid; gap: 12px; margin: 16px 0; }
+  .phase { display: grid; grid-template-columns: 52px 1fr; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); page-break-inside: avoid; }
+  .phase .idx { display: flex; align-items: center; justify-content: center; font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--accent); background: var(--accent-soft); }
+  .phase .pbody { padding: 12px 16px; }
+  .phase .pbody > :first-child { margin-top: 0; margin-bottom: 3px; font-size: 14.5px; }
+  .phase .pbody p { margin: 0; font-size: 12.5px; color: var(--ink-2); }
+  .phase.parallel .idx { color: var(--positive); background: var(--positive-soft); }
+  .badge-par { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .1em; color: var(--positive); border: 1px solid color-mix(in srgb, var(--positive) 45%, var(--border)); padding: 1px 7px; border-radius: 999px; margin-left: 8px; }
+
+  /* Custom lists — numbered questions (.qlist) and struck non-goals (.xlist) */
+  .qlist { margin: 12px 0; padding: 0; list-style: none; counter-reset: q; }
+  .qlist li { position: relative; padding: 8px 0 8px 30px; border-top: 1px solid var(--border); color: var(--ink-2); font-size: 12.5px; counter-increment: q; }
+  .qlist li:first-child { border-top: none; }
+  .qlist li::before { content: "Q" counter(q); position: absolute; left: 0; top: 8px; font-family: var(--mono); font-size: 10px; color: var(--accent); font-weight: 700; }
+  .xlist { margin: 12px 0; padding: 0; list-style: none; }
+  .xlist li { position: relative; padding: 8px 0 8px 22px; border-top: 1px solid var(--border); color: var(--ink-2); font-size: 12.5px; }
+  .xlist li:first-child { border-top: none; }
+  .xlist li::before { content: "\\00D7"; position: absolute; left: 3px; top: 7px; color: var(--negative); font-weight: 700; }
+
+  /* Provenance footer */
+  .docfooter { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--ink-3); line-height: 1.9; }
+
+  @page { size: A4; margin: 0; }
   ${fitCss()}`;
 }
 
 // ---- HTML assembly ---------------------------------------------------------
 
-function buildHtml({ md, cards, accent, mermaidTheme, docTitle, coverHtml, designed }) {
+function buildHtml({ md, cards, accent, mode, mermaidTheme, docTitle, coverHtml, designed }) {
   const marked = readFileSync(join(VENDOR, 'marked.min.js'), 'utf8');
   const mermaid = readFileSync(join(VENDOR, 'mermaid.min.js'), 'utf8');
   const mdB64 = Buffer.from(md, 'utf8').toString('base64');
@@ -326,7 +470,7 @@ function buildHtml({ md, cards, accent, mermaidTheme, docTitle, coverHtml, desig
       '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
       '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">'
     : '';
-  const css = designed ? designedCss(accent) : plainCss(accent);
+  const css = designed ? designedCss(accent, mode) : plainCss(accent);
 
   return `<!doctype html>
 <html lang="en">
@@ -350,6 +494,34 @@ ${fonts}
 
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
+    // A "cards" fenced block holds a Markdown table; render it as a grid of reference
+    // cards (first column = title, remaining columns = body). Inline markdown in each cell
+    // is rendered via marked.parseInline so code/bold/badges work.
+    function splitCells(line) {
+      var t = line.trim().replace(/^\\|/, '').replace(/\\|$/, '');
+      return t.split(/(?<!\\\\)\\|/).map(function (c) { return c.replace(/\\\\\\|/g, '|').trim(); });
+    }
+    function renderCards(rawTable) {
+      var rows = rawTable.split('\\n').filter(function (l) { return l.trim() !== ''; });
+      var sepIdx = -1;
+      for (var i = 0; i < rows.length; i++) { if (/\\|/.test(rows[i]) && /-/.test(rows[i]) && /^[\\s|:-]+$/.test(rows[i].trim())) { sepIdx = i; break; } }
+      var header = sepIdx > 0 ? splitCells(rows[sepIdx - 1]) : null;
+      var start = sepIdx >= 0 ? sepIdx + 1 : 0;
+      var cards = [];
+      for (var r = start; r < rows.length; r++) {
+        var cells = splitCells(rows[r]);
+        if (!cells.length || (cells.length === 1 && cells[0] === '')) continue;
+        var body = [];
+        for (var c = 1; c < cells.length; c++) {
+          var val = marked.parseInline(cells[c] || '');
+          if (cells.length > 2 && header && header[c]) { body.push('<div><span class="refcard-k">' + esc(header[c]) + '</span>' + val + '</div>'); }
+          else { body.push('<div>' + val + '</div>'); }
+        }
+        cards.push('<div class="refcard"><div class="refcard-title">' + marked.parseInline(cells[0] || '') + '</div><div class="refcard-body">' + body.join('') + '</div></div>');
+      }
+      return '<div class="cardgrid">' + cards.join('') + '</div>';
+    }
+
     // Inline badge extension: [[Label]] / [[role:Label]]
     if (window.DESIGNED) {
       marked.use({ extensions: [{
@@ -369,6 +541,7 @@ ${fonts}
     renderer.code = function (code, lang) {
       var text = (typeof code === 'object') ? code.text : code;
       var language = (typeof code === 'object') ? code.lang : lang;
+      if ((language || '').trim() === 'cards') { return renderCards(text); }
       if ((language || '').trim() === 'mermaid') {
         var body = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         var meta = window.CARDS[idx];
@@ -465,9 +638,13 @@ async function main() {
   const output = resolve(args._[1] || input.replace(/\.md$/i, '') + '.pdf');
 
   if (args.design !== 'designed' && args.design !== 'plain') throw new Error('Unknown --design "' + args.design + '". Options: designed, plain');
+  if (args.mode !== 'light' && args.mode !== 'dark') throw new Error('Unknown --mode "' + args.mode + '". Options: light, dark');
   const designed = args.design === 'designed';
-  const accent = ACCENTS[args.accent];
+  const dark = designed && args.mode === 'dark';
+  const accent = (dark ? ACCENTS_DARK : ACCENTS)[args.accent];
   if (!accent) throw new Error('Unknown --accent "' + args.accent + '". Options: ' + Object.keys(ACCENTS).join(', '));
+  // Match the mermaid theme to dark mode unless the user set one explicitly.
+  const mermaidTheme = args.theme !== 'default' ? args.theme : (dark ? 'dark' : 'default');
 
   const chrome = findChrome();
   if (!chrome) throw new Error('No Chrome/Chromium found. Set CHROME_PATH or PUPPETEER_EXECUTABLE_PATH to its executable.');
@@ -475,16 +652,16 @@ async function main() {
   await ensureVendor();
 
   const { data: front, body } = parseFrontmatter(readFileSync(input, 'utf8'));
-  const { md, cards } = preprocess(body, { cards: args.cards, designed });
+  const { md, cards } = preprocess(cardifyTables(body, designed), { cards: args.cards, designed });
   const coverHtml = designed ? buildCoverHtml(front) : '';
   const docTitle = args.title || front.title || basename(input);
-  const html = buildHtml({ md, cards, accent, mermaidTheme: args.theme, docTitle, coverHtml, designed });
+  const html = buildHtml({ md, cards, accent, mode: args.mode, mermaidTheme, docTitle, coverHtml, designed });
 
   const htmlPath = args.keepHtml ? output.replace(/\.pdf$/i, '') + '.html' : join(tmpdir(), 'md2pdf-' + process.pid + '-' + Date.now() + '.html');
   writeFileSync(htmlPath, html);
   try {
     await renderPdf(htmlPath, output, chrome);
-    process.stdout.write('Wrote ' + output + '  (' + args.design + ' theme, accent ' + args.accent + ', ' + cards.length + ' diagram card' + (cards.length === 1 ? '' : 's') + (coverHtml ? ', cover' : '') + ')\n');
+    process.stdout.write('Wrote ' + output + '  (' + args.design + (designed ? '/' + args.mode : '') + ' theme, accent ' + args.accent + ', ' + cards.length + ' diagram card' + (cards.length === 1 ? '' : 's') + (coverHtml ? ', cover' : '') + ')\n');
   } finally {
     if (!args.keepHtml) { try { rmSync(htmlPath); } catch {} }
   }

@@ -37,11 +37,18 @@ script. To run it directly:
 # one-time, in the skill's script folder
 npm install --prefix skills/rendering-markdown-to-pdf/scripts
 
-# convert
+# convert (designed/dark by default)
 node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md
-node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md out.pdf --accent green
+node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md out.pdf --mode light --accent green
 node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md out.pdf --design plain
 ```
+
+The designed theme has a **dark** and a **light** mode (both full-bleed), a component
+library modeled on a real Claude design artifact — callouts, badges, reference cards,
+comparison cards, phase lists, flow lanes, panels, key boxes, legend, custom lists — and a
+**decision matrix** of when to use each in
+[`references/ui-elements.md`](skills/rendering-markdown-to-pdf/references/ui-elements.md).
+Any 2-column table auto-renders as reference cards.
 
 ### Requirements
 - **Node ≥ 18**

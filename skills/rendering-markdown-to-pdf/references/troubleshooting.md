@@ -62,11 +62,21 @@ literally. If a doc uses inline math, convert those bits to Unicode (`→`, `≥
 source, or add MathJax to the HTML template. HTML entities inside a mermaid label (e.g.
 `&ge;`) are fine — mermaid renders them.
 
-## Themes: designed vs plain
+## Themes: designed vs plain, and dark vs light
 `--design designed` (default) applies the full system — tokens, web fonts, cover page,
-callouts, badges, styled tables. `--design plain` is a minimal system-font look with the
-diagram cards but none of the rest; use it when you want a lightweight, fully-offline render
-or a doc without the branded styling.
+callouts, badges, styled tables, reference cards, and the component library. It has two
+modes via `--mode`: **dark** (default) and **light**, both **full-bleed** (`@page { margin:0 }`
+so the ground reaches the paper edge — no white border). `--design plain` is a minimal
+light system-font look with the diagram cards but none of the rest; use it for a lightweight,
+fully-offline render. Because the designed theme is full-bleed, continuation pages have no top
+margin band by design; the ground color is continuous so this reads cleanly.
+
+## Reference cards from 2-column tables
+In the designed theme, a 2-column Markdown table is wrapped (in a pre-pass) into a `cards`
+fenced block and rendered as a card grid — the first column becomes a monospace card title,
+the second the body. This avoids the cramped, mid-word-hyphenated first column a narrow table
+column produces for long class/API names. Force a real table with `<!-- table -->` on the line
+before it. Escaped pipes (`\|`) inside cells are handled.
 
 ## Fonts and emoji
 The **designed** theme loads IBM Plex Sans/Mono and Familjen Grotesk from Google Fonts at

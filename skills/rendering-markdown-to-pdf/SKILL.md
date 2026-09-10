@@ -38,11 +38,16 @@ node "<skill>/scripts/md2pdf.mjs" README.md out.pdf --accent green
 | Flag | Meaning | Default |
 |---|---|---|
 | `--design <designed\|plain>` | Full design system, or a minimal system-font look | `designed` |
+| `--mode <dark\|light>` | Palette for the designed theme (both full-bleed) | `dark` |
 | `--accent <blue\|green\|slate\|purple>` | Accent for tokens, tables, badges, diagram cards | `blue` |
-| `--theme <default\|neutral\|forest\|dark\|base>` | Mermaid diagram theme | `default` |
+| `--theme <default\|neutral\|forest\|dark\|base>` | Mermaid diagram theme (auto-`dark` in dark mode) | `default` |
 | `--no-cards` | Render diagrams plain (no title/caption/background card) | cards on |
 | `--title "…"` | Document `<title>` | frontmatter title / filename |
 | `--keep-html` | Also write the intermediate `.html` (debugging) | off |
+
+The designed theme is **full-bleed** (no page border) and **token-driven**, so `--mode`
+and `--accent` recolor everything — cover, callouts, badges, tables, cards, and components —
+consistently. `--design plain` is a minimal light system-font look for a lightweight render.
 
 ## Authoring for the designed theme
 
@@ -70,10 +75,16 @@ text in a normal viewer, so they don't disturb the source doc.
 - **Diagram card title/caption** — on the line(s) before a ```mermaid fence:
   `<!-- figure: Data Model | The aggregate and its relationships -->` (either side optional),
   or `<!-- caption: … -->` to keep the auto title (`Figure N · <nearest heading>`).
+- **Reference cards** — any **2-column** table auto-renders as a grid of cards (first column
+  = mono title, second = body), which reads far better than a table with a long/monospace
+  first column. Force a plain table with `<!-- table -->` on the line before it.
 
-Anything richer than this — the reference doc's comparison grids, phase cards, flow lanes —
-is bespoke per-document HTML. You can write raw HTML inline in the markdown (Chrome renders
-it), or build a one-off HTML artifact for that specific page.
+**Richer components** — comparison cards, phase lists, flow lanes, panels, key boxes, a tint
+legend, custom lists, and a provenance footer — ship as token-driven CSS classes. Paste the
+small HTML snippet inline in your Markdown (Chrome renders it; the theme styles it in both
+modes). Every element, with a **decision matrix** of when to use each, is in
+**[references/ui-elements.md](references/ui-elements.md)**; a full working example is
+**[examples/gallery.md](examples/gallery.md)**.
 
 ## Verify — always look at the PDF
 
