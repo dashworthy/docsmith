@@ -15,6 +15,8 @@ import { PanelGrid, Panel } from '../components/PanelGrid.js';
 import { KeyBox } from '../components/KeyBox.js';
 import { Phases } from '../components/Phases.js';
 import { Flow } from '../components/Flow.js';
+import { QList } from '../components/QList.js';
+import { NonGoals } from '../components/NonGoals.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -146,6 +148,25 @@ export default (
             tone: 'good',
             steps: [{ text: 'parser + result', tone: 'good' }, { text: 'router' }, { text: 'presenter', tone: 'good' }],
           },
+        ]}
+      />
+    </Section>
+
+    <Section
+      eyebrow="Boundaries"
+      title="Open questions & non-goals"
+      deck="Questions to resolve, and what this work explicitly is not."
+    >
+      <QList
+        items={[
+          'DB migration vs rebuild for the new column?',
+          'Truncation policy for large tool output?',
+        ]}
+      />
+      <NonGoals
+        items={[
+          'Other-agent support — out of scope this run.',
+          'Non-chat panes — not part of this work.',
         ]}
       />
     </Section>
