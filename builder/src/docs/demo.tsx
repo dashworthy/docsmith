@@ -17,6 +17,7 @@ import { Phases } from '../components/Phases.js';
 import { Flow } from '../components/Flow.js';
 import { QList } from '../components/QList.js';
 import { NonGoals } from '../components/NonGoals.js';
+import { CodeBlock } from '../components/CodeBlock.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -168,6 +169,22 @@ export default (
           'Other-agent support — out of scope this run.',
           'Non-chat panes — not part of this work.',
         ]}
+      />
+    </Section>
+
+    <Section
+      eyebrow="Code"
+      title="Syntax highlighting"
+      deck="Code blocks are highlighted at generation time with Shiki — static, no runtime JS."
+    >
+      <CodeBlock
+        lang="ts"
+        code={`export function generate(opts: GenerateOptions): Promise<void> {
+  const root = (await import(opts.docModule)).default;
+  const bodyHtml = renderToStaticMarkup(root);
+  // passes.reduce(...) → assembleHtml → write .html | print .pdf
+  return write(bodyHtml, opts);
+}`}
       />
     </Section>
 

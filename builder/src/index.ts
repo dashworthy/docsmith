@@ -16,3 +16,4 @@ export { Phases } from './components/Phases.js';
 export { Flow } from './components/Flow.js';
 export { QList } from './components/QList.js';
 export { NonGoals } from './components/NonGoals.js';
+export { CodeBlock } from './components/CodeBlock.js';

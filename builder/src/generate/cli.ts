@@ -17,13 +17,14 @@ import { assembleHtml, type Pass, type PassCtx } from './html.js';
 import { buildTailwindCss } from './tailwind.js';
 import { findChrome } from './chrome.js';
 import { renderPdf } from './pdf.js';
+import { prerenderCode } from './prerenderCode.js';
 
 /**
- * The ordered pre-render passes. Empty today; it will hold the code-highlighting and
- * diagram-rendering passes once those components land. The generator composes whatever is here
- * uniformly and never contains a pass's own find-and-replace logic.
+ * The ordered pre-render passes. Each finds its own markers in the body HTML and swaps in static
+ * content; the generator composes them uniformly and never contains a pass's own find-and-replace
+ * logic. Code highlighting runs first (browserless); the diagram pass is appended next.
  */
-const PASSES: Pass[] = [];
+const PASSES: Pass[] = [prerenderCode];
 
 export interface GenerateOptions {
   /** Path to the doc module (`.tsx`), resolved against the current working directory. */
