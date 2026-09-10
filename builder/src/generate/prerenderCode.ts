@@ -5,6 +5,7 @@
 
 import { getHighlighter, type Highlighter } from 'shiki';
 import type { Pass } from './html.js';
+import { unescapeHtml } from './htmlEntities.js';
 
 /** The Shiki themes we render into, one per doc theme. */
 const THEME = { light: 'github-light', dark: 'github-dark' } as const;
@@ -19,16 +20,6 @@ let highlighterPromise: Promise<Highlighter> | null = null;
 function getShiki(): Promise<Highlighter> {
   highlighterPromise ??= getHighlighter({ themes: [THEME.light, THEME.dark], langs: LANGS });
   return highlighterPromise;
-}
-
-/** Reverse the HTML escaping `renderToStaticMarkup` applied to the source inside the marker. */
-function unescape(s: string): string {
-  return s
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#(?:39|x27);/g, "'")
-    .replace(/&amp;/g, '&');
 }
 
 /** Highlight one snippet to a `<pre>…spans…</pre>`; unknown languages fall back to plain text. */
@@ -46,7 +37,7 @@ export const prerenderCode: Pass = async (bodyHtml, theme) => {
   let out = bodyHtml;
   for (const m of matches) {
     const [marker, lang, escaped] = m;
-    const pre = await highlight(unescape(escaped), lang, theme);
+    const pre = await highlight(unescapeHtml(escaped), lang, theme);
     // Replace via a function so `$`-sequences in the highlighted HTML (e.g. `${}` in the source)
     // are inserted literally, not treated as replacement patterns.
     out = out.replace(marker, () => pre);

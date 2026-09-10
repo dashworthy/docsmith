@@ -18,6 +18,7 @@ import { Flow } from '../components/Flow.js';
 import { QList } from '../components/QList.js';
 import { NonGoals } from '../components/NonGoals.js';
 import { CodeBlock } from '../components/CodeBlock.js';
+import { Mermaid } from '../components/Mermaid.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -185,6 +186,23 @@ export default (
   // passes.reduce(...) → assembleHtml → write .html | print .pdf
   return write(bodyHtml, opts);
 }`}
+      />
+    </Section>
+
+    <Section
+      eyebrow="Diagrams"
+      title="Pre-rendered mermaid"
+      deck="Diagrams render to inline SVG at generation time, recolored by shape."
+    >
+      <Mermaid
+        title="Render pipeline"
+        caption="Markdown-shaped content becomes a designed page, then Chrome prints it."
+        chart={`flowchart LR
+  A[JSX doc] --> B{Format?}
+  B -->|html| C[Static HTML]
+  B -->|pdf| D[(PDF)]
+  C --> E((done))
+  D --> E`}
       />
     </Section>
 

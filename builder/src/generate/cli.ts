@@ -18,13 +18,15 @@ import { buildTailwindCss } from './tailwind.js';
 import { findChrome } from './chrome.js';
 import { renderPdf } from './pdf.js';
 import { prerenderCode } from './prerenderCode.js';
+import { prerenderMermaid } from './prerenderMermaid.js';
 
 /**
  * The ordered pre-render passes. Each finds its own markers in the body HTML and swaps in static
  * content; the generator composes them uniformly and never contains a pass's own find-and-replace
- * logic. Code highlighting runs first (browserless); the diagram pass is appended next.
+ * logic. Code highlighting runs first (browserless), then diagram rendering (uses the shared
+ * Chrome via ctx).
  */
-const PASSES: Pass[] = [prerenderCode];
+const PASSES: Pass[] = [prerenderCode, prerenderMermaid];
 
 export interface GenerateOptions {
   /** Path to the doc module (`.tsx`), resolved against the current working directory. */
