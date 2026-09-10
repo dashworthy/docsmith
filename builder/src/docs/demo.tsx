@@ -11,6 +11,8 @@ import { Table } from '../components/Table.js';
 import { Legend } from '../components/Legend.js';
 import { CompareCard } from '../components/CompareCard.js';
 import { SourceCard } from '../components/SourceCard.js';
+import { PanelGrid, Panel } from '../components/PanelGrid.js';
+import { KeyBox } from '../components/KeyBox.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -103,6 +105,19 @@ export default (
         The only class allowed to drive the headless browser — parses the Markdown, runs the
         diagrams, prints the PDF.
       </SourceCard>
+    </Section>
+
+    <Section
+      eyebrow="At a glance"
+      title="Panels & key boxes"
+      deck="Panels group short notes; key boxes flag a labeled fact."
+    >
+      <PanelGrid>
+        <Panel title="Data flow">Parser → correlate by id → store → render.</Panel>
+        <Panel title="Library picks">marked, mermaid, puppeteer-core.</Panel>
+      </PanelGrid>
+      <KeyBox role="negative" k="Gap 1 — no results" v="Tool output is absent end to end." />
+      <KeyBox role="positive" k="Fix — result capture" v="Captured and rendered in the tool row." />
     </Section>
 
     <Footer

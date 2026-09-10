@@ -10,3 +10,5 @@ export { Table } from './components/Table.js';
 export { Legend } from './components/Legend.js';
 export { CompareCard } from './components/CompareCard.js';
 export { SourceCard } from './components/SourceCard.js';
+export { PanelGrid, Panel } from './components/PanelGrid.js';
+export { KeyBox } from './components/KeyBox.js';
