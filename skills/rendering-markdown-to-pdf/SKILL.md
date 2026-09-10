@@ -54,10 +54,10 @@ consistently. `--design plain` is a minimal light system-font look for a lightwe
 All of these are plain-Markdown-compatible — they degrade to invisible comments or plain
 text in a normal viewer, so they don't disturb the source doc.
 
-- **Doc title section** — a YAML frontmatter block becomes an artifact-style hero: an accent
-  top rule, the `eyebrow` as a kicker, the big title, the `subtitle` as a lede, freeform
-  `chips`, and the structured fields (`author`/`version`/`status`/`date`/`reference`) as a
-  label-over-value metadata row (an "Approved"-type `status` turns green):
+- **Doc title section** — a YAML frontmatter block becomes the title band: the `eyebrow` as a
+  muted kicker, the big title, the `subtitle` as a lede, and a row of metadata chips from the
+  structured fields (`author`/`version`/`status`/`date`/`reference`) plus any freeform
+  `chips` (an "Approved"-type `status` turns green):
   ```yaml
   ---
   title: My Guide

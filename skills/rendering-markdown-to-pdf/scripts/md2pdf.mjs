@@ -108,6 +108,19 @@ function mermaidVars(accent, mode) {
   };
 }
 
+// Per-shape node colors, applied consistently across every diagram by post-processing the
+// rendered SVG: rectangles (process), diamonds (decision), cylinders (data store), and
+// circles/stadiums (terminals) each get a distinct role tint from the same palette.
+function shapeColors(accent, mode) {
+  const p = PALETTE[mode] || PALETTE.dark;
+  return {
+    process:   { fill: accent.band1,   stroke: accent.text },
+    decision:  { fill: p.warningSoft,  stroke: p.warning },
+    datastore: { fill: p.positiveSoft, stroke: p.positive },
+    terminal:  { fill: p.surface2,     stroke: p.ink3 },
+  };
+}
+
 function parseArgs(argv) {
   const a = { _: [], design: 'designed', mode: 'dark', accent: 'blue', theme: 'default', cards: true, keepHtml: false, title: null, help: false };
   for (let i = 0; i < argv.length; i++) {
@@ -176,26 +189,23 @@ function parseFrontmatter(md) {
 
 function buildCoverHtml(d) {
   if (!d || !d.title) return '';
-  // Structured metadata renders as a label-over-value row (the artifact's title-section
-  // pattern); freeform `chips:` render as pills above it.
+  // Title section modeled on the artifact header: eyebrow, big title, lede, then a row of
+  // metadata chips (an "Approved"-type status turns green).
   const isOk = (s) => /^(approved|done|complete|completed|shipped|final|ready|stable)$/i.test(s);
-  const meta = [];
-  if (d.author) meta.push({ k: 'Author', v: d.author });
-  if (d.version) meta.push({ k: 'Version', v: 'v' + d.version });
-  if (d.status) meta.push({ k: 'Status', v: d.status, ok: isOk(d.status) });
-  if (d.date) meta.push({ k: 'Date', v: String(d.date) });
-  if (d.reference) meta.push({ k: 'Reference', v: d.reference });
+  const chips = [];
+  if (d.author) chips.push({ t: 'Author · ' + d.author });
+  if (d.status) chips.push({ t: 'Status · ' + d.status, ok: isOk(d.status) });
+  if (d.version) chips.push({ t: 'v' + d.version });
+  if (d.date) chips.push({ t: String(d.date) });
+  if (d.reference) chips.push({ t: 'Reference · ' + d.reference });
+  if (Array.isArray(d.chips)) d.chips.forEach((c) => chips.push({ t: c }));
   const lede = d.lede || d.subtitle || '';
-  const metaHtml = meta.map((m) =>
-    '<div class="metaitem"><div class="mk">' + escHtml(m.k) + '</div>' +
-    '<div class="mv' + (m.ok ? ' ok' : '') + '">' + escHtml(m.v) + '</div></div>').join('');
-  const chipHtml = Array.isArray(d.chips) ? d.chips.map((c) => '<span class="chip">' + escHtml(c) + '</span>').join('') : '';
+  const chipHtml = chips.map((c) => '<span class="chip' + (c.ok ? ' ok' : '') + '">' + escHtml(c.t) + '</span>').join('');
   return '<header class="cover">' +
     (d.eyebrow ? '<span class="eyebrow">' + escHtml(d.eyebrow) + '</span>' : '') +
     '<h1>' + escHtml(d.title) + '</h1>' +
     (lede ? '<p class="lede">' + escHtml(lede) + '</p>' : '') +
     (chipHtml ? '<div class="chips">' + chipHtml + '</div>' : '') +
-    (metaHtml ? '<div class="meta">' + metaHtml + '</div>' : '') +
     '</header>';
 }
 
@@ -397,40 +407,32 @@ function designedCss(accent, mode) {
   .page { max-width: 900px; margin: 0 auto; padding: 0; }
   h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -.01em; text-wrap: balance; }
   h1 { font-size: 30px; margin: 8px 0 4px; page-break-after: avoid; }
-  /* Section titles — the artifact's section-header pattern: an accent kicker (.eyebrow),
-     a large display title with an accent tab, and a muted deck line under it. */
-  h2 { position: relative; font-size: 26px; font-weight: 700; line-height: 1.15; margin-top: 42px; padding: 0 0 10px 16px; border-bottom: 1px solid var(--border); page-break-after: avoid; }
-  h2::before { content: ""; position: absolute; left: 0; top: .1em; bottom: .5em; width: 4px; border-radius: 3px; background: var(--accent); }
-  h3 { font-size: 17px; font-weight: 600; margin-top: 26px; padding-left: 16px; position: relative; page-break-after: avoid; }
-  h3::before { content: ""; position: absolute; left: 0; top: .32em; height: .84em; width: 3px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 55%, var(--border)); }
-  h4 { font-size: 14.5px; font-weight: 600; page-break-after: avoid; }
+  /* Section titles — the artifact's .sec-head pattern: a muted mono kicker (.eyebrow), a
+     clean bold Familjen title (no tab, no underline), and a muted deck line under it.
+     A hairline rule above the kicker separates sections, like the artifact's section borders. */
+  h2 { font-size: 24px; font-weight: 700; line-height: 1.18; margin: 40px 0 4px; page-break-after: avoid; }
+  .eyebrow + h2 { margin-top: 0; }
+  h3 { font-size: 17px; font-weight: 600; margin-top: 26px; page-break-after: avoid; }
+  h4 { font-size: 14.5px; font-weight: 600; margin-top: 20px; page-break-after: avoid; }
   /* Section deck — muted subtitle immediately under a heading */
-  .deck { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); max-width: 70ch; margin: 8px 0 2px; break-before: avoid; page-break-before: avoid; break-inside: avoid; }
-  h2 + .deck, h1 + .deck { margin-top: 12px; }
+  .deck { font-size: 15.5px; line-height: 1.55; color: var(--ink-2); max-width: 68ch; margin: 8px 0 2px; break-before: avoid; page-break-before: avoid; break-inside: avoid; }
   p, li { orphans: 3; widows: 3; }
   a { color: var(--accent); text-decoration: none; }
   hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
   code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); color: var(--ink); padding: .12em .42em; border-radius: 5px; border: 1px solid var(--border); }
   blockquote { border-left: 3px solid var(--border-strong); margin: 14px 0; padding: 2px 16px; color: var(--ink-2); }
 
-  /* Eyebrow kicker — accent kick above a section title (artifact pattern) */
-  .eyebrow { display:block; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 30px 0 -12px; padding-left: 16px; break-after: avoid; page-break-after: avoid; }
-  .eyebrow + h2 { margin-top: 6px; }
+  /* Eyebrow kicker — muted mono kick above a section title (the artifact's .eyebrow) */
+  .eyebrow { display:block; font-family: var(--mono); font-size: 11.5px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 34px 0 6px; break-after: avoid; page-break-after: avoid; }
+  .eyebrow + h2 { margin-top: 0; }
 
-  /* Cover / doc title section — an artifact-style hero: accent top rule, kicker, big title,
-     lede, and a structured metadata row. */
-  .cover { position: relative; margin: 0 0 14px; padding: 30px 30px 24px; border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(155deg, var(--surface) 0%, var(--ground) 88%); overflow: hidden; break-inside: avoid; }
-  .cover::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 22%, transparent)); }
-  .cover .eyebrow { margin: 0 0 12px; padding-left: 0; }
-  .cover h1 { font-size: clamp(32px, 6vw, 48px); line-height: 1.02; letter-spacing: -.025em; margin: 0; }
-  .cover .lede { font-size: 16px; color: var(--ink-2); max-width: 64ch; margin: 14px 0 0; }
-  .cover .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-  .cover .meta { display: flex; flex-wrap: wrap; align-items: flex-start; row-gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .cover .metaitem { padding-right: 20px; margin-right: 20px; border-right: 1px solid var(--border); }
-  .cover .metaitem:last-child { border-right: none; margin-right: 0; padding-right: 0; }
-  .cover .metaitem .mk { font-family: var(--mono); font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); }
-  .cover .metaitem .mv { font-size: 13.5px; font-weight: 500; color: var(--ink); margin-top: 3px; }
-  .cover .metaitem .mv.ok { color: var(--positive); }
+  /* Doc title section — the artifact's header.top: a subtle surface→ground band with a
+     bottom border, an eyebrow, a big title, a lede, and a row of metadata chips. */
+  .cover { margin: 0 0 10px; padding: 10px 0 30px; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--surface), var(--ground)); }
+  .cover .eyebrow { margin: 0 0 18px; }
+  .cover h1 { font-size: clamp(34px, 6vw, 48px); font-weight: 700; line-height: 1.02; letter-spacing: -.01em; margin: 0; }
+  .cover .lede { font-size: 18px; color: var(--ink-2); max-width: 60ch; margin: 14px 0 0; }
+  .cover .chips { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 22px; }
   .chip { font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-2); white-space: nowrap; }
   .chip.ok { color: var(--positive); background: var(--positive-soft); border-color: color-mix(in srgb, var(--positive) 34%, var(--border)); }
 
@@ -546,7 +548,7 @@ function designedCss(accent, mode) {
 
 // ---- HTML assembly ---------------------------------------------------------
 
-function buildHtml({ md, cards, accent, mode, mermaidTheme, mermaidVarsObj, docTitle, coverHtml, designed }) {
+function buildHtml({ md, cards, accent, mode, mermaidTheme, mermaidVarsObj, shapeColorsObj, docTitle, coverHtml, designed }) {
   const marked = readFileSync(join(VENDOR, 'marked.min.js'), 'utf8');
   const mermaid = readFileSync(join(VENDOR, 'mermaid.min.js'), 'utf8');
   const mdB64 = Buffer.from(md, 'utf8').toString('base64');
@@ -568,7 +570,7 @@ ${fonts}
 <body class="${designed ? 'designed' : 'plain'}">
 ${designed ? '<div class="pagebg"></div>\n' : ''}<div class="page">${coverHtml}<div id="content"></div></div>
 
-<script>window.MD_B64 = "${mdB64}"; window.CARDS = ${JSON.stringify(cards)}; window.MERMAID_THEME = ${JSON.stringify(mermaidTheme)}; window.MERMAID_VARS = ${JSON.stringify(mermaidVarsObj)}; window.DESIGNED = ${designed ? 'true' : 'false'};</script>
+<script>window.MD_B64 = "${mdB64}"; window.CARDS = ${JSON.stringify(cards)}; window.MERMAID_THEME = ${JSON.stringify(mermaidTheme)}; window.MERMAID_VARS = ${JSON.stringify(mermaidVarsObj)}; window.SHAPE_COLORS = ${JSON.stringify(shapeColorsObj)}; window.DESIGNED = ${designed ? 'true' : 'false'};</script>
 <script>${marked}</script>
 <script>${mermaid}</script>
 <script>
@@ -682,6 +684,23 @@ ${designed ? '<div class="pagebg"></div>\n' : ''}<div class="page">${coverHtml}<
     } catch (e) {
       document.title = 'MERMAID_ERROR: ' + (e && e.message ? e.message : e);
     }
+
+    // Recolor node shapes by type, consistently across all diagrams. Mermaid marks the shape
+    // element with class "label-container" (there is also a trailing label rect to leave
+    // alone): rect=process, polygon=decision/IO, path=data store (cylinder), circle=terminal.
+    if (window.DESIGNED && window.SHAPE_COLORS) {
+      var SC = window.SHAPE_COLORS;
+      var KIND = { rect: 'process', polygon: 'decision', path: 'datastore', circle: 'terminal', ellipse: 'terminal' };
+      document.querySelectorAll('.mermaid svg g.node').forEach(function (node) {
+        var el = node.querySelector('.label-container');
+        if (!el) return;
+        var c = SC[KIND[el.tagName.toLowerCase()]];
+        if (!c) return;
+        el.style.fill = c.fill;
+        el.style.stroke = c.stroke;
+        el.style.strokeWidth = '1.4px';
+      });
+    }
     try { if (document.fonts && document.fonts.ready) { await document.fonts.ready; } } catch (e) {}
     window.__RENDER_DONE__ = true;
   })();
@@ -752,7 +771,8 @@ async function main() {
   const coverHtml = designed ? buildCoverHtml(front) : '';
   const docTitle = args.title || front.title || basename(input);
   const mermaidVarsObj = designed ? mermaidVars(accent, args.mode) : null;
-  const html = buildHtml({ md, cards, accent, mode: args.mode, mermaidTheme, mermaidVarsObj, docTitle, coverHtml, designed });
+  const shapeColorsObj = designed ? shapeColors(accent, args.mode) : null;
+  const html = buildHtml({ md, cards, accent, mode: args.mode, mermaidTheme, mermaidVarsObj, shapeColorsObj, docTitle, coverHtml, designed });
 
   const htmlPath = args.keepHtml ? output.replace(/\.pdf$/i, '') + '.html' : join(tmpdir(), 'md2pdf-' + process.pid + '-' + Date.now() + '.html');
   writeFileSync(htmlPath, html);

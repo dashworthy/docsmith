@@ -56,13 +56,15 @@ Card colours come from the `ACCENTS` map in `md2pdf.mjs`; add a preset there to 
 new `--accent` name. Each preset sets the header-band gradient, title text colour, border,
 and the tinted dot-grid canvas behind the diagram.
 
-**Diagram colours are coordinated with the doc.** In the designed theme the diagrams use
-mermaid's `base` theme with `themeVariables` built by `mermaidVars()` from the same palette:
-accent-tinted nodes with an accent border, a distinct neutral **arrow/line** colour (`--line`)
-so edges read as their own layer, and positive/warning role tints for secondary/tertiary node
-shapes and notes. To recolour diagrams globally, edit `mermaidVars()` or the `PALETTE`/`ACCENTS`
-entries — not the individual `.md`. `--design plain` still uses a stock mermaid theme
-(`--theme`).
+**Diagram colours are coordinated with the doc, and consistent per shape.** In the designed
+theme the diagrams use mermaid's `base` theme with `themeVariables` from the same palette, and
+then a post-render pass recolours each node **by its shape** so the mapping is identical across
+every diagram: **rectangles** (process) = accent, **diamonds** (decision/IO) = warning/amber,
+**cylinders** (data store) = positive/green, **circles/stadiums** (terminals) = neutral;
+arrows/edge lines stay a distinct neutral (`--line`). Mermaid marks the shape element with
+class `label-container` (there is also a trailing label rect to leave alone) — the pass keys
+off that. To retune, edit `shapeColors()` / `mermaidVars()` / `PALETTE` — not the individual
+`.md`. `--design plain` uses a stock mermaid theme (`--theme`) with no per-shape recolour.
 
 ## Math / LaTeX and HTML entities
 The renderer does **not** typeset LaTeX — `$\rightarrow$` in the source would print
