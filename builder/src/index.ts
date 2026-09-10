@@ -8,3 +8,5 @@ export { Callout } from './components/Callout.js';
 export { Badge } from './components/Badge.js';
 export { Table } from './components/Table.js';
 export { Legend } from './components/Legend.js';
+export { CompareCard } from './components/CompareCard.js';
+export { SourceCard } from './components/SourceCard.js';

@@ -9,6 +9,8 @@ import { Callout } from '../components/Callout.js';
 import { Badge } from '../components/Badge.js';
 import { Table } from '../components/Table.js';
 import { Legend } from '../components/Legend.js';
+import { CompareCard } from '../components/CompareCard.js';
+import { SourceCard } from '../components/SourceCard.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -75,6 +77,32 @@ export default (
           { role: 'neutral', label: 'neutral' },
         ]}
       />
+    </Section>
+
+    <Section
+      eyebrow="Category by category"
+      title="Comparison & sources"
+      deck="Comparison cards read today against target; source cards name a class or API."
+    >
+      <CompareCard
+        num="01"
+        title="Questions & permissions"
+        a={{
+          role: 'negative',
+          label: 'Today',
+          items: ['Vanishes after answering.', 'Answers flattened to a string.'],
+        }}
+        b={{
+          role: 'positive',
+          label: 'Target',
+          items: ['Inline card with previews.', 'Structured, persisted answers.'],
+        }}
+        target="Inline card, previews, structured answers, full scopes."
+      />
+      <SourceCard title={'Docsmith\\Render\\MarkdownDocumentRenderer'}>
+        The only class allowed to drive the headless browser — parses the Markdown, runs the
+        diagrams, prints the PDF.
+      </SourceCard>
     </Section>
 
     <Footer
