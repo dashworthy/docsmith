@@ -8,7 +8,11 @@ import { findChrome } from '../src/generate/chrome.js';
 const tmp = mkdtempSync(join(tmpdir(), 'rdb-gen-'));
 
 describe('generate — HTML', () => {
-  it('writes a standalone HTML file for the demo in the chosen theme', async () => {
+  it('writes a standalone HTML file for the demo in the chosen theme', async (ctx) => {
+    if (!findChrome()) {
+      ctx.skip(); // the demo has mermaid markers, which the prerender pass needs Chrome to render
+      return;
+    }
     const out = join(tmp, 'demo-dark.html');
     await generate({ docModule: 'src/docs/demo.tsx', theme: 'dark', format: 'html', out });
     const html = readFileSync(out, 'utf8');

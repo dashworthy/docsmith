@@ -3,9 +3,8 @@
 //
 // A doc module default-exports the document's root React element and may export a `title` string.
 // generate() renders it to static markup, runs the pre-render passes uniformly (each a whole-body
-// Pass owning its own marker loop), inlines the built Tailwind CSS via the skeleton assembler, and
-// writes the output. The pass list is empty today; it will hold the code- and diagram-
-// pre-rendering passes once those components exist.
+// Pass owning its own marker loop — code highlighting, then diagram rendering), inlines the built
+// Tailwind CSS via the skeleton assembler, and writes the output.
 
 import { renderToStaticMarkup } from 'react-dom/server';
 import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';

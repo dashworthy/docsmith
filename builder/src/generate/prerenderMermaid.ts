@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import type { Pass } from './html.js';
 import { PALETTE } from '../theme/palette.js';
 import { unescapeHtml } from './htmlEntities.js';
+import { replaceMarkers } from './markers.js';
 
 /** Matches a Mermaid marker; `data-mermaid` may be bare or `=""` (React emits the latter). */
 const MARKER = /<div data-mermaid(?:="")?>([\s\S]*?)<\/div>/g;
@@ -95,12 +96,9 @@ export const prerenderMermaid: Pass = async (bodyHtml, theme, ctx) => {
 
     const vars = mermaidVars(theme);
     const sc = shapeColors(theme);
-    let out = bodyHtml;
 
-    for (const m of matches) {
-      const [marker, escaped] = m;
-      const chart = unescapeHtml(escaped).trim();
-      const svg = await page.evaluate(
+    return await replaceMarkers(bodyHtml, MARKER, ([, escaped]) =>
+      page.evaluate(
         // Runs in the browser: render the chart, recolor each node by its shape, size the svg to
         // fit, and return the recolored markup.
         async (chartSrc: string, themeVars: unknown, shape: Record<string, { fill: string; stroke: string }>) => {
@@ -144,13 +142,11 @@ export const prerenderMermaid: Pass = async (bodyHtml, theme, ctx) => {
           }
           return holder.innerHTML;
         },
-        chart,
+        unescapeHtml(escaped).trim(),
         vars,
         sc,
-      );
-      out = out.replace(marker, () => svg);
-    }
-    return out;
+      ),
+    );
   } finally {
     await browser.close();
   }

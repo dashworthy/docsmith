@@ -6,6 +6,7 @@
 import { getHighlighter, type Highlighter } from 'shiki';
 import type { Pass } from './html.js';
 import { unescapeHtml } from './htmlEntities.js';
+import { replaceMarkers } from './markers.js';
 
 /** The Shiki themes we render into, one per doc theme. */
 const THEME = { light: 'github-light', dark: 'github-dark' } as const;
@@ -30,17 +31,7 @@ async function highlight(code: string, lang: string, theme: 'light' | 'dark'): P
   return hl.codeToHtml(code, { lang: useLang, theme: THEME[theme] });
 }
 
-export const prerenderCode: Pass = async (bodyHtml, theme) => {
-  const matches = [...bodyHtml.matchAll(MARKER)];
-  if (matches.length === 0) return bodyHtml;
-
-  let out = bodyHtml;
-  for (const m of matches) {
-    const [marker, lang, escaped] = m;
-    const pre = await highlight(unescapeHtml(escaped), lang, theme);
-    // Replace via a function so `$`-sequences in the highlighted HTML (e.g. `${}` in the source)
-    // are inserted literally, not treated as replacement patterns.
-    out = out.replace(marker, () => pre);
-  }
-  return out;
-};
+export const prerenderCode: Pass = (bodyHtml, theme) =>
+  replaceMarkers(bodyHtml, MARKER, ([, lang, escaped]) =>
+    highlight(unescapeHtml(escaped), lang, theme),
+  );

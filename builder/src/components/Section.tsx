@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { cx, t } from '../theme/tokens.js';
 
 /**
- * A section header in the artifact pattern: an accent kicker (eyebrow) above a clean bold title,
+ * A section header: an accent kicker (eyebrow) above a clean bold title,
  * an optional muted deck line under it, then the section body. No underline or tab rule — the
  * accent lives only in the small kicker. The header stays glued to its body across page breaks.
  */

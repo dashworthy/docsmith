@@ -6,6 +6,7 @@
 // pre-rendered to static markup before they reach here, so the page runs no JS.
 
 import { themeStyleBlock } from '../theme/tokens.js';
+import { escapeHtml } from './htmlEntities.js';
 
 /** The Google Fonts stylesheet URL for the three faces the palette declares. */
 const FONTS_HREF =
@@ -36,7 +37,7 @@ export function assembleHtml(i: SkeletonInput): string {
     '<head>' +
     '<meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-    `<title>${i.title}</title>` +
+    `<title>${escapeHtml(i.title)}</title>` +
     '<link rel="preconnect" href="https://fonts.googleapis.com">' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
     `<link rel="stylesheet" href="${FONTS_HREF}">` +

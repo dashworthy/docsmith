@@ -14,6 +14,7 @@ interface Lane {
   steps: Step[];
 }
 
+/** Lane/step tone → its className fragments: role text color, soft fill, and border token. */
 const TONE: Record<Tone, { text: string; soft: string; border: string }> = {
   bad: { text: t.text.negative, soft: t.bg.negativeSoft, border: t.border.negative },
   good: { text: t.text.positive, soft: t.bg.positiveSoft, border: t.border.positive },

@@ -17,6 +17,13 @@ const ROLE_TEXT: Record<ColRole, string> = {
   positive: t.text.positive,
 };
 
+/** Column role → the palette variable its swatch fills with — typed, so no unchecked cast. */
+const ROLE_VAR: Record<ColRole, TokenName> = {
+  warning: 'warning',
+  negative: 'negative',
+  positive: 'positive',
+};
+
 function Col({ col, bordered }: { col: Column; bordered?: boolean }): JSX.Element {
   return (
     <div className={cx('px-5 py-4', bordered && cx(t.border.base, 'border-l'))}>
@@ -28,7 +35,7 @@ function Col({ col, bordered }: { col: Column; bordered?: boolean }): JSX.Elemen
       >
         <span
           className="inline-block h-2.5 w-2.5 rounded-full"
-          style={{ background: cssVar(col.role as TokenName) }}
+          style={{ background: cssVar(ROLE_VAR[col.role]) }}
         />
         {col.label}
       </div>
@@ -42,7 +49,7 @@ function Col({ col, bordered }: { col: Column; bordered?: boolean }): JSX.Elemen
 }
 
 /**
- * A two-column comparison card in the artifact pattern: a neutral surface-2 header band carrying a
+ * A two-column comparison card: a neutral surface-2 header band carrying a
  * muted number and the title, two role-tinted columns (today vs. target), and an optional
  * accent-soft target footer. Kept whole across page breaks.
  */

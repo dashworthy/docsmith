@@ -1,5 +1,6 @@
-// Public barrel for the document builder. Components and the theme token module are
-// exported here as they land in later tasks.
+// Public barrel for the document builder: every authoring component a doc module composes,
+// re-exported from one entry point so a doc imports from '../index.js' rather than reaching into
+// individual component files.
 export { Doc } from './components/Doc.js';
 export { Cover } from './components/Cover.js';
 export { Section } from './components/Section.js';

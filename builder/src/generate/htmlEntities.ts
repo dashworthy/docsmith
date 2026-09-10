@@ -12,3 +12,16 @@ export function unescapeHtml(s: string): string {
     .replace(/&#(?:39|x27);/g, "'")
     .replace(/&amp;/g, '&');
 }
+
+/**
+ * Escape text for safe interpolation into HTML markup — used for values that flow into the
+ * document skeleton verbatim (the `<title>`). `&` is escaped first so the entities the later
+ * replacements introduce aren't double-escaped.
+ */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
