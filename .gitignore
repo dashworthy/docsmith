@@ -1,0 +1,10 @@
+# Node
+node_modules/
+
+# Downloaded browser libraries (fetched on first run into scripts/vendor/)
+skills/*/scripts/vendor/*
+!skills/*/scripts/vendor/.gitkeep
+
+# Generated output / previews
+*.pdf
+*.png

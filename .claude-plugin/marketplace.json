@@ -1,0 +1,20 @@
+{
+  "name": "docsmith",
+  "description": "docsmith plugin marketplace — turn Markdown documentation into polished PDFs",
+  "owner": {
+    "name": "Andrew Leach",
+    "email": "7387639+andyleach@users.noreply.github.com"
+  },
+  "plugins": [
+    {
+      "name": "docsmith",
+      "description": "Convert Markdown docs into print-ready PDFs with mermaid diagrams rendered as vector cards, nothing running off the page.",
+      "version": "1.0.0",
+      "source": ".",
+      "author": {
+        "name": "Andrew Leach",
+        "email": "7387639+andyleach@users.noreply.github.com"
+      }
+    }
+  ]
+}

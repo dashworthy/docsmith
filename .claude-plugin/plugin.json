@@ -1,0 +1,20 @@
+{
+  "name": "docsmith",
+  "description": "Convert Markdown documentation into polished, print-ready PDFs: mermaid diagrams render as crisp vector cards (coloured title bar, tinted background, caption), tables and code never overflow the page, and there is no browser header/footer. Use when exporting a README or Markdown doc to PDF, or rendering a doc whose mermaid diagrams must appear as real diagrams.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Andrew Leach",
+    "email": "7387639+andyleach@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "markdown",
+    "pdf",
+    "mermaid",
+    "diagrams",
+    "documentation",
+    "export",
+    "puppeteer",
+    "print"
+  ]
+}
