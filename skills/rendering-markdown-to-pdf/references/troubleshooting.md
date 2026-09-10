@@ -56,6 +56,14 @@ Card colours come from the `ACCENTS` map in `md2pdf.mjs`; add a preset there to 
 new `--accent` name. Each preset sets the header-band gradient, title text colour, border,
 and the tinted dot-grid canvas behind the diagram.
 
+**Diagram colours are coordinated with the doc.** In the designed theme the diagrams use
+mermaid's `base` theme with `themeVariables` built by `mermaidVars()` from the same palette:
+accent-tinted nodes with an accent border, a distinct neutral **arrow/line** colour (`--line`)
+so edges read as their own layer, and positive/warning role tints for secondary/tertiary node
+shapes and notes. To recolour diagrams globally, edit `mermaidVars()` or the `PALETTE`/`ACCENTS`
+entries — not the individual `.md`. `--design plain` still uses a stock mermaid theme
+(`--theme`).
+
 ## Math / LaTeX and HTML entities
 The renderer does **not** typeset LaTeX — `$\rightarrow$` in the source would print
 literally. If a doc uses inline math, convert those bits to Unicode (`→`, `≥`, `×`) in the
@@ -65,11 +73,15 @@ source, or add MathJax to the HTML template. HTML entities inside a mermaid labe
 ## Themes: designed vs plain, and dark vs light
 `--design designed` (default) applies the full system — tokens, web fonts, cover page,
 callouts, badges, styled tables, reference cards, and the component library. It has two
-modes via `--mode`: **dark** (default) and **light**, both **full-bleed** (`@page { margin:0 }`
-so the ground reaches the paper edge — no white border). `--design plain` is a minimal
-light system-font look with the diagram cards but none of the rest; use it for a lightweight,
-fully-offline render. Because the designed theme is full-bleed, continuation pages have no top
-margin band by design; the ground color is continuous so this reads cleanly.
+modes via `--mode`: **dark** (default, the near-black artifact tone) and **light** (a solid
+**white** page ground). Both are **full-bleed with uniform per-page padding**: `@page` sets a
+real margin (so every page — including continuation pages — has top/bottom/side breathing
+room), and a `position: fixed` `.pagebg` layer repeats on each printed page and extends
+*negatively* into that margin, so the ground still reaches the paper edge with no white
+border. (Do not set `@page { margin: 0 }` for the full-bleed look — that starves continuation
+pages of top/bottom padding, because `.page` padding only lands on the first/last page.)
+`--design plain` is a minimal light system-font look with the diagram cards but none of the
+rest; use it for a lightweight, fully-offline render.
 
 ## Reference cards from 2-column tables
 In the designed theme, a 2-column Markdown table is wrapped (in a pre-pass) into a `cards`

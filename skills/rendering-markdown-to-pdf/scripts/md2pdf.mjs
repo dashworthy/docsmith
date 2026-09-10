@@ -54,6 +54,58 @@ const ACCENTS_DARK = {
   purple: { text: '#a78bfa', soft: '#241b3a', band1: '#1f1930', band2: '#181327', border: '#33294d', canvas: '#141a24', dot: 'rgba(180,150,255,0.12)' },
 };
 
+// Shared design-token palettes so the CSS and the mermaid theme use the SAME colors.
+// Light mode is deliberately a pure-white page ground; dark is the near-black artifact tone.
+const PALETTE = {
+  dark: {
+    ground: '#0c0f15', surface: '#141922', surface2: '#1b212c',
+    ink: '#e7eaef', ink2: '#a7b0bd', ink3: '#79828f',
+    border: '#242c38', borderStrong: '#333d4c',
+    positive: '#34c99a', positiveSoft: '#103028',
+    negative: '#e2685e', negativeSoft: '#341c1a',
+    warning: '#dca34a', warningSoft: '#33280f',
+    neutral: '#79828f', neutralSoft: '#1b212c',
+    line: '#9aa4b2',
+    shadow: '0 1px 2px rgba(0,0,0,.30), 0 12px 32px -14px rgba(0,0,0,.72)',
+  },
+  light: {
+    ground: '#ffffff', surface: '#ffffff', surface2: '#f1f4f8',
+    ink: '#141821', ink2: '#43505f', ink3: '#6b7482',
+    border: '#dce2ea', borderStrong: '#c4ccd7',
+    positive: '#0f7a5a', positiveSoft: '#e4f4ee',
+    negative: '#b83f36', negativeSoft: '#f8e6e3',
+    warning: '#a76d12', warningSoft: '#f8efdb',
+    neutral: '#6b7482', neutralSoft: '#eef1f6',
+    line: '#7a8494',
+    shadow: '0 1px 2px rgba(20,24,33,.05), 0 6px 16px -12px rgba(20,24,33,.22)',
+  },
+};
+
+// Coordinated mermaid theme variables built from the same palette + accent, so diagrams
+// match the doc: accent-tinted nodes, a distinct neutral arrow/line color, and secondary/
+// tertiary role tints for other node shapes (data stores, clusters, alternate branches).
+function mermaidVars(accent, mode) {
+  const p = PALETTE[mode] || PALETTE.dark;
+  return {
+    darkMode: mode === 'dark',
+    background: 'transparent',
+    fontFamily: '"IBM Plex Sans", system-ui, sans-serif',
+    // Primary node = accent tint with accent border
+    primaryColor: accent.band1, primaryBorderColor: accent.text, primaryTextColor: p.ink,
+    mainBkg: accent.band1, nodeBorder: accent.text, nodeTextColor: p.ink,
+    // Secondary / tertiary node shapes = coordinated role tints
+    secondaryColor: p.positiveSoft, secondaryBorderColor: p.positive, secondaryTextColor: p.ink,
+    tertiaryColor: p.warningSoft, tertiaryBorderColor: p.warning, tertiaryTextColor: p.ink,
+    // Edges / arrows = a distinct neutral so they read as their own layer
+    lineColor: p.line, textColor: p.ink2,
+    // Clusters / subgraphs + edge labels
+    clusterBkg: p.surface2, clusterBorder: p.borderStrong,
+    edgeLabelBackground: p.surface, titleColor: p.ink,
+    // Data stores / notes
+    noteBkgColor: p.warningSoft, noteBorderColor: p.warning, noteTextColor: p.ink,
+  };
+}
+
 function parseArgs(argv) {
   const a = { _: [], design: 'designed', mode: 'dark', accent: 'blue', theme: 'default', cards: true, keepHtml: false, title: null, help: false };
   for (let i = 0; i < argv.length; i++) {
@@ -295,24 +347,17 @@ function plainCss(accent) {
 
 function designedCss(accent, mode) {
   const dark = mode === 'dark';
-  const tokens = dark ? `
-    --ground:#0c0f15; --surface:#141922; --surface-2:#1b212c;
-    --ink:#e7eaef; --ink-2:#a7b0bd; --ink-3:#79828f;
-    --border:#242c38; --border-strong:#333d4c;
-    --positive:#34c99a; --positive-soft:#103028;
-    --negative:#e2685e; --negative-soft:#341c1a;
-    --warning:#dca34a; --warning-soft:#33280f;
-    --neutral:#79828f; --neutral-soft:#1b212c;
-    --shadow: 0 1px 2px rgba(0,0,0,.30), 0 12px 32px -14px rgba(0,0,0,.72);
-  ` : `
-    --ground:#e9edf3; --surface:#ffffff; --surface-2:#e3e8f0;
-    --ink:#141821; --ink-2:#43505f; --ink-3:#6b7482;
-    --border:#d1d8e2; --border-strong:#b7c0cc;
-    --positive:#0f7a5a; --positive-soft:#d9f2e8;
-    --negative:#b83f36; --negative-soft:#f7e2df;
-    --warning:#a76d12; --warning-soft:#f8eeda;
-    --neutral:#6b7482; --neutral-soft:#e3e8f0;
-    --shadow: 0 1px 2px rgba(20,24,33,.07), 0 10px 26px -14px rgba(20,24,33,.32);
+  const p = PALETTE[dark ? 'dark' : 'light'];
+  const tokens = `
+    --ground:${p.ground}; --surface:${p.surface}; --surface-2:${p.surface2};
+    --ink:${p.ink}; --ink-2:${p.ink2}; --ink-3:${p.ink3};
+    --border:${p.border}; --border-strong:${p.borderStrong};
+    --positive:${p.positive}; --positive-soft:${p.positiveSoft};
+    --negative:${p.negative}; --negative-soft:${p.negativeSoft};
+    --warning:${p.warning}; --warning-soft:${p.warningSoft};
+    --neutral:${p.neutral}; --neutral-soft:${p.neutralSoft};
+    --line:${p.line};
+    --shadow: ${p.shadow};
   `;
   return `
   :root {
@@ -328,11 +373,19 @@ function designedCss(accent, mode) {
   * { box-sizing: border-box; }
   html, body { background: var(--ground); }
   body { font-family: var(--sans); font-size: 14px; line-height: 1.62; color: var(--ink); margin: 0; -webkit-font-smoothing: antialiased; }
-  .page { max-width: 900px; margin: 0 auto; padding: 15mm 15mm 18mm; }
+  /* Full-bleed background on EVERY page while keeping uniform per-page padding: the @page
+     margin insets the content on every page (so continuation pages breathe top and bottom),
+     and this fixed layer repeats on each printed page, extending negatively into that margin
+     so the ground still reaches the paper edge — no white border. */
+  .pagebg { position: fixed; top: -15mm; left: -16mm; right: -16mm; bottom: -15mm; background: var(--ground); z-index: -1; }
+  .page { max-width: 900px; margin: 0 auto; padding: 0; }
   h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -.01em; text-wrap: balance; }
   h1 { font-size: 30px; margin: 8px 0 4px; page-break-after: avoid; }
-  h2 { font-size: 22px; font-weight: 700; margin-top: 34px; padding-bottom: 6px; border-bottom: 1px solid var(--border-strong); page-break-after: avoid; }
-  h3 { font-size: 16.5px; font-weight: 600; margin-top: 22px; page-break-after: avoid; }
+  /* Section titles — accent tab + hairline rule, like the design artifact */
+  h2 { position: relative; font-size: 23px; font-weight: 700; margin-top: 38px; padding: 0 0 8px 15px; border-bottom: 1px solid var(--border); page-break-after: avoid; }
+  h2::before { content: ""; position: absolute; left: 0; top: .12em; bottom: .5em; width: 4px; border-radius: 3px; background: var(--accent); }
+  h3 { font-size: 16.5px; font-weight: 600; margin-top: 24px; padding-left: 15px; position: relative; page-break-after: avoid; }
+  h3::before { content: ""; position: absolute; left: 0; top: .34em; height: .82em; width: 3px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 55%, var(--border)); }
   h4 { font-size: 14.5px; font-weight: 600; page-break-after: avoid; }
   p, li { orphans: 3; widows: 3; }
   a { color: var(--accent); text-decoration: none; }
@@ -376,11 +429,14 @@ function designedCss(accent, mode) {
   thead th { background: var(--accent-soft); color: var(--accent); font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
   tbody tr:nth-child(even) { background: var(--surface-2); }
 
-  /* Reference cards — a 2-column table becomes these in the designed theme */
+  /* Reference cards — a 2-column table becomes these in the designed theme. Traditional
+     card shape: a tinted header band (accent) over a plain body, with a hairline border. */
   .cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 16px 0; }
-  .refcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; box-shadow: var(--shadow); page-break-inside: avoid; }
-  .refcard-title { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; margin-bottom: 6px; }
-  .refcard-body { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .refcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); page-break-inside: avoid; }
+  .refcard-title { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; padding: 8px 13px; background: var(--accent-soft); border-bottom: 1px solid var(--border); }
+  /* Titles come from a code-wrapped cell; drop the inline-code chrome so the header reads clean. */
+  .refcard-title code { background: none; border: none; padding: 0; font-size: inherit; color: inherit; }
+  .refcard-body { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; padding: 11px 13px; }
   .refcard-body > div + div { margin-top: 4px; }
   .refcard-k { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin-right: 6px; }
 
@@ -455,13 +511,13 @@ function designedCss(accent, mode) {
   /* Provenance footer */
   .docfooter { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 11px; color: var(--ink-3); line-height: 1.9; }
 
-  @page { size: A4; margin: 0; }
+  @page { size: A4; margin: 15mm 16mm; }
   ${fitCss()}`;
 }
 
 // ---- HTML assembly ---------------------------------------------------------
 
-function buildHtml({ md, cards, accent, mode, mermaidTheme, docTitle, coverHtml, designed }) {
+function buildHtml({ md, cards, accent, mode, mermaidTheme, mermaidVarsObj, docTitle, coverHtml, designed }) {
   const marked = readFileSync(join(VENDOR, 'marked.min.js'), 'utf8');
   const mermaid = readFileSync(join(VENDOR, 'mermaid.min.js'), 'utf8');
   const mdB64 = Buffer.from(md, 'utf8').toString('base64');
@@ -481,9 +537,9 @@ ${fonts}
 <style>${css}</style>
 </head>
 <body class="${designed ? 'designed' : 'plain'}">
-<div class="page">${coverHtml}<div id="content"></div></div>
+${designed ? '<div class="pagebg"></div>\n' : ''}<div class="page">${coverHtml}<div id="content"></div></div>
 
-<script>window.MD_B64 = "${mdB64}"; window.CARDS = ${JSON.stringify(cards)}; window.MERMAID_THEME = ${JSON.stringify(mermaidTheme)}; window.DESIGNED = ${designed ? 'true' : 'false'};</script>
+<script>window.MD_B64 = "${mdB64}"; window.CARDS = ${JSON.stringify(cards)}; window.MERMAID_THEME = ${JSON.stringify(mermaidTheme)}; window.MERMAID_VARS = ${JSON.stringify(mermaidVarsObj)}; window.DESIGNED = ${designed ? 'true' : 'false'};</script>
 <script>${marked}</script>
 <script>${mermaid}</script>
 <script>
@@ -580,7 +636,12 @@ ${fonts}
 
     document.getElementById('content').innerHTML = marked.parse(raw, { renderer: renderer, gfm: true, breaks: false });
 
-    mermaid.initialize({ startOnLoad: false, theme: window.MERMAID_THEME, securityLevel: 'loose', flowchart: { htmlLabels: true } });
+    // Designed theme drives a coordinated palette via the base theme + themeVariables; plain uses a stock theme.
+    if (window.DESIGNED && window.MERMAID_VARS) {
+      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: window.MERMAID_VARS, securityLevel: 'loose', flowchart: { htmlLabels: true, curve: 'basis' } });
+    } else {
+      mermaid.initialize({ startOnLoad: false, theme: window.MERMAID_THEME, securityLevel: 'loose', flowchart: { htmlLabels: true } });
+    }
     try {
       await mermaid.run({ querySelector: '.mermaid' });
     } catch (e) {
@@ -655,7 +716,8 @@ async function main() {
   const { md, cards } = preprocess(cardifyTables(body, designed), { cards: args.cards, designed });
   const coverHtml = designed ? buildCoverHtml(front) : '';
   const docTitle = args.title || front.title || basename(input);
-  const html = buildHtml({ md, cards, accent, mode: args.mode, mermaidTheme, docTitle, coverHtml, designed });
+  const mermaidVarsObj = designed ? mermaidVars(accent, args.mode) : null;
+  const html = buildHtml({ md, cards, accent, mode: args.mode, mermaidTheme, mermaidVarsObj, docTitle, coverHtml, designed });
 
   const htmlPath = args.keepHtml ? output.replace(/\.pdf$/i, '') + '.html' : join(tmpdir(), 'md2pdf-' + process.pid + '-' + Date.now() + '.html');
   writeFileSync(htmlPath, html);
