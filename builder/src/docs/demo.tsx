@@ -7,6 +7,8 @@ import { Section } from '../components/Section.js';
 import { Footer } from '../components/Footer.js';
 import { Callout } from '../components/Callout.js';
 import { Badge } from '../components/Badge.js';
+import { Table } from '../components/Table.js';
+import { Legend } from '../components/Legend.js';
 
 export const title = 'Harvest × Bloom Parity';
 
@@ -49,6 +51,30 @@ export default (
       <Callout role="tip">A tip in the positive role.</Callout>
       <Callout role="warning">A warning in the amber role.</Callout>
       <Callout role="caution">A caution in the negative role.</Callout>
+    </Section>
+
+    <Section
+      eyebrow="Tabular data"
+      title="Tables & legend"
+      deck="An accent-header table and a tint legend."
+    >
+      <Table
+        head={['Component', 'Role']}
+        rows={[
+          ['Table', 'accent-header data table'],
+          ['Legend', 'role tint key'],
+          ['Callout', 'admonition card'],
+        ]}
+      />
+      <Legend
+        items={[
+          { role: 'accent', label: 'accent' },
+          { role: 'positive', label: 'positive' },
+          { role: 'negative', label: 'negative' },
+          { role: 'warning', label: 'warning' },
+          { role: 'neutral', label: 'neutral' },
+        ]}
+      />
     </Section>
 
     <Footer

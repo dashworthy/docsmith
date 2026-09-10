@@ -6,3 +6,5 @@ export { Section } from './components/Section.js';
 export { Footer } from './components/Footer.js';
 export { Callout } from './components/Callout.js';
 export { Badge } from './components/Badge.js';
+export { Table } from './components/Table.js';
+export { Legend } from './components/Legend.js';
