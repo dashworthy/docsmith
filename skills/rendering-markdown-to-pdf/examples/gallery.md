@@ -40,12 +40,15 @@ Badges: [[New]] [[accent:Accent]] [[positive:Stable]] [[warning:Beta]] [[negativ
   <span class="t"><span class="dot" style="background:var(--warning)"></span>warning</span>
 </div>
 
+<!-- eyebrow: Category by category -->
 ## Reference cards
+<!-- deck: A two-column table becomes a grid of cards — neutral header band, accent title, and clean namespace wrapping, styled like the artifact's cards. -->
 
 | Class | Responsibility |
 |---|---|
-| `Search\WebsiteSearchProductFinder` | The only class allowed to touch the search engine. Matches products, applies the cap, pages and enriches. |
-| `Search\SelectionFilterApplier` | Turns a stage's selections plus hidden defaults into search filters. |
+| `Docsmith\Render\MarkdownDocumentRenderer` | The only class allowed to drive the headless browser. Parses the Markdown, runs mermaid, prints the PDF. |
+| `Docsmith\Theme\DesignedThemeStylesheetProviderInterface` | A deliberately long name to prove the header wraps cleanly at the namespace separator instead of running off the card edge. |
+| `Docsmith\Diagram\DiagramCardBuilder` | Turns a mermaid fence plus its figure/caption directives into a titled card. |
 
 ## Comparison
 

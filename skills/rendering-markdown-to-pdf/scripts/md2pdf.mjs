@@ -66,7 +66,9 @@ const PALETTE = {
     warning: '#dca34a', warningSoft: '#33280f',
     neutral: '#79828f', neutralSoft: '#1b212c',
     line: '#9aa4b2',
-    shadow: '0 1px 2px rgba(0,0,0,.30), 0 12px 32px -14px rgba(0,0,0,.72)',
+    // Flat by design: PDF viewers render blurred box-shadows as hard dark bands, so cards
+    // rely on borders + surface elevation for separation, not shadow.
+    shadow: 'none',
   },
   light: {
     ground: '#ffffff', surface: '#ffffff', surface2: '#f1f4f8',
@@ -77,7 +79,7 @@ const PALETTE = {
     warning: '#a76d12', warningSoft: '#f8efdb',
     neutral: '#6b7482', neutralSoft: '#eef1f6',
     line: '#7a8494',
-    shadow: '0 1px 2px rgba(20,24,33,.05), 0 6px 16px -12px rgba(20,24,33,.22)',
+    shadow: 'none',
   },
 };
 
@@ -174,20 +176,26 @@ function parseFrontmatter(md) {
 
 function buildCoverHtml(d) {
   if (!d || !d.title) return '';
-  const chips = [];
-  if (d.author) chips.push({ t: 'Author · ' + d.author });
-  if (d.status) chips.push({ t: 'Status · ' + d.status, ok: /^(approved|done|complete|completed|shipped|final|ready)$/i.test(d.status) });
-  if (d.version) chips.push({ t: 'v' + d.version });
-  if (d.date) chips.push({ t: String(d.date) });
-  if (d.reference) chips.push({ t: 'Reference · ' + d.reference });
-  if (Array.isArray(d.chips)) d.chips.forEach((c) => chips.push({ t: c }));
+  // Structured metadata renders as a label-over-value row (the artifact's title-section
+  // pattern); freeform `chips:` render as pills above it.
+  const isOk = (s) => /^(approved|done|complete|completed|shipped|final|ready|stable)$/i.test(s);
+  const meta = [];
+  if (d.author) meta.push({ k: 'Author', v: d.author });
+  if (d.version) meta.push({ k: 'Version', v: 'v' + d.version });
+  if (d.status) meta.push({ k: 'Status', v: d.status, ok: isOk(d.status) });
+  if (d.date) meta.push({ k: 'Date', v: String(d.date) });
+  if (d.reference) meta.push({ k: 'Reference', v: d.reference });
   const lede = d.lede || d.subtitle || '';
-  const chipHtml = chips.map((c) => '<span class="chip' + (c.ok ? ' ok' : '') + '">' + escHtml(c.t) + '</span>').join('');
+  const metaHtml = meta.map((m) =>
+    '<div class="metaitem"><div class="mk">' + escHtml(m.k) + '</div>' +
+    '<div class="mv' + (m.ok ? ' ok' : '') + '">' + escHtml(m.v) + '</div></div>').join('');
+  const chipHtml = Array.isArray(d.chips) ? d.chips.map((c) => '<span class="chip">' + escHtml(c) + '</span>').join('') : '';
   return '<header class="cover">' +
     (d.eyebrow ? '<span class="eyebrow">' + escHtml(d.eyebrow) + '</span>' : '') +
     '<h1>' + escHtml(d.title) + '</h1>' +
     (lede ? '<p class="lede">' + escHtml(lede) + '</p>' : '') +
     (chipHtml ? '<div class="chips">' + chipHtml + '</div>' : '') +
+    (metaHtml ? '<div class="meta">' + metaHtml + '</div>' : '') +
     '</header>';
 }
 
@@ -233,6 +241,14 @@ function preprocess(md, { cards: cardsOn, designed }) {
       // line marked absorbs the following paragraph/table into the raw HTML block and
       // stops parsing it (badges, bold, tables would render literally).
       if (designed) { out.push('<p class="eyebrow">' + escHtml(eye[1].trim()) + '</p>'); out.push(''); }
+      continue;
+    }
+
+    // Section deck — a muted subtitle line under a heading (the artifact's section-header
+    // pattern is: accent kicker, big title, then this deck). Place after the heading.
+    const deck = line.match(/^\s*<!--\s*deck:\s*(.*?)\s*-->\s*$/i);
+    if (deck) {
+      if (designed) { out.push('<p class="deck">' + escHtml(deck[1].trim()) + '</p>'); out.push(''); }
       continue;
     }
 
@@ -381,27 +397,40 @@ function designedCss(accent, mode) {
   .page { max-width: 900px; margin: 0 auto; padding: 0; }
   h1, h2, h3, h4 { font-family: var(--display); letter-spacing: -.01em; text-wrap: balance; }
   h1 { font-size: 30px; margin: 8px 0 4px; page-break-after: avoid; }
-  /* Section titles — accent tab + hairline rule, like the design artifact */
-  h2 { position: relative; font-size: 23px; font-weight: 700; margin-top: 38px; padding: 0 0 8px 15px; border-bottom: 1px solid var(--border); page-break-after: avoid; }
-  h2::before { content: ""; position: absolute; left: 0; top: .12em; bottom: .5em; width: 4px; border-radius: 3px; background: var(--accent); }
-  h3 { font-size: 16.5px; font-weight: 600; margin-top: 24px; padding-left: 15px; position: relative; page-break-after: avoid; }
-  h3::before { content: ""; position: absolute; left: 0; top: .34em; height: .82em; width: 3px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+  /* Section titles — the artifact's section-header pattern: an accent kicker (.eyebrow),
+     a large display title with an accent tab, and a muted deck line under it. */
+  h2 { position: relative; font-size: 26px; font-weight: 700; line-height: 1.15; margin-top: 42px; padding: 0 0 10px 16px; border-bottom: 1px solid var(--border); page-break-after: avoid; }
+  h2::before { content: ""; position: absolute; left: 0; top: .1em; bottom: .5em; width: 4px; border-radius: 3px; background: var(--accent); }
+  h3 { font-size: 17px; font-weight: 600; margin-top: 26px; padding-left: 16px; position: relative; page-break-after: avoid; }
+  h3::before { content: ""; position: absolute; left: 0; top: .32em; height: .84em; width: 3px; border-radius: 2px; background: color-mix(in srgb, var(--accent) 55%, var(--border)); }
   h4 { font-size: 14.5px; font-weight: 600; page-break-after: avoid; }
+  /* Section deck — muted subtitle immediately under a heading */
+  .deck { font-size: 14.5px; line-height: 1.5; color: var(--ink-2); max-width: 70ch; margin: 8px 0 2px; break-before: avoid; page-break-before: avoid; break-inside: avoid; }
+  h2 + .deck, h1 + .deck { margin-top: 12px; }
   p, li { orphans: 3; widows: 3; }
   a { color: var(--accent); text-decoration: none; }
   hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
   code { font-family: var(--mono); font-size: .86em; background: var(--surface-2); color: var(--ink); padding: .12em .42em; border-radius: 5px; border: 1px solid var(--border); }
   blockquote { border-left: 3px solid var(--border-strong); margin: 14px 0; padding: 2px 16px; color: var(--ink-2); }
 
-  /* Eyebrow kicker */
-  .eyebrow { display:block; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 22px 0 -10px; }
+  /* Eyebrow kicker — accent kick above a section title (artifact pattern) */
+  .eyebrow { display:block; font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 30px 0 -12px; padding-left: 16px; break-after: avoid; page-break-after: avoid; }
+  .eyebrow + h2 { margin-top: 6px; }
 
-  /* Cover header */
-  .cover { margin: 0 0 6px; padding: 6px 0 22px; border-bottom: 2px solid var(--border); }
-  .cover .eyebrow { margin: 0 0 10px; }
-  .cover h1 { font-size: clamp(26px, 4.4vw, 38px); line-height: 1.04; margin: 0; }
-  .cover .lede { font-size: 15px; color: var(--ink-2); max-width: 62ch; margin: 12px 0 0; }
-  .cover .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  /* Cover / doc title section — an artifact-style hero: accent top rule, kicker, big title,
+     lede, and a structured metadata row. */
+  .cover { position: relative; margin: 0 0 14px; padding: 30px 30px 24px; border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(155deg, var(--surface) 0%, var(--ground) 88%); overflow: hidden; break-inside: avoid; }
+  .cover::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 22%, transparent)); }
+  .cover .eyebrow { margin: 0 0 12px; padding-left: 0; }
+  .cover h1 { font-size: clamp(32px, 6vw, 48px); line-height: 1.02; letter-spacing: -.025em; margin: 0; }
+  .cover .lede { font-size: 16px; color: var(--ink-2); max-width: 64ch; margin: 14px 0 0; }
+  .cover .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .cover .meta { display: flex; flex-wrap: wrap; align-items: flex-start; row-gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .cover .metaitem { padding-right: 20px; margin-right: 20px; border-right: 1px solid var(--border); }
+  .cover .metaitem:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+  .cover .metaitem .mk { font-family: var(--mono); font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); }
+  .cover .metaitem .mv { font-size: 13.5px; font-weight: 500; color: var(--ink); margin-top: 3px; }
+  .cover .metaitem .mv.ok { color: var(--positive); }
   .chip { font-family: var(--mono); font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-2); white-space: nowrap; }
   .chip.ok { color: var(--positive); background: var(--positive-soft); border-color: color-mix(in srgb, var(--positive) 34%, var(--border)); }
 
@@ -432,8 +461,8 @@ function designedCss(accent, mode) {
   /* Reference cards — a 2-column table becomes these in the designed theme. Traditional
      card shape: a tinted header band (accent) over a plain body, with a hairline border. */
   .cardgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 16px 0; }
-  .refcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); page-break-inside: avoid; }
-  .refcard-title { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; padding: 8px 13px; background: var(--accent-soft); border-bottom: 1px solid var(--border); }
+  .refcard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); page-break-inside: avoid; }
+  .refcard-title { font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--accent); overflow-wrap: anywhere; word-break: break-word; padding: 9px 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
   /* Titles come from a code-wrapped cell; drop the inline-code chrome so the header reads clean. */
   .refcard-title code { background: none; border: none; padding: 0; font-size: inherit; color: inherit; }
   .refcard-body { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; padding: 11px 13px; }
@@ -573,7 +602,13 @@ ${designed ? '<div class="pagebg"></div>\n' : ''}<div class="page">${coverHtml}<
           if (cells.length > 2 && header && header[c]) { body.push('<div><span class="refcard-k">' + esc(header[c]) + '</span>' + val + '</div>'); }
           else { body.push('<div>' + val + '</div>'); }
         }
-        cards.push('<div class="refcard"><div class="refcard-title">' + marked.parseInline(cells[0] || '') + '</div><div class="refcard-body">' + body.join('') + '</div></div>');
+        // Long class/interface names are single unbreakable tokens; add a break opportunity
+        // after each namespace separator (backslash) so the header wraps cleanly at namespace
+        // boundaries instead of running off the card edge. Backslash never occurs in the
+        // emitted HTML tags, so this split is safe.
+        var bs = String.fromCharCode(92);
+        var title = marked.parseInline(cells[0] || '').split(bs).join(bs + '<wbr>');
+        cards.push('<div class="refcard"><div class="refcard-title">' + title + '</div><div class="refcard-body">' + body.join('') + '</div></div>');
       }
       return '<div class="cardgrid">' + cards.join('') + '</div>';
     }

@@ -9,9 +9,10 @@ It ships one skill, **`rendering-markdown-to-pdf`**, plus the Node script that d
 
 ## What you get
 
-- **A designed theme** (default) — design tokens, IBM Plex + Familjen Grotesk fonts, a
-  **cover page** from YAML frontmatter with metadata chips, GitHub-style **admonition
-  callouts**, inline **badges/pills**, and accent-header **tables**.
+- **A designed theme** (default) — design tokens, IBM Plex + Familjen Grotesk fonts, an
+  artifact-style **doc title hero** from YAML frontmatter (accent rule, kicker, big title,
+  label/value metadata), **section headers** (accent kicker + title + deck), GitHub-style
+  **admonition callouts**, inline **badges/pills**, and accent-header **tables**.
 - **Real diagrams, not code** — every ```mermaid fence renders as selectable vector art, in a
   titled card with a coloured header (`blue` default; `green` / `slate` / `purple`), a tinted
   background, and an optional caption.

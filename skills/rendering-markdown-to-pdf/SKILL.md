@@ -54,7 +54,10 @@ consistently. `--design plain` is a minimal light system-font look for a lightwe
 All of these are plain-Markdown-compatible — they degrade to invisible comments or plain
 text in a normal viewer, so they don't disturb the source doc.
 
-- **Cover page** — a YAML frontmatter block becomes a cover header with metadata chips:
+- **Doc title section** — a YAML frontmatter block becomes an artifact-style hero: an accent
+  top rule, the `eyebrow` as a kicker, the big title, the `subtitle` as a lede, freeform
+  `chips`, and the structured fields (`author`/`version`/`status`/`date`/`reference`) as a
+  label-over-value metadata row (an "Approved"-type `status` turns green):
   ```yaml
   ---
   title: My Guide
@@ -71,7 +74,14 @@ text in a normal viewer, so they don't disturb the source doc.
   `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`.
 - **Badges** — inline pills: `[[Label]]` (neutral), `[[accent:New]]`, `[[positive:Stable]]`,
   `[[warning:Beta]]`, `[[negative:Deprecated]]`.
-- **Eyebrow kicker** above a heading — `<!-- eyebrow: The headline finding -->`.
+- **Section header** (the artifact pattern) — an accent **kicker** above the title and a
+  muted **deck** line under it, wrapping any `##` heading:
+  ```markdown
+  <!-- eyebrow: Category by category -->
+  ## Questions · Tasks · Tools · Bash
+  <!-- deck: The four surfaces you asked to focus on, each read against the baseline. -->
+  ```
+  Either directive is optional; the kicker stays glued to its title across page breaks.
 - **Diagram card title/caption** — on the line(s) before a ```mermaid fence:
   `<!-- figure: Data Model | The aggregate and its relationships -->` (either side optional),
   or `<!-- caption: … -->` to keep the auto title (`Figure N · <nearest heading>`).
