@@ -1,16 +1,15 @@
-// react-pdf theme layer. Unlike the HTML path (Tailwind arbitrary utilities reading CSS
-// variables), react-pdf has no CSS or custom properties: styles are plain objects with a small
-// subset of flexbox/text properties, and fonts must be registered from real TTF/OTF files. This
-// module registers the three faces once and exposes the palette (reused verbatim from the HTML
-// path's single source of truth) through a React context so components read theme colors without
-// prop-drilling.
+// react-pdf theme layer. react-pdf has no CSS or custom properties: styles are plain objects with a
+// small subset of flexbox/text properties, and fonts must be registered from real font files. This
+// module registers the faces once, carries the page geometry, and exposes the ShadCN styling
+// boundary — a theme-bound `tw` resolver provided via React context so components read ShadCN
+// tokens without prop-drilling (see the boundary section below).
 
 import { createContext, useContext } from 'react';
 import { Font } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { PALETTE, SHADCN, type TokenName } from '../theme/palette.js';
+import { SHADCN } from '../theme/palette.js';
 
 const require = createRequire(import.meta.url);
 
@@ -82,23 +81,6 @@ export const CONTENT_HEIGHT = PAGE.height - PAGE.paddingV * 2;
 export const HALF_CONTENT = CONTENT_HEIGHT / 2;
 
 export type PdfTheme = 'light' | 'dark';
-
-/** The resolved palette for the active theme — the exact-hex map, keyed by role. */
-export type Palette = Record<TokenName, string>;
-
-const ThemeContext = createContext<Palette>(PALETTE.light);
-
-export const ThemeProvider = ThemeContext.Provider;
-
-/** Read the active theme's palette inside any component under a `PdfDoc`. */
-export function usePalette(): Palette {
-  return useContext(ThemeContext);
-}
-
-/** The palette map for a theme (light/dark) — the value fed to `ThemeProvider`. */
-export function paletteFor(theme: PdfTheme): Palette {
-  return PALETTE[theme];
-}
 
 // ── ShadCN styling boundary (react-pdf-tailwind) ─────────────────────────────
 // Components reach styling through one primitive: `useTw()`, a theme-bound class→style

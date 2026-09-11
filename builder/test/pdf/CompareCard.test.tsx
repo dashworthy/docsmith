@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import TestRenderer from 'react-test-renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { CompareCard } from '../../src/pdf/components/CompareCard.js';
-import { ThemeProvider, TwProvider, paletteFor, shadcnConfig } from '../../src/pdf/theme.js';
+import { TwProvider, shadcnConfig } from '../../src/pdf/theme.js';
 
 const tw = createTw(shadcnConfig('light'));
 
@@ -14,17 +14,15 @@ function flat(style: unknown): Record<string, unknown> {
 /** Collect every resolved `color` and `backgroundColor` across the rendered tree. */
 function collect() {
   const tree = TestRenderer.create(
-    <ThemeProvider value={paletteFor('light')}>
-      <TwProvider value={tw}>
-        <CompareCard
-          num="01"
-          title="Trade-off"
-          a={{ label: 'Pros', role: 'positive', items: ['fast'] }}
-          b={{ label: 'Cons', role: 'negative', items: ['risky'] }}
-          target="pick A"
-        />
-      </TwProvider>
-    </ThemeProvider>,
+    <TwProvider value={tw}>
+      <CompareCard
+        num="01"
+        title="Trade-off"
+        a={{ label: 'Pros', role: 'positive', items: ['fast'] }}
+        b={{ label: 'Cons', role: 'negative', items: ['risky'] }}
+        target="pick A"
+      />
+    </TwProvider>,
   ).toJSON() as any;
   const colors = new Set<unknown>();
   const bgs = new Set<unknown>();
