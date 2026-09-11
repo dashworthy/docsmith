@@ -182,7 +182,6 @@ export default async (theme: PdfTheme) => {
           keeps narrowing the products.
         </P>
         <CompareCard
-          num="scope"
           title="How long an answer keeps filtering"
           a={{
             role: 'positive',
