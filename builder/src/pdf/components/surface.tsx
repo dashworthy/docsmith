@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { View } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/types';
-import { usePalette } from '../theme.js';
+import { useTw } from '../theme.js';
 
 /** Card corner radii, shared so a card body and its rounded header/footer bands agree. */
 export const RADIUS = { md: 10, lg: 12 } as const;
@@ -22,11 +22,11 @@ export function Card({
 }: {
   radius: number;
   children: ReactNode;
-  /** Border color; defaults to the theme's stronger border for a defined edge. */
+  /** Border color; defaults to the ShadCN `border` token for a defined edge. */
   border?: string;
   style?: Style;
 }): JSX.Element {
-  const c = usePalette();
+  const tw = useTw();
   return (
     <Elevated radius={radius} style={style}>
       <View style={{ position: 'relative', borderRadius: radius }}>
@@ -38,7 +38,7 @@ export function Card({
             left: 0,
             right: 0,
             bottom: 0,
-            borderColor: border ?? c.borderStrong,
+            borderColor: border ?? tw('border-border').borderColor,
             borderWidth: 1,
             borderRadius: radius,
           }}
