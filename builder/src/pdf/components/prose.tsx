@@ -21,9 +21,10 @@ export function Muted({ children }: { children: ReactNode }): JSX.Element {
 }
 
 /**
- * A small mono, uppercase, letter-spaced kicker. Defaults to the ShadCN `primary` ink (the
- * agreed note/info role); a role-colored eyebrow passes an explicit `color`. The mono family and
- * exact letter-spacing are raw style — react-pdf-tailwind resolves neither from our token config.
+ * A small mono, uppercase, letter-spaced kicker. Defaults to the `brand` accent ink (the note/info
+ * role, Tailwind indigo), which is what gives a section eyebrow its colored identity; a role-colored
+ * eyebrow passes an explicit `color`. The mono family and exact letter-spacing are raw style —
+ * react-pdf-tailwind resolves neither from our token config.
  */
 export function Eyebrow({ children, color }: { children: ReactNode; color?: string }): JSX.Element {
   const tw = useTw();
@@ -31,7 +32,7 @@ export function Eyebrow({ children, color }: { children: ReactNode; color?: stri
     <Text
       style={[
         tw('text-[8px] font-medium uppercase'),
-        { fontFamily: FONT.mono, letterSpacing: 1, lineHeight: 1, marginBottom: 3, color: color ?? tw('text-primary').color },
+        { fontFamily: FONT.mono, letterSpacing: 1, lineHeight: 1, marginBottom: 3, color: color ?? tw('text-brand-ink').color },
       ]}
     >
       {children}

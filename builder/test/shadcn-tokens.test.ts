@@ -27,11 +27,13 @@ describe('SHADCN token maps', () => {
     expect(SHADCN.light.foreground).not.toBe(SHADCN.dark.foreground);
   });
 
-  it('uses vanilla ShadCN default (slate) values', () => {
-    // Spot-check the canonical defaults so a drift from vanilla ShadCN is caught.
-    expect(SHADCN.light.primary).toBe('#0f172a'); // slate-900
-    expect(SHADCN.light.border).toBe('#e2e8f0'); // slate-200
-    expect(SHADCN.light.destructive).toBe('#ef4444'); // red-500
-    expect(SHADCN.dark.background).toBe('#020817');
+  it('keeps the ShadCN slate base, with the deliberately retuned neutral ramp', () => {
+    // Spot-check anchors that should not drift, plus the intentional light-mode ramp retune
+    // (grey ground / slate-300 frame) so a change there is a conscious edit, not an accident.
+    expect(SHADCN.light.primary).toBe('#0f172a'); // slate-900 (unchanged)
+    expect(SHADCN.light.destructive).toBe('#ef4444'); // red-500 (unchanged)
+    expect(SHADCN.dark.background).toBe('#020817'); // unchanged
+    expect(SHADCN.light.background).toBe('#f1f5f9'); // slate-100 ground (retuned)
+    expect(SHADCN.light.border).toBe('#cbd5e1'); // slate-300 card frame (retuned)
   });
 });

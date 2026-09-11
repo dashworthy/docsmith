@@ -3,7 +3,7 @@ import { Text, View } from '@react-pdf/renderer';
 import { FONT, useTw } from '../theme.js';
 import { Card, RADIUS } from './surface.js';
 
-/** A reference card: a muted header band with a mono, primary-colored title over a muted body. */
+/** A reference card: a muted header band with a mono, indigo-accented title over a muted body. */
 export function SourceCard({ title, children }: { title: string; children: ReactNode }): JSX.Element {
   const tw = useTw();
   return (
@@ -20,7 +20,7 @@ export function SourceCard({ title, children }: { title: string; children: React
           },
         ]}
       >
-        <Text style={[tw('text-primary'), { fontFamily: FONT.mono, fontSize: 9.5 }]}>{title}</Text>
+        <Text style={[tw('text-brand-ink'), { fontFamily: FONT.mono, fontSize: 9.5 }]}>{title}</Text>
       </View>
       <View style={[tw('bg-card'), { paddingVertical: 9, paddingHorizontal: 13 }]}>
         <Text style={[tw('text-fg-muted'), { fontSize: 9.5 }]}>{children}</Text>

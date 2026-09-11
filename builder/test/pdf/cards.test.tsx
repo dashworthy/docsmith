@@ -37,9 +37,9 @@ function paint(node: ReactElement) {
 
 describe('SourceCard (ShadCN tokens)', () => {
   const p = paint(<SourceCard title="App\Render\Renderer">body</SourceCard>);
-  it('uses a muted header band with a primary mono title over a muted body', () => {
+  it('uses a muted header band with an indigo mono title over a muted body', () => {
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(p.colors.has(tw('text-primary').color)).toBe(true);
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
   });
   it('does not leak old palette hexes', () => {
@@ -65,19 +65,19 @@ describe('Panel (ShadCN tokens)', () => {
   });
 });
 
-describe('KeyBox (ShadCN role palette)', () => {
-  it('colors the rule + key by role', () => {
-    const neg = paint(<KeyBox role="negative" k="k" v="v" />);
-    expect(neg.colors.has(tw('text-destructive').color)).toBe(true);
-    expect(neg.borders.has(tw('border-destructive').borderColor)).toBe(true);
+describe('KeyBox (the one standardized admonition)', () => {
+  it('colors the left rule + title by the role ink', () => {
+    const neg = paint(<KeyBox role="negative" title="t">v</KeyBox>);
+    expect(neg.colors.has(tw('text-neg-ink').color)).toBe(true);
+    expect(neg.borders.has(tw('text-neg-ink').color)).toBe(true);
 
-    expect(paint(<KeyBox role="positive" k="k" v="v" />).colors.has(tw('text-emerald-600').color)).toBe(true);
-    expect(paint(<KeyBox role="warning" k="k" v="v" />).colors.has(tw('text-amber-600').color)).toBe(true);
-    expect(paint(<KeyBox role="accent" k="k" v="v" />).colors.has(tw('text-primary').color)).toBe(true);
+    expect(paint(<KeyBox role="positive" title="t">v</KeyBox>).colors.has(tw('text-pos-ink').color)).toBe(true);
+    expect(paint(<KeyBox role="warning" title="t">v</KeyBox>).colors.has(tw('text-warn-ink').color)).toBe(true);
+    expect(paint(<KeyBox role="accent" title="t">v</KeyBox>).colors.has(tw('text-brand-ink').color)).toBe(true);
   });
-  it('fills with the theme-safe muted token, not a fixed soft tint', () => {
-    const p = paint(<KeyBox role="negative" k="k" v="v" />);
-    expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(p.bgs.has('#f7e2df')).toBe(false); // old negativeSoft
+  it('fills with the theme-swapped soft role tint', () => {
+    const p = paint(<KeyBox role="negative" title="t">v</KeyBox>);
+    expect(p.bgs.has(tw('bg-neg-soft').backgroundColor)).toBe(true);
+    expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(false);
   });
 });

@@ -50,6 +50,13 @@ describe('CompareCard (ShadCN tokens)', () => {
     expect(colors.has(tw('text-destructive').color)).toBe(true); // negative
   });
 
+  it('gives the num pill a soft indigo accent and the target footer the deeper brand fill', () => {
+    const { colors, bgs } = collect();
+    expect(bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true); // num pill soft fill
+    expect(bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // footer band — one step more saturated
+    expect(colors.has(tw('text-brand-ink').color)).toBe(true); // num pill ink + "Target" label
+  });
+
   it('does not leak the old bespoke palette hexes', () => {
     const { colors, bgs } = collect();
     expect(colors.has('#4b52d4')).toBe(false); // old accent

@@ -9,7 +9,6 @@ import {
   Section,
   P,
   B,
-  Callout,
   Badge,
   Table,
   CompareCard,
@@ -173,11 +172,11 @@ export default async (theme: PdfTheme) => {
           Example, from the seeded “Roll-Off Tarp System Builder”: Stage 1 “Choose Your System” asks for a
           product line, a Frame Material (Aluminum or Steel), and a Load Length.
         </P>
-        <Callout role="note">
+        <KeyBox role="accent" title="Note">
           The “Heavy-Duty Hardware” stage only appears for a <B>Steel</B> frame; the “Extended-Reach Rigging”
           stage only appears when the Load Length is <B>240 in. or longer</B>. Pick an Aluminum frame with a
           short load and both add-on stages are skipped entirely.
-        </Callout>
+        </KeyBox>
         <P>
           <B>Memory (retention scope).</B> Each step has a retention scope that decides how long its answer
           keeps narrowing the products.
@@ -238,11 +237,11 @@ export default async (theme: PdfTheme) => {
             shopper and formatted for display.
           </Panel>
         </PanelGrid>
-        <Callout role="important">
+        <KeyBox role="accent" title="Important">
           A listing image only counts as the product's “own” picture when the image file actually exists in
           storage. If the database has the image record but not the file behind it (common when a DB is imported
           without its media), the product falls through to Salsify rather than getting stuck on the placeholder.
-        </Callout>
+        </KeyBox>
         <Mermaid
           diagram={search}
           title="Search & enrichment"
@@ -255,16 +254,14 @@ export default async (theme: PdfTheme) => {
         title="Handling unexpected behavior"
         deck="Because the logic can be complex, the system monitors itself and logs the two outcomes an owner must act on."
       >
-        <KeyBox
-          role="negative"
-          k="Dead end — zero results"
-          v="A set of choices that matches 0 products is logged: the rules are too strict; shoppers can't find anything with this combination."
-        />
-        <KeyBox
-          role="warning"
-          k="Too many — truncation"
-          v="When a search exceeds the display cap, a warning is logged: this stage is too broad; it may need more steps to narrow it down."
-        />
+        <KeyBox role="negative" title="Dead end — zero results">
+          A set of choices that matches 0 products is logged: the rules are too strict; shoppers can't find
+          anything with this combination.
+        </KeyBox>
+        <KeyBox role="warning" title="Too many — truncation">
+          When a search exceeds the display cap, a warning is logged: this stage is too broad; it may need more
+          steps to narrow it down.
+        </KeyBox>
       </Section>
 
       <Section
@@ -344,10 +341,10 @@ export default async (theme: PdfTheme) => {
             ['PrimaryUnitCodeProvider', 'Each product\'s primary unit code (needed by the add-to-cart form), one batched query.'],
           ]}
         />
-        <Callout role="tip">
+        <KeyBox role="positive" title="Tip">
           Enrichment cost scales with the 12-item display size, not with the match count: images, prices, and
           unit codes are looked up only for the current page's ids.
-        </Callout>
+        </KeyBox>
       </Section>
 
       <Section
@@ -369,9 +366,17 @@ export default async (theme: PdfTheme) => {
         title="Pagination & caps"
         deck="Page size and every cap live inside the finder; the client renders a pager purely from the result totals."
       >
-        <KeyBox role="accent" k="Page size — 12" v="Fixed at PAGE_SIZE, entirely inside the finder. The client renders a pager from FinderResult's totals." />
-        <KeyBox role="accent" k="Per-stage cap — 1000" v="Each stage's match set is capped at its configured max_products, or DEFAULT_MAX_PRODUCTS when none is set. totalCount is the capped count; truncated says whether the true count exceeded it." />
-        <KeyBox role="accent" k="Result window — 10000" v="Requests are clamped to Elasticsearch's MAX_RESULT_WINDOW: from + size can never exceed it, so a deep page is pulled back to the last valid window rather than erroring." />
+        <KeyBox role="accent" title="Page size — 12">
+          Fixed at PAGE_SIZE, entirely inside the finder. The client renders a pager from FinderResult's totals.
+        </KeyBox>
+        <KeyBox role="accent" title="Per-stage cap — 1000">
+          Each stage's match set is capped at its configured max_products, or DEFAULT_MAX_PRODUCTS when none is
+          set. totalCount is the capped count; truncated says whether the true count exceeded it.
+        </KeyBox>
+        <KeyBox role="accent" title="Result window — 10000">
+          Requests are clamped to Elasticsearch's MAX_RESULT_WINDOW: from + size can never exceed it, so a deep
+          page is pulled back to the last valid window rather than erroring.
+        </KeyBox>
       </Section>
 
       <Section

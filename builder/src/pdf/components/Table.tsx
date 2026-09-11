@@ -4,7 +4,7 @@ import { useTw } from '../theme.js';
 import { Card, RADIUS } from './surface.js';
 
 /**
- * A data table with a muted header band (ShadCN `th` reads muted-foreground) and zebra body rows.
+ * A data table with a muted header band (indigo-accented `th` labels) and zebra body rows.
  * There is no `<table>` in react-pdf, so it's built from flex rows with per-column weight. The card
  * clips the header/last-row corners to its radius, and the table is atomic (via `Elevated`): tables
  * here fit within a page and relocate rather than clip.
@@ -19,8 +19,8 @@ export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }): 
           <Text
             key={i}
             style={[
-              tw('text-fg-muted'),
-              { flex: weights[i], fontWeight: 500, fontSize: 9, paddingTop: 8, paddingBottom: 4, paddingHorizontal: 9 },
+              tw('text-brand-ink'),
+              { flex: weights[i], fontWeight: 700, fontSize: 9, paddingTop: 8, paddingBottom: 4, paddingHorizontal: 9 },
             ]}
           >
             {h}

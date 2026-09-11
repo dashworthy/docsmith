@@ -62,28 +62,40 @@ export function CompareCard({
   const tw = useTw();
   return (
     <Card radius={RADIUS.lg} style={tw('mb-2.5')}>
-      {/* Pill/title vertical alignment is done deterministically, because react-pdf's flex
-          `center`/`baseline` misplace them (numeric lineHeight inflates the text box). The row is
-          top-anchored; the pill's `marginTop` drops it so its caps sit level with the title's, and
-          its top padding exceeds bottom by ~0.75 to center the (box-high) uppercase label in it. */}
-      <View style={tw('bg-muted flex-row items-start gap-2 border-b border-border px-3.5 py-2')}>
-        <View style={[tw('bg-secondary rounded'), { paddingHorizontal: 6, paddingTop: 1.5, paddingBottom: 4, marginTop: 1 }]}>
+      {/* Pill and title are centered against each other on the row. Both the pill's label and the
+          title carry lineHeight:1 (tight boxes), so `items-center` aligns their optical centers;
+          the pill's slightly-heavier bottom padding centers the caps-high label inside it. */}
+      <View style={tw('bg-muted flex-row items-center gap-2 border-b border-border px-3.5 py-2')}>
+        {/* Soft-indigo outlined pill: the old `bg-secondary` pill sat invisibly on the identical
+            `bg-muted` header (both slate-100); the brand border + soft fill give it back its edge. */}
+        <View style={[tw('bg-brand-soft border border-brand-ink rounded'), { paddingHorizontal: 6, paddingTop: 2, paddingBottom: 3 }]}>
           <Text
-            style={[tw('text-fg-secondary uppercase'), { fontFamily: FONT.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: 0.5, lineHeight: 1 }]}
+            style={[tw('text-brand-ink uppercase'), { fontFamily: FONT.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: 0.5, lineHeight: 1 }]}
           >
             {num}
           </Text>
         </View>
-        <Text style={[tw('text-foreground'), { fontFamily: FONT.display, fontSize: 12, fontWeight: 600, lineHeight: 1 }]}>{title}</Text>
+        <Text style={[tw('text-foreground'), { fontFamily: FONT.display, fontSize: 11, fontWeight: 600, lineHeight: 1 }]}>{title}</Text>
       </View>
       <View style={tw('bg-card flex-row')}>
         <Col col={a} />
         <Col col={b} bordered />
       </View>
       {target && (
-        <View style={tw('bg-muted border-t border-border px-3.5 py-2')}>
+        // The "Target" footer: a clearly-indigo band — `brand-fill` (indigo-200 in light, a deep
+        // indigo-900 in dark) reads as the accent where the paler keyblock `soft` tint washes out to
+        // grey in this thin band, and theme-swaps rather than glaring as a fixed light band on the
+        // dark card — with a dashed top divider, muted body text, and a mono, uppercase, "TARGET" kicker.
+        <View
+          style={[
+            tw('bg-brand-fill px-3.5 py-2'),
+            { borderTopWidth: 1, borderTopColor: tw('border-border').borderColor, borderStyle: 'dashed' },
+          ]}
+        >
           <Text style={[tw('text-fg-muted'), { fontSize: 9.5 }]}>
-            <Text style={tw('text-primary font-bold')}>Target </Text>
+            <Text style={[tw('text-brand-ink'), { fontFamily: FONT.mono, fontSize: 7, fontWeight: 700, letterSpacing: 0.5 }]}>
+              TARGET{'   '}
+            </Text>
             {target}
           </Text>
         </View>

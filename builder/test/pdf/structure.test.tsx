@@ -57,10 +57,10 @@ describe('Section (ShadCN tokens)', () => {
       <P>kids</P>
     </Section>,
   );
-  it('titles in foreground, decks in muted, eyebrow in primary', () => {
+  it('titles in foreground, decks in muted, eyebrow in indigo (brand accent)', () => {
     expect(p.colors.has(tw('text-foreground').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
-    expect(p.colors.has(tw('text-primary').color)).toBe(true);
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
   });
   it('does not leak the old bespoke accent hex', () => {
     expect(p.colors.has('#4b52d4')).toBe(false);

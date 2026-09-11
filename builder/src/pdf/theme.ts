@@ -9,7 +9,7 @@ import { Font } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { SHADCN } from '../theme/palette.js';
+import { SHADCN, ROLE } from '../theme/palette.js';
 
 const require = createRequire(import.meta.url);
 
@@ -111,6 +111,7 @@ export type Tw = ReturnType<typeof createTw>;
  */
 function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, string>> {
   const c = SHADCN[theme];
+  const r = ROLE[theme];
   return {
     background: c.background,
     foreground: c.foreground,
@@ -134,6 +135,13 @@ function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, s
       accent: c['accent-foreground'],
       destructive: c['destructive-foreground'],
     },
+    // Semantic accent roles (Tailwind indigo/emerald/amber/red, theme-swapped) as object colors so
+    // `text-brand-ink`, `bg-brand-soft`, `border-brand-ink`, … resolve. See ROLE in palette.ts.
+    // brand also carries `fill` (a step more saturated than `soft`) → `bg-brand-fill`.
+    brand: { ink: r.brand.ink, soft: r.brand.soft, ...(r.brand.fill ? { fill: r.brand.fill } : {}) },
+    pos: { ink: r.pos.ink, soft: r.pos.soft },
+    warn: { ink: r.warn.ink, soft: r.warn.soft },
+    neg: { ink: r.neg.ink, soft: r.neg.soft },
   };
 }
 
