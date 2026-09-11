@@ -5,7 +5,7 @@ import { createTw } from 'react-pdf-tailwind';
 import { SourceCard } from '../../src/pdf/components/SourceCard.js';
 import { PanelGrid, Panel } from '../../src/pdf/components/PanelGrid.js';
 import { KeyBox } from '../../src/pdf/components/KeyBox.js';
-import { shadcnConfig, TwProvider } from '../../src/pdf/theme.js';
+import { shadcnConfig, TwProvider, TYPE } from '../../src/pdf/theme.js';
 
 const tw = createTw(shadcnConfig('light'));
 
@@ -33,6 +33,20 @@ function paint(node: ReactElement) {
   };
   (Array.isArray(tree) ? tree : [tree]).forEach(walk);
   return { colors, bgs, borders };
+}
+
+/** Every resolved `fontSize` across a rendered subtree. */
+function sizes(node: ReactElement): Set<number> {
+  const tree = TestRenderer.create(<TwProvider value={tw}>{node}</TwProvider>).toJSON() as any;
+  const found = new Set<number>();
+  const walk = (n: any) => {
+    if (!n || typeof n !== 'object') return;
+    const s = flat(n.props?.style);
+    if (typeof s.fontSize === 'number') found.add(s.fontSize);
+    (n.children ?? []).forEach(walk);
+  };
+  (Array.isArray(tree) ? tree : [tree]).forEach(walk);
+  return found;
 }
 
 describe('SourceCard (ShadCN tokens)', () => {
@@ -79,5 +93,10 @@ describe('KeyBox (the one standardized admonition)', () => {
     const p = paint(<KeyBox role="negative" title="t">v</KeyBox>);
     expect(p.bgs.has(tw('bg-neg-soft').backgroundColor)).toBe(true);
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(false);
+  });
+  it('sizes its title and body from the shared TYPE scale', () => {
+    const s = sizes(<KeyBox role="accent" title="t">v</KeyBox>);
+    expect(s.has(TYPE.cardTitle)).toBe(true);
+    expect(s.has(TYPE.cardBody)).toBe(true);
   });
 });

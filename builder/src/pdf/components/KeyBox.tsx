@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { useTw } from '../theme.js';
+import { TYPE, useTw } from '../theme.js';
 
 type Role = 'accent' | 'positive' | 'warning' | 'negative';
 
@@ -52,8 +52,8 @@ export function KeyBox({
         },
       ]}
     >
-      <Text style={[tw(`text-${t}-ink`), { fontWeight: 700, fontSize: 10.5, marginBottom: 2 }]}>{title}</Text>
-      <Text style={[tw('text-foreground'), { fontSize: 10 }]}>{children}</Text>
+      <Text style={[tw(`text-${t}-ink`), { fontWeight: 700, fontSize: TYPE.cardTitle, marginBottom: 2 }]}>{title}</Text>
+      <Text style={[tw('text-foreground'), { fontSize: TYPE.cardBody }]}>{children}</Text>
     </View>
   );
 }

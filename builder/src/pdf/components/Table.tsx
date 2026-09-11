@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { useTw } from '../theme.js';
+import { TYPE, useTw } from '../theme.js';
 import { Card, RADIUS } from './surface.js';
 
 /**
@@ -20,7 +20,7 @@ export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }): 
             key={i}
             style={[
               tw('text-brand-ink'),
-              { flex: weights[i], fontWeight: 700, fontSize: 9, paddingTop: 8, paddingBottom: 4, paddingHorizontal: 9 },
+              { flex: weights[i], fontWeight: 700, fontSize: TYPE.tableHeader, paddingTop: 8, paddingBottom: 4, paddingHorizontal: 9 },
             ]}
           >
             {h}
@@ -40,7 +40,7 @@ export function Table({ head, rows }: { head: string[]; rows: ReactNode[][] }): 
               key={ci}
               style={[
                 tw(ci === 0 ? 'text-foreground' : 'text-fg-muted'),
-                { flex: weights[ci], fontSize: 9, paddingVertical: 6, paddingHorizontal: 9 },
+                { flex: weights[ci], fontSize: TYPE.tableCell, paddingVertical: 6, paddingHorizontal: 9 },
               ]}
             >
               {cell}

@@ -33,6 +33,41 @@ export const FONT = {
   display: 'Inter',
 } as const;
 
+/**
+ * The one type scale for the whole document, in PDF points. Sizes live here (not scattered as magic
+ * numbers across components) so the doc reads at one consistent scale and a change is a single edit.
+ * Anchored on the reference `SourceCard` body (9.5) and the parity artifact's ratios (section title
+ * ~1.5×, deck / card body ~0.9×, eyebrow ~0.72× the body).
+ */
+export const TYPE = {
+  /** Section headline. */
+  sectionTitle: 15,
+  /** Section deck / secondary line under a headline. */
+  deck: 8.5,
+  /** Base page body (the `Page` default). */
+  body: 9.5,
+  /** A card's mono header-band title (the shared `Card` header). */
+  cardTitle: 9.5,
+  /** Muted body text inside a card. */
+  cardBody: 9,
+  /** Mono uppercase section eyebrow / kicker. */
+  eyebrow: 7,
+  /** Compare-card column labels. */
+  colLabel: 7.5,
+  /** Mermaid caption band. */
+  caption: 8,
+  /** Table header row. */
+  tableHeader: 8.5,
+  /** Table body cells. */
+  tableCell: 9,
+  /** QList `Q1`/`Q2` mono marker. */
+  qMarker: 7,
+  /** Phase big display numeral. */
+  phaseNum: 15,
+  /** Phase title. */
+  phaseTitle: 9.5,
+} as const;
+
 let registered = false;
 /** Register the faces once (idempotent) — importing this module is enough; render calls this. */
 export function registerFonts(): void {

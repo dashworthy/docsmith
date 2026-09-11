@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { FONT, HALF_CONTENT, useTw } from '../theme.js';
+import { FONT, HALF_CONTENT, TYPE, useTw } from '../theme.js';
 import { Eyebrow } from './prose.js';
 
 /** A section: a primary kicker, a display title, an optional muted deck, then the section body. */
@@ -33,12 +33,12 @@ export function Section({
         <Text
           style={[
             tw('text-foreground'),
-            { fontFamily: FONT.display, fontSize: 17, fontWeight: 700, lineHeight: 1.2, marginBottom: deck ? 5 : 10 },
+            { fontFamily: FONT.display, fontSize: TYPE.sectionTitle, fontWeight: 700, lineHeight: 1.2, marginBottom: deck ? 5 : 10 },
           ]}
         >
           {title}
         </Text>
-        {deck && <Text style={tw('text-fg-muted mb-2.5')}>{deck}</Text>}
+        {deck && <Text style={[tw('text-fg-muted mb-2.5'), { fontSize: TYPE.deck }]}>{deck}</Text>}
       </View>
       {children}
     </>

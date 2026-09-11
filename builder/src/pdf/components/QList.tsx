@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { FONT, useTw } from '../theme.js';
+import { FONT, TYPE, useTw } from '../theme.js';
 
 /**
  * A numbered question list matching the original design's `.oq`: each item is a row divided from
@@ -23,10 +23,10 @@ export function QList({ items }: { items: ReactNode[] }): JSX.Element {
             },
           ]}
         >
-          <Text style={[tw('text-brand-ink'), { width: 20, fontWeight: 700, fontFamily: FONT.mono, fontSize: 7.5, marginTop: 1.5 }]}>
+          <Text style={[tw('text-brand-ink'), { width: 20, fontWeight: 700, fontFamily: FONT.mono, fontSize: TYPE.qMarker, marginTop: 1.5 }]}>
             {`Q${i + 1}`}
           </Text>
-          <Text style={[tw('flex-1 text-fg-muted'), { fontSize: 10 }]}>{item}</Text>
+          <Text style={[tw('flex-1 text-fg-muted'), { fontSize: TYPE.cardBody }]}>{item}</Text>
         </View>
       ))}
     </View>
