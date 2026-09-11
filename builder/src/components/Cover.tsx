@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { cx, t } from '../theme/tokens.js';
 
 /**
- * The document title band — the artifact's flat header: a muted mono eyebrow, a large
+ * The document title band — a flat header: a muted mono eyebrow, a large
  * display-face title, an optional lede, and a row of metadata chips. Flat by design (a soft
  * surface band with a hairline border), no gradient or shadow.
  */

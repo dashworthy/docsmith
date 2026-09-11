@@ -16,7 +16,9 @@ export function Doc({ children }: { children: ReactNode }): JSX.Element {
         'min-h-screen antialiased leading-relaxed',
       )}
     >
-      <div className="mx-auto w-full max-w-3xl px-10 py-12">{children}</div>
+      {/* Ground-colored content inset — the doc's own padding, not a page margin (Chrome prints
+          a page margin as white). `py` frames the doc's top and bottom on the ground. */}
+      <div className="mx-auto w-full max-w-3xl px-10 py-14">{children}</div>
     </main>
   );
 }

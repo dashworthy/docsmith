@@ -1,10 +1,10 @@
-// Public barrel for the document builder: every authoring component a doc module composes,
-// re-exported from one entry point so a doc imports from '../index.js' rather than reaching into
-// individual component files.
-export { Doc } from './components/Doc.js';
+// Public barrel for the react-pdf document builder: the primitives a PDF doc composes, plus the
+// async asset helpers (code highlighting, mermaid rasterization) a doc runs before render.
+export { PdfDoc } from './components/PdfDoc.js';
 export { Cover } from './components/Cover.js';
 export { Section } from './components/Section.js';
 export { Footer } from './components/Footer.js';
+export { P, B, Muted, Eyebrow } from './components/prose.js';
 export { Callout } from './components/Callout.js';
 export { Badge } from './components/Badge.js';
 export { Table } from './components/Table.js';
@@ -19,3 +19,7 @@ export { QList } from './components/QList.js';
 export { NonGoals } from './components/NonGoals.js';
 export { CodeBlock } from './components/CodeBlock.js';
 export { Mermaid } from './components/Mermaid.js';
+
+export { highlightCode, type HighlightedCode } from './highlightCode.js';
+export { rasterizeMermaid, type RasterDiagram } from './rasterizeMermaid.js';
+export type { PdfTheme } from './theme.js';

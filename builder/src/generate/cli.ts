@@ -3,9 +3,8 @@
 //
 // A doc module default-exports the document's root React element and may export a `title` string.
 // generate() renders it to static markup, runs the pre-render passes uniformly (each a whole-body
-// Pass owning its own marker loop), inlines the built Tailwind CSS via the skeleton assembler, and
-// writes the output. The pass list is empty today; it will hold the code- and diagram-
-// pre-rendering passes once those components exist.
+// Pass owning its own marker loop — code highlighting, then diagram rendering), inlines the built
+// Tailwind CSS via the skeleton assembler, and writes the output.
 
 import { renderToStaticMarkup } from 'react-dom/server';
 import { writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -17,13 +16,16 @@ import { assembleHtml, type Pass, type PassCtx } from './html.js';
 import { buildTailwindCss } from './tailwind.js';
 import { findChrome } from './chrome.js';
 import { renderPdf } from './pdf.js';
+import { prerenderCode } from './prerenderCode.js';
+import { prerenderMermaid } from './prerenderMermaid.js';
 
 /**
- * The ordered pre-render passes. Empty today; it will hold the code-highlighting and
- * diagram-rendering passes once those components land. The generator composes whatever is here
- * uniformly and never contains a pass's own find-and-replace logic.
+ * The ordered pre-render passes. Each finds its own markers in the body HTML and swaps in static
+ * content; the generator composes them uniformly and never contains a pass's own find-and-replace
+ * logic. Code highlighting runs first (browserless), then diagram rendering (uses the shared
+ * Chrome via ctx).
  */
-const PASSES: Pass[] = [];
+const PASSES: Pass[] = [prerenderCode, prerenderMermaid];
 
 export interface GenerateOptions {
   /** Path to the doc module (`.tsx`), resolved against the current working directory. */

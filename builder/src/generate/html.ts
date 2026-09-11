@@ -6,6 +6,7 @@
 // pre-rendered to static markup before they reach here, so the page runs no JS.
 
 import { themeStyleBlock } from '../theme/tokens.js';
+import { escapeHtml } from './htmlEntities.js';
 
 /** The Google Fonts stylesheet URL for the three faces the palette declares. */
 const FONTS_HREF =
@@ -36,14 +37,23 @@ export function assembleHtml(i: SkeletonInput): string {
     '<head>' +
     '<meta charset="utf-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-    `<title>${i.title}</title>` +
+    `<title>${escapeHtml(i.title)}</title>` +
     '<link rel="preconnect" href="https://fonts.googleapis.com">' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
     `<link rel="stylesheet" href="${FONTS_HREF}">` +
     themeStyleBlock() +
     `<style>${i.tailwindCss}</style>` +
     '</head>' +
-    `<body>${i.bodyHtml}</body>` +
+    // A fixed, full-bleed ground layer sits behind everything. In paged media a fixed box repeats
+    // on every printed page, so this paints the ground color across the whole sheet on every page —
+    // including any empty space below the last page's content, which `<html>`/`<body>` backgrounds
+    // alone can leave unpainted. With a zero `@page` margin the content box is the whole sheet, so
+    // there is no white margin band to leak through. `aria-hidden` + `z-index:-1` keep it purely
+    // decorative and behind the content.
+    '<body>' +
+    '<div aria-hidden="true" style="position:fixed;inset:0;background:var(--ground);z-index:-1"></div>' +
+    i.bodyHtml +
+    '</body>' +
     '</html>'
   );
 }
