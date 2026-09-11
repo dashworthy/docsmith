@@ -112,8 +112,15 @@ export const PAGE = {
 /** Usable content height between the top and bottom page padding. */
 export const CONTENT_HEIGHT = PAGE.height - PAGE.paddingV * 2;
 
-/** The vertical midpoint of the content area — half the usable height. */
-export const HALF_CONTENT = CONTENT_HEIGHT / 2;
+/**
+ * The minimum content-height that must remain below a section headline for it to start on the
+ * current page; below this, react-pdf breaks before the headline and pushes it to the next page.
+ * Two-fifths (40%) of the usable height — moderate orphan control: a headline is bumped to the next
+ * page when it would otherwise start in the bottom two-fifths, keeping a reasonable run of body
+ * beneath a headline without leaving pages half-empty. Consumed by `Section`'s header block as its
+ * `minPresenceAhead`.
+ */
+export const HEADLINE_MIN_PRESENCE = CONTENT_HEIGHT * 0.4;
 
 export type PdfTheme = 'light' | 'dark';
 
