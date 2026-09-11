@@ -1,6 +1,16 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Document, Page, StyleSheet } from '@react-pdf/renderer';
-import { FONT, PAGE, ThemeProvider, paletteFor, registerFonts, type PdfTheme } from '../theme.js';
+import { createTw } from 'react-pdf-tailwind';
+import {
+  FONT,
+  PAGE,
+  ThemeProvider,
+  TwProvider,
+  paletteFor,
+  registerFonts,
+  shadcnConfig,
+  type PdfTheme,
+} from '../theme.js';
 
 /**
  * The react-pdf document root. Unlike the HTML path (where a headless-Chrome print leaves the
@@ -20,6 +30,7 @@ export function PdfDoc({
 }): JSX.Element {
   registerFonts();
   const c = paletteFor(theme);
+  const tw = useMemo(() => createTw(shadcnConfig(theme)), [theme]);
   const styles = StyleSheet.create({
     page: {
       backgroundColor: c.ground,
@@ -33,11 +44,13 @@ export function PdfDoc({
   });
   return (
     <ThemeProvider value={c}>
-      <Document title={title}>
-        <Page size="A4" style={styles.page}>
-          {children}
-        </Page>
-      </Document>
+      <TwProvider value={tw}>
+        <Document title={title}>
+          <Page size="A4" style={styles.page}>
+            {children}
+          </Page>
+        </Document>
+      </TwProvider>
     </ThemeProvider>
   );
 }
