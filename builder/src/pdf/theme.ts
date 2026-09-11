@@ -8,19 +8,30 @@
 import { createContext, useContext } from 'react';
 import { Font } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { PALETTE, SHADCN, type TokenName } from '../theme/palette.js';
+
+const require = createRequire(import.meta.url);
 
 /** Resolve a bundled font file to an absolute path react-pdf can read. */
 function font(file: string): string {
   return fileURLToPath(new URL(`../../assets/fonts/${file}`, import.meta.url));
 }
 
-/** The three font families, by the names components reference in `fontFamily`. */
+/** Resolve an @fontsource Inter face (WOFF; react-pdf reads WOFF) to an absolute path. */
+function inter(weight: 400 | 500 | 600 | 700): string {
+  return require.resolve(`@fontsource/inter/files/inter-latin-${weight}-normal.woff`);
+}
+
+/**
+ * The font families components reference. ShadCN's default UI font is Inter, used for both body
+ * and headings (a single sans — the vanilla ShadCN choice); code keeps a mono face.
+ */
 export const FONT = {
-  sans: 'IBM Plex Sans',
+  sans: 'Inter',
   mono: 'IBM Plex Mono',
-  display: 'Familjen Grotesk',
+  display: 'Inter',
 } as const;
 
 let registered = false;
@@ -28,13 +39,14 @@ let registered = false;
 export function registerFonts(): void {
   if (registered) return;
   registered = true;
+  // Inter (ShadCN's default sans) serves both `sans` and `display`; register the family once.
   Font.register({
     family: FONT.sans,
     fonts: [
-      { src: font('IBMPlexSans-Regular.ttf'), fontWeight: 400 },
-      { src: font('IBMPlexSans-Medium.ttf'), fontWeight: 500 },
-      { src: font('IBMPlexSans-SemiBold.ttf'), fontWeight: 600 },
-      { src: font('IBMPlexSans-Bold.ttf'), fontWeight: 700 },
+      { src: inter(400), fontWeight: 400 },
+      { src: inter(500), fontWeight: 500 },
+      { src: inter(600), fontWeight: 600 },
+      { src: inter(700), fontWeight: 700 },
     ],
   });
   Font.register({
@@ -44,13 +56,6 @@ export function registerFonts(): void {
       { src: font('IBMPlexMono-Medium.ttf'), fontWeight: 500 },
       { src: font('IBMPlexMono-SemiBold.ttf'), fontWeight: 600 },
       { src: font('IBMPlexMono-Bold.ttf'), fontWeight: 700 },
-    ],
-  });
-  Font.register({
-    family: FONT.display,
-    fonts: [
-      { src: font('FamiljenGrotesk-SemiBold.ttf'), fontWeight: 600 },
-      { src: font('FamiljenGrotesk-Bold.ttf'), fontWeight: 700 },
     ],
   });
   // react-pdf hyphenates at line breaks by default, which mangles technical identifiers
