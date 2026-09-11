@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { FONT, HALF_CONTENT, usePalette } from '../theme.js';
+import { FONT, HALF_CONTENT, useTw } from '../theme.js';
 import { Eyebrow } from './prose.js';
 
-/** A section: an accent kicker, a display title, an optional muted deck, then the section body. */
+/** A section: a primary kicker, a display title, an optional muted deck, then the section body. */
 export function Section({
   eyebrow,
   title,
@@ -15,7 +15,7 @@ export function Section({
   deck?: string;
   children: ReactNode;
 }): JSX.Element {
-  const c = usePalette();
+  const tw = useTw();
   // Presentation rule: a headline must not start below the 50% line of the page.
   //
   // react-pdf's `shouldBreak` only honors `minPresenceAhead` when the node (a) does NOT itself
@@ -31,18 +31,14 @@ export function Section({
       <View wrap={false} minPresenceAhead={HALF_CONTENT} style={{ marginTop: 22 }}>
         <Eyebrow>{eyebrow}</Eyebrow>
         <Text
-          style={{
-            fontFamily: FONT.display,
-            fontSize: 17,
-            fontWeight: 700,
-            lineHeight: 1.2,
-            color: c.ink,
-            marginBottom: deck ? 5 : 10,
-          }}
+          style={[
+            tw('text-foreground'),
+            { fontFamily: FONT.display, fontSize: 17, fontWeight: 700, lineHeight: 1.2, marginBottom: deck ? 5 : 10 },
+          ]}
         >
           {title}
         </Text>
-        {deck && <Text style={{ color: c.ink3, marginBottom: 10 }}>{deck}</Text>}
+        {deck && <Text style={tw('text-fg-muted mb-2.5')}>{deck}</Text>}
       </View>
       {children}
     </>
