@@ -21,6 +21,7 @@ function collect(node: ReactElement) {
   const bgs = new Set<unknown>();
   const fonts = new Set<unknown>();
   const sizes = new Set<unknown>();
+  const weights = new Set<unknown>();
   const borderStyles = new Set<unknown>();
   const walk = (n: any) => {
     if (!n || typeof n !== 'object') return;
@@ -29,11 +30,12 @@ function collect(node: ReactElement) {
     if (s.backgroundColor) bgs.add(s.backgroundColor);
     if (s.fontFamily) fonts.add(s.fontFamily);
     if (typeof s.fontSize === 'number') sizes.add(s.fontSize);
+    if (typeof s.fontWeight === 'number') weights.add(s.fontWeight);
     if (s.borderStyle) borderStyles.add(s.borderStyle);
     (n.children ?? []).forEach(walk);
   };
   (Array.isArray(tree) ? tree : [tree]).forEach(walk);
-  return { colors, bgs, fonts, sizes, borderStyles };
+  return { colors, bgs, fonts, sizes, weights, borderStyles };
 }
 
 /** Every `borderColor` resolved across a rendered default `Card`. */
@@ -77,6 +79,7 @@ describe('Card (shared header + footer bands)', () => {
     expect(c.colors.has(tw('text-brand-ink').color)).toBe(true);
     expect(c.fonts.has(FONT.mono)).toBe(true);
     expect(c.sizes.has(TYPE.cardTitle)).toBe(true);
+    expect(c.weights.has(700)).toBe(true); // bold header title
   });
 
   it('renders an accent-tone footer as a dashed-top brand-soft band', () => {

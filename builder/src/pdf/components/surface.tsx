@@ -10,8 +10,8 @@ export const RADIUS = { md: 10, lg: 12 } as const;
 export type FooterTone = 'accent' | 'muted';
 
 /**
- * The shared card header band. Every titled card renders exactly this — a muted band with a mono,
- * indigo, `TYPE.cardTitle` title — so all category-card headers are identical by construction
+ * The shared card header band. Every titled card renders exactly this — a muted band with a bold,
+ * mono, indigo, `TYPE.cardTitle` title — so all category-card headers are identical by construction
  * (they cannot each hand-roll their own and drift apart). Owned here, not by the wrappers.
  */
 function HeaderBand({ title }: { title: string }): JSX.Element {
@@ -24,7 +24,7 @@ function HeaderBand({ title }: { title: string }): JSX.Element {
         { paddingTop: 8.2, paddingBottom: 5.8, paddingHorizontal: 13 },
       ]}
     >
-      <Text style={[tw('text-brand-ink'), { fontFamily: FONT.mono, fontSize: TYPE.cardTitle }]}>{title}</Text>
+      <Text style={[tw('text-brand-ink'), { fontFamily: FONT.mono, fontSize: TYPE.cardTitle, fontWeight: 700 }]}>{title}</Text>
     </View>
   );
 }
