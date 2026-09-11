@@ -7,7 +7,7 @@
 import puppeteer from 'puppeteer';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { findChrome } from '../generate/chrome.js';
+import { findChrome } from './chrome.js';
 import { SHADCN } from '../theme/palette.js';
 import type { PdfTheme } from './theme.js';
 
