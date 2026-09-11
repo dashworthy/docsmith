@@ -18,10 +18,12 @@ const TONE: Record<Role, 'brand' | 'pos' | 'warn' | 'neg'> = {
 
 /**
  * The one standardized admonition for the whole set — Note, Important, Tip, warnings, and labeled
- * facts alike are all a `KeyBox`, presented one way: a soft role-tinted panel with a flush left
- * accent bar (square left corners, only the right softened), a bold role-colored `title`, and body
- * `children`. `role` picks the color; the title is always explicit (there is no auto-label), so a
- * "Note" and a "Dead end — zero results" differ only in role and wording, never in shape.
+ * facts alike are all a `KeyBox`, presented one way: a white (card) panel framed by the ShadCN
+ * border, with a flush thick left accent bar (square left corners, only the right softened), a bold
+ * role-colored `title`, and body `children`. `role` picks the color, which shows in the bar + title
+ * only — the panel itself stays white and framed so the boxes read as clean cards. The title is
+ * always explicit (there is no auto-label), so a "Note" and a "Dead end — zero results" differ only
+ * in role and wording, never in shape.
  */
 export function KeyBox({
   role,
@@ -38,10 +40,13 @@ export function KeyBox({
     <View
       wrap={false}
       style={[
-        // The fill is a light tint of the same hue as the accent bar (see ROLE `soft`), so the panel
-        // reads as clearly colored against the ground while the bar + title carry the saturated ink.
-        tw(`bg-${t}-soft`),
+        // The panel is the white card surface framed by the ShadCN border; the role identity lives in
+        // the thick left bar + title ink, so the box reads as a clean framed card, not a colored block.
+        tw('bg-card'),
         {
+          borderColor: tw('border-border').borderColor as string,
+          borderWidth: 1,
+          // The left edge is the role accent bar — a thicker, role-colored override of the frame.
           borderLeftColor: tw(`text-${t}-ink`).color as string,
           borderLeftWidth: 4,
           borderTopRightRadius: 6,

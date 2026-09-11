@@ -89,10 +89,16 @@ describe('KeyBox (the one standardized admonition)', () => {
     expect(paint(<KeyBox role="warning" title="t">v</KeyBox>).colors.has(tw('text-warn-ink').color)).toBe(true);
     expect(paint(<KeyBox role="accent" title="t">v</KeyBox>).colors.has(tw('text-brand-ink').color)).toBe(true);
   });
-  it('fills with the theme-swapped soft role tint', () => {
+  it('fills with the white card surface, not a role tint (role shows in the bar + title only)', () => {
     const p = paint(<KeyBox role="negative" title="t">v</KeyBox>);
-    expect(p.bgs.has(tw('bg-neg-soft').backgroundColor)).toBe(true);
+    expect(p.bgs.has(tw('bg-card').backgroundColor)).toBe(true); // white by default
+    expect(p.bgs.has(tw('bg-neg-soft').backgroundColor)).toBe(false); // no longer role-tinted
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(false);
+  });
+  it('frames the panel in the ShadCN border, alongside the role left bar', () => {
+    const p = paint(<KeyBox role="negative" title="t">v</KeyBox>);
+    expect(p.borders.has(tw('border-border').borderColor)).toBe(true); // full frame
+    expect(p.borders.has(tw('text-neg-ink').color)).toBe(true); // thick role left bar
   });
   it('sizes its title and body from the shared TYPE scale', () => {
     const s = sizes(<KeyBox role="accent" title="t">v</KeyBox>);
