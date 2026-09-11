@@ -138,7 +138,13 @@ export const prerenderMermaid: Pass = async (bodyHtml, theme, ctx) => {
           const svgEl = holder.querySelector('svg');
           if (svgEl) {
             const prev = svgEl.getAttribute('style') || '';
-            svgEl.setAttribute('style', `${prev};max-width:100%;height:auto`);
+            // Fit within both the column width and a single printed page's height, preserving the
+            // diagram's aspect ratio (auto width/height + two max constraints = contain). Without
+            // the height cap a tall flowchart overruns the page and leaves the prior page blank.
+            svgEl.setAttribute(
+              'style',
+              `${prev};max-width:100%;max-height:200mm;width:auto;height:auto`,
+            );
           }
           return holder.innerHTML;
         },

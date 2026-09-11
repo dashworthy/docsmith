@@ -24,7 +24,7 @@ export function Mermaid({
           {title}
         </figcaption>
       )}
-      <div className={cx(t.bg.surface, 'flex justify-center px-4 py-6')}>
+      <div className={cx(t.bg.surface, 'flex justify-center px-4 py-4')}>
         <div data-mermaid="">{chart}</div>
       </div>
       {caption && (

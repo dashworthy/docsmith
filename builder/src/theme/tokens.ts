@@ -70,8 +70,19 @@ function declarations(theme: 'light' | 'dark'): string {
 
 /**
  * The generation-time theme block: light palette on `:root`, dark overrides under
- * `[data-theme=dark]`, and the body font. Baked into the HTML skeleton so the chosen theme is
- * static — no runtime JS toggles it.
+ * `[data-theme=dark]`, and the layout rules that make the page read like a document. Baked into
+ * the HTML skeleton so the chosen theme is static — no runtime JS toggles it.
+ *
+ * Paged-media notes (these drive the PDF print, and are inert on screen):
+ * - `@page` margin is ZERO: Chrome headless never paints the page-margin band (it clips even a
+ *   fixed, full-bleed layer to the content box), so any non-zero margin prints as pure white paper
+ *   around the content. Instead the sheet is full-bleed ground and the doc-like inset is supplied
+ *   as ground-colored *content* padding (see `Doc`), so the padded frame matches the background.
+ * - The ground color is on `<html>`/`<body>`, and a fixed full-bleed layer (see `assembleHtml`)
+ *   repeats it on every page — including any blank space below the last page's content — so the
+ *   whole sheet is one consistent color to the paper edge.
+ * - Shiki emits a bare `<pre class="shiki">`; give it inner padding and kill its default margin so
+ *   code isn't flush against its card border.
  */
 export function themeStyleBlock(): string {
   const fonts = `--font-sans:${FONTS.sans};--font-mono:${FONTS.mono};--font-display:${FONTS.display}`;
@@ -79,7 +90,14 @@ export function themeStyleBlock(): string {
     '<style>' +
     `:root{${declarations('light')};${fonts}}` +
     `[data-theme=dark]{${declarations('dark')}}` +
+    'html,body{background:var(--ground)}' +
     'body{font-family:var(--font-sans)}' +
+    '.shiki{padding:1rem;margin:0;border-radius:.5rem}' +
+    '@page{size:A4;margin:0}' +
+    '@media screen{body{padding:2rem 0}}' +
+    // Print can't scroll: soft-wrap long code lines so nothing is clipped at the page edge.
+    // Screen keeps the horizontal scroll the CodeBlock card provides.
+    '@media print{.shiki{white-space:pre-wrap;word-break:break-word}}' +
     '</style>'
   );
 }

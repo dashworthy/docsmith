@@ -44,7 +44,16 @@ export function assembleHtml(i: SkeletonInput): string {
     themeStyleBlock() +
     `<style>${i.tailwindCss}</style>` +
     '</head>' +
-    `<body>${i.bodyHtml}</body>` +
+    // A fixed, full-bleed ground layer sits behind everything. In paged media a fixed box repeats
+    // on every printed page, so this paints the ground color across the whole sheet on every page —
+    // including any empty space below the last page's content, which `<html>`/`<body>` backgrounds
+    // alone can leave unpainted. With a zero `@page` margin the content box is the whole sheet, so
+    // there is no white margin band to leak through. `aria-hidden` + `z-index:-1` keep it purely
+    // decorative and behind the content.
+    '<body>' +
+    '<div aria-hidden="true" style="position:fixed;inset:0;background:var(--ground);z-index:-1"></div>' +
+    i.bodyHtml +
+    '</body>' +
     '</html>'
   );
 }
