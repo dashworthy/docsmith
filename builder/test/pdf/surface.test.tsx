@@ -82,23 +82,23 @@ describe('Card (shared header + footer bands)', () => {
     expect(c.weights.has(700)).toBe(true); // bold header title
   });
 
-  it('renders an accent-tone footer as a dashed-top brand-soft band', () => {
+  it('renders an accent-tone footer as a dashed-top brand-fill (indigo-300) band', () => {
     const c = collect(
       <Card footer={<Text>target</Text>} footerTone="accent">
         <Text>body</Text>
       </Card>,
     );
-    expect(c.bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true);
+    expect(c.bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true);
     expect(c.borderStyles.has('dashed')).toBe(true);
   });
 
-  it('renders a muted-tone footer as a solid muted band (no dashed border)', () => {
+  it('renders a muted-tone footer with the same brand-fill band but a solid (not dashed) border', () => {
     const c = collect(
       <Card footer={<Text>caption</Text>} footerTone="muted">
         <Text>body</Text>
       </Card>,
     );
-    expect(c.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(c.borderStyles.has('dashed')).toBe(false);
+    expect(c.bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // fill unified across tones
+    expect(c.borderStyles.has('dashed')).toBe(false); // tone distinction now lives in the border only
   });
 });

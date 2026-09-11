@@ -49,10 +49,10 @@ describe('CompareCard (ShadCN tokens)', () => {
     expect(colors.has(tw('text-destructive').color)).toBe(true); // negative
   });
 
-  it('gives the target footer the accent (brand-soft) band — and carries no num pill / brand-fill', () => {
+  it('gives the target footer the accent brand-fill (indigo-300) band — and carries no num pill', () => {
     const { bgs } = collect();
-    expect(bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true); // footer accent band (Card footerTone)
-    expect(bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(false); // brand-fill is gone
+    expect(bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // footer accent band (Card footerTone)
+    expect(bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(false); // footer no longer uses the pale panel soft
   });
 
   it('does not leak the old bespoke palette hexes', () => {

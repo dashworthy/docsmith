@@ -67,7 +67,7 @@ export function CompareCard({
     <Card
       radius={RADIUS.lg}
       title={title}
-      // The "Target" footer rides the shared accent footer band (brand-soft fill, dashed divider);
+      // The "Target" footer rides the shared accent footer band (violet brand-fill, dashed divider);
       // the content is a muted line led by a mono, uppercase "TARGET" kicker.
       footer={
         target ? (

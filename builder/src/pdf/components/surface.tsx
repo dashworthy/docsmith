@@ -30,17 +30,18 @@ function HeaderBand({ title }: { title: string }): JSX.Element {
 }
 
 /**
- * The shared card footer band. Card owns the band frame + tone (a top border and the tint); the
- * caller supplies the inner `content` (which varies — a mono kicker + body for the accent target,
- * a single muted line for a caption). `accent` reads as the emphasized target (brand-soft fill,
- * dashed divider); `muted` as a subdued caption (muted fill, solid divider).
+ * The shared card footer band. Card owns the band frame + tone; the caller supplies the inner
+ * `content` (which varies — a mono kicker + body for the accent target, a single muted line for a
+ * caption). Both tones share the same violet footer fill (`bg-brand-fill`, stronger and distinct from
+ * the pale indigo panel `soft`); the tone now differs only in the divider — `accent` a dashed top border (the
+ * emphasized target), `muted` a solid one (a subdued caption).
  */
 function FooterBand({ tone, content }: { tone: FooterTone; content: ReactNode }): JSX.Element {
   const tw = useTw();
   return (
     <View
       style={[
-        tw(tone === 'accent' ? 'bg-brand-soft' : 'bg-muted'),
+        tw('bg-brand-fill'),
         {
           borderTopWidth: 1,
           borderTopColor: tw('border-border').borderColor,

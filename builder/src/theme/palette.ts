@@ -75,30 +75,34 @@ export const SHADCN: { light: Record<ShadcnToken, string>; dark: Record<ShadcnTo
  * is drawn straight from Tailwind's own default color scales (indigo / emerald / amber / red), never
  * a bespoke hue, so the accent stays inside the Tailwind palette.
  *
- * Each role is `{ ink, soft }`, theme-swapped: `ink` is the saturated mid-tone for text, a left
- * accent bar, or a border (Tailwind's 600 in light, 400 in dark — legible on both the page and its
- * own soft fill); `soft` is the tinted surface behind it — the nearest Tailwind tint to the parity
- * artifact's accent-soft (indigo's 50 in light, the 950 tint in dark, so it never glares on the
- * near-black ground the way a fixed light tint would). The soft fill backs the KeyBox/Phase panels
- * and the CompareCard "Target" footer alike.
+ * Each role is `{ ink, soft }` with an optional `fill`, theme-swapped: `ink` is the saturated
+ * mid-tone for text, a left accent bar, or a border (Tailwind's 600 in light, 400 in dark — legible
+ * on both the page and its own soft fill); `soft` is the pale tinted surface behind it (indigo's 50
+ * in light, the 950 tint in dark, so it never glares on the near-black ground the way a fixed light
+ * tint would) — it backs the KeyBox and Phase panels.
+ *
+ * `fill` is a stronger, more saturated tint than `soft` — a violet (violet-200 in light, violet-800
+ * in dark), a deliberate sibling of the indigo accent so the band reads as unmistakably its own
+ * rather than a faint wash — the card footer band. Only `brand` carries it today; the footer uses
+ * `bg-brand-fill` so it stays more present, and distinct from, the pale indigo `soft` panels.
  */
 export type Role = 'brand' | 'pos' | 'warn' | 'neg';
 
 export const ROLE: {
-  light: Record<Role, { ink: string; soft: string }>;
-  dark: Record<Role, { ink: string; soft: string }>;
+  light: Record<Role, { ink: string; soft: string; fill?: string }>;
+  dark: Record<Role, { ink: string; soft: string; fill?: string }>;
 } = {
   light: {
-    // A pale fill with a medium ink (-600) for the left bar / title. Indigo's -50 is the nearest
-    // Tailwind tint to the artifact's accent-soft — pale but clearly violet, where the bluer -100/-200
-    // read grey or over-saturated; the -600 ink keeps the accent the same indigo across the doc.
-    brand: { ink: '#4f46e5', soft: '#eef2ff' }, // indigo-600 / indigo-50
+    // A pale indigo panel fill (soft, -50) and a violet footer fill (fill, violet-200) with a medium
+    // indigo ink (-600) for the left bar / title. The violet footer is a sibling of the indigo accent
+    // — present enough for the footer band to stand apart from the pale indigo panels.
+    brand: { ink: '#4f46e5', soft: '#eef2ff', fill: '#ddd6fe' }, // indigo-600 / indigo-50 / violet-200
     pos: { ink: '#059669', soft: '#d1fae5' }, // emerald-600 / emerald-100
     warn: { ink: '#d97706', soft: '#fef3c7' }, // amber-600 / amber-100
     neg: { ink: '#dc2626', soft: '#fee2e2' }, // red-600 / red-100
   },
   dark: {
-    brand: { ink: '#818cf8', soft: '#1e1b4b' }, // indigo-400 / indigo-950
+    brand: { ink: '#818cf8', soft: '#1e1b4b', fill: '#5b21b6' }, // indigo-400 / indigo-950 / violet-800
     pos: { ink: '#34d399', soft: '#022c22' }, // emerald-400 / emerald-950
     warn: { ink: '#fbbf24', soft: '#451a03' }, // amber-400 / amber-950
     neg: { ink: '#f87171', soft: '#450a0a' }, // red-400 / red-950
