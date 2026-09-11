@@ -35,5 +35,6 @@ describe('SHADCN token maps', () => {
     expect(SHADCN.dark.background).toBe('#020817'); // unchanged
     expect(SHADCN.light.background).toBe('#f1f5f9'); // slate-100 ground (retuned)
     expect(SHADCN.light.border).toBe('#cbd5e1'); // slate-300 card frame (retuned)
+    expect(SHADCN.light['muted-foreground']).toBe('#475569'); // slate-600 — darker muted body (retuned)
   });
 });
