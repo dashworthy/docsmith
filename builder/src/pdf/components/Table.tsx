@@ -4,7 +4,7 @@ import { TYPE, useTw } from '../theme.js';
 import { Card, RADIUS } from './surface.js';
 
 /**
- * A data table with a muted header band (indigo-accented `th` labels) and zebra body rows.
+ * A data table with a muted header band (blue-accented `th` labels) and zebra body rows.
  * There is no `<table>` in react-pdf, so it's built from flex rows with per-column weight. The card
  * clips the header/last-row corners to its radius, and the table is atomic (via `Elevated`): tables
  * here fit within a page and relocate rather than clip.

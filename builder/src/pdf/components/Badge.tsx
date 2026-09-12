@@ -5,8 +5,8 @@ import { useTw } from '../theme.js';
 type Role = 'neutral' | 'accent' | 'positive' | 'negative' | 'warning';
 
 /**
- * Role → a Badge variant. `accent` is the soft-indigo highlight (Tailwind `brand`: soft fill +
- * indigo ink) used to call out an inline value without the harsh contrast of a solid dark pill;
+ * Role → a Badge variant. `accent` is the soft-blue highlight (Tailwind `brand`: soft fill +
+ * blue ink) used to call out an inline value without the harsh contrast of a solid dark pill;
  * `neutral` stays the stock ShadCN `secondary`. `positive`/`warning`/`negative` fill the gap with
  * solid Tailwind emerald/amber/destructive (the agreed role palette).
  */

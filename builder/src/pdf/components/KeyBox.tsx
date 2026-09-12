@@ -5,8 +5,8 @@ import { TYPE, useTw } from '../theme.js';
 type Role = 'accent' | 'positive' | 'warning' | 'negative';
 
 /**
- * Role → an accent role from the `ROLE` palette (Tailwind indigo/emerald/amber/red, theme-swapped):
- * `accent` = indigo brand (notes, neutral facts), `positive` = emerald (tips), `warning` = amber,
+ * Role → an accent role from the `ROLE` palette (Tailwind blue/emerald/amber/red, theme-swapped):
+ * `accent` = blue brand (notes, neutral facts), `positive` = emerald (tips), `warning` = amber,
  * `negative` = red (dead ends, cautions).
  */
 const TONE: Record<Role, 'brand' | 'pos' | 'warn' | 'neg'> = {

@@ -177,10 +177,10 @@ function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, s
       accent: c['accent-foreground'],
       destructive: c['destructive-foreground'],
     },
-    // Semantic accent roles (Tailwind indigo/emerald/amber/red, theme-swapped) as object colors so
+    // Semantic accent roles (Tailwind blue/emerald/amber/red, theme-swapped) as object colors so
     // `text-brand-ink`, `bg-brand-soft`, `border-brand-ink`, … resolve. See ROLE in palette.ts.
-    // brand also carries `fill` (a stronger violet tint than `soft`, violet-200/-800) → `bg-brand-fill`
-    // for the card footer band.
+    // brand also carries `fill` (the footer band tint — a soft blue-100 in light, blue-950 in dark)
+    // → `bg-brand-fill` for the card footer band. See ROLE in palette.ts for why the two differ.
     brand: { ink: r.brand.ink, soft: r.brand.soft, ...(r.brand.fill ? { fill: r.brand.fill } : {}) },
     pos: { ink: r.pos.ink, soft: r.pos.soft },
     warn: { ink: r.warn.ink, soft: r.warn.soft },

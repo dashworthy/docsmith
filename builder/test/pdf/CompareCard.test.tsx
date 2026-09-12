@@ -37,7 +37,7 @@ function collect() {
 }
 
 describe('CompareCard (ShadCN tokens)', () => {
-  it('wears the shared mono header band — a muted band with an indigo title', () => {
+  it('wears the shared mono header band — a muted band with a blue title', () => {
     const { colors, bgs } = collect();
     expect(bgs.has(tw('bg-muted').backgroundColor)).toBe(true); // Card header band
     expect(colors.has(tw('text-brand-ink').color)).toBe(true); // mono title + TARGET kicker
@@ -49,10 +49,11 @@ describe('CompareCard (ShadCN tokens)', () => {
     expect(colors.has(tw('text-destructive').color)).toBe(true); // negative
   });
 
-  it('gives the target footer the accent brand-fill (indigo-300) band — and carries no num pill', () => {
+  it('gives the target footer the accent brand-fill (blue-100) band — and carries no num pill', () => {
     const { bgs } = collect();
     expect(bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // footer accent band (Card footerTone)
-    expect(bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(false); // footer no longer uses the pale panel soft
+    // In light the footer fill (blue-100) is a distinct band, not the pale panel soft (blue-50).
+    expect(tw('bg-brand-fill').backgroundColor).not.toBe(tw('bg-brand-soft').backgroundColor);
   });
 
   it('does not leak the old bespoke palette hexes', () => {

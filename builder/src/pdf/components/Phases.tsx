@@ -6,14 +6,14 @@ interface Phase {
   idx: string;
   title: string;
   body: string;
-  /** A parallel phase takes the positive (emerald) accent on its number column instead of indigo. */
+  /** A parallel phase takes the positive (emerald) accent on its number column instead of blue. */
   parallel?: boolean;
 }
 
 /**
  * An ordered list of phases, each a bordered card with a full-height accent-soft number column and
  * a title + body — matching the original design's phase cards (accent-soft column, big accent
- * number). A parallel phase swaps the indigo brand accent for the positive (emerald) role.
+ * number). A parallel phase swaps the blue brand accent for the positive (emerald) role.
  */
 export function Phases({ items }: { items: Phase[] }): JSX.Element {
   const tw = useTw();

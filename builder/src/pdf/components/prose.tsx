@@ -23,7 +23,7 @@ export function Muted({ children }: { children: ReactNode }): JSX.Element {
 /**
  * A small mono, uppercase, letter-spaced kicker. Defaults to a neutral grey (Tailwind slate-500 —
  * the nearest to the parity artifact's `ink-3`), which reads as a quiet structural label rather than
- * competing with the indigo accent; a role-colored eyebrow passes an explicit `color`. The mono
+ * competing with the blue accent; a role-colored eyebrow passes an explicit `color`. The mono
  * family and exact letter-spacing are raw style — react-pdf-tailwind resolves neither from our token
  * config.
  */

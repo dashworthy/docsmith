@@ -11,7 +11,7 @@ export type FooterTone = 'accent' | 'muted';
 
 /**
  * The shared card header band. Every titled card renders exactly this — a muted band with a bold,
- * mono, indigo, `TYPE.cardTitle` title — so all category-card headers are identical by construction
+ * mono, blue, `TYPE.cardTitle` title — so all category-card headers are identical by construction
  * (they cannot each hand-roll their own and drift apart). Owned here, not by the wrappers.
  */
 function HeaderBand({ title }: { title: string }): JSX.Element {
@@ -32,9 +32,9 @@ function HeaderBand({ title }: { title: string }): JSX.Element {
 /**
  * The shared card footer band. Card owns the band frame + tone; the caller supplies the inner
  * `content` (which varies — a mono kicker + body for the accent target, a single muted line for a
- * caption). Both tones share the same violet footer fill (`bg-brand-fill`, stronger and distinct from
- * the pale indigo panel `soft`); the tone now differs only in the divider — `accent` a dashed top border (the
- * emphasized target), `muted` a solid one (a subdued caption).
+ * caption). Both tones share the same footer fill (`bg-brand-fill` — a soft blue-100 in light,
+ * blue-950 in dark; see ROLE in palette.ts); the tone differs only in the divider — `accent` a
+ * dashed top border (the emphasized target), `muted` a solid one (a subdued caption).
  */
 function FooterBand({ tone, content }: { tone: FooterTone; content: ReactNode }): JSX.Element {
   const tw = useTw();

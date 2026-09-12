@@ -61,7 +61,7 @@ describe('Section (ShadCN tokens)', () => {
     expect(p.colors.has(tw('text-foreground').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
     expect(p.colors.has(tw('text-slate-500').color)).toBe(true); // neutral eyebrow
-    expect(p.colors.has(tw('text-brand-ink').color)).toBe(false); // no longer indigo
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(false); // no longer blue
   });
   it('does not leak the old bespoke accent hex', () => {
     expect(p.colors.has('#4b52d4')).toBe(false);

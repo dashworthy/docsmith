@@ -51,7 +51,7 @@ function sizes(node: ReactElement): Set<number> {
 
 describe('SourceCard (ShadCN tokens)', () => {
   const p = paint(<SourceCard title="App\Render\Renderer">body</SourceCard>);
-  it('uses a muted header band with an indigo mono title over a muted body', () => {
+  it('uses a muted header band with a blue mono title over a muted body', () => {
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
     expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);

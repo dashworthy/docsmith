@@ -69,7 +69,7 @@ describe('Card (ShadCN border)', () => {
 });
 
 describe('Card (shared header + footer bands)', () => {
-  it('renders `title` as a mono, indigo, TYPE.cardTitle header on a muted band', () => {
+  it('renders `title` as a mono, blue, TYPE.cardTitle header on a muted band', () => {
     const c = collect(
       <Card title={'Ns\\Sub'}>
         <Text>body</Text>
@@ -82,7 +82,7 @@ describe('Card (shared header + footer bands)', () => {
     expect(c.weights.has(700)).toBe(true); // bold header title
   });
 
-  it('renders an accent-tone footer as a dashed-top brand-fill (indigo-300) band', () => {
+  it('renders an accent-tone footer as a dashed-top brand-fill (blue-100) band', () => {
     const c = collect(
       <Card footer={<Text>target</Text>} footerTone="accent">
         <Text>body</Text>

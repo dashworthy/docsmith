@@ -43,7 +43,7 @@ describe('Phases (ShadCN tokens)', () => {
       ]}
     />,
   );
-  it('gives each phase an accent-soft number column — indigo for sequential, emerald for parallel', () => {
+  it('gives each phase an accent-soft number column — blue for sequential, emerald for parallel', () => {
     expect(p.bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true); // sequential column
     expect(p.colors.has(tw('text-brand-ink').color)).toBe(true); // sequential number
     expect(p.bgs.has(tw('bg-pos-soft').backgroundColor)).toBe(true); // parallel column
@@ -81,7 +81,7 @@ describe('Flow (tone = destructive/emerald on a muted lane)', () => {
 
 describe('QList (ShadCN tokens)', () => {
   const p = paint(<QList items={['first?', 'second?']} />);
-  it('markers in indigo, bodies in muted; no old accent hex', () => {
+  it('markers in blue, bodies in muted; no old accent hex', () => {
     expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
     expect(p.colors.has('#4b52d4')).toBe(false);

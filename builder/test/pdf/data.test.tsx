@@ -41,7 +41,7 @@ function badgeStyle(node: ReactElement): Record<string, unknown> {
 }
 
 describe('Badge (ShadCN + role variants)', () => {
-  it('neutral = secondary, accent = soft indigo, negative = destructive', () => {
+  it('neutral = secondary, accent = soft blue, negative = destructive', () => {
     const neu = badgeStyle(<Badge role="neutral">n</Badge>);
     expect(neu.backgroundColor).toBe(tw('bg-secondary').backgroundColor);
     expect(neu.color).toBe(tw('text-fg-secondary').color);
@@ -63,7 +63,7 @@ describe('Badge (ShadCN + role variants)', () => {
 
 describe('Table (ShadCN tokens)', () => {
   const p = paint(<Table head={['A', 'B']} rows={[['1', '2'], ['3', '4']]} />);
-  it('has a muted header band with indigo-accented headers', () => {
+  it('has a muted header band with blue-accented headers', () => {
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
     expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
   });
