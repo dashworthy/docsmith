@@ -3,26 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "React + native-Tailwind document builder — renders hand-written JSX docs to standalone HTML and to PDF (via headless Chrome print).",
+  "description": "React document builder — renders hand-written JSX docs to PDF via @react-pdf/renderer, styled to vanilla ShadCN tokens through react-pdf-tailwind.",
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "css": "tailwindcss -i src/styles/input.css -o dist/tailwind.css"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
     "@react-pdf/renderer": "^4.9.0",
     "mermaid": "^11.0.0",
     "puppeteer": "^24.15.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "react-pdf-tailwind": "^2.3.0",
-    "shiki": "^1.0.0",
-    "tailwindcss": "^3.4.0"
+    "shiki": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
     "@types/react-test-renderer": "^18.3.1",
     "react-test-renderer": "^18.3.1",
     "tsx": "^4.16.0",

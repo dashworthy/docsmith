@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import TestRenderer from 'react-test-renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { CompareCard } from '../../src/pdf/components/CompareCard.js';
-import { ThemeProvider, TwProvider, paletteFor, shadcnConfig } from '../../src/pdf/theme.js';
+import { TwProvider, shadcnConfig } from '../../src/pdf/theme.js';
 
 const tw = createTw(shadcnConfig('light'));
 
@@ -14,17 +14,14 @@ function flat(style: unknown): Record<string, unknown> {
 /** Collect every resolved `color` and `backgroundColor` across the rendered tree. */
 function collect() {
   const tree = TestRenderer.create(
-    <ThemeProvider value={paletteFor('light')}>
-      <TwProvider value={tw}>
-        <CompareCard
-          num="01"
-          title="Trade-off"
-          a={{ label: 'Pros', role: 'positive', items: ['fast'] }}
-          b={{ label: 'Cons', role: 'negative', items: ['risky'] }}
-          target="pick A"
-        />
-      </TwProvider>
-    </ThemeProvider>,
+    <TwProvider value={tw}>
+      <CompareCard
+        title="Trade-off"
+        a={{ label: 'Pros', role: 'positive', items: ['fast'] }}
+        b={{ label: 'Cons', role: 'negative', items: ['risky'] }}
+        target="pick A"
+      />
+    </TwProvider>,
   ).toJSON() as any;
   const colors = new Set<unknown>();
   const bgs = new Set<unknown>();
@@ -40,16 +37,23 @@ function collect() {
 }
 
 describe('CompareCard (ShadCN tokens)', () => {
-  it('uses ShadCN surfaces — a muted header band and a foreground title', () => {
+  it('wears the shared mono header band — a muted band with a blue title', () => {
     const { colors, bgs } = collect();
-    expect(bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(colors.has(tw('text-foreground').color)).toBe(true);
+    expect(bgs.has(tw('bg-muted').backgroundColor)).toBe(true); // Card header band
+    expect(colors.has(tw('text-brand-ink').color)).toBe(true); // mono title + TARGET kicker
   });
 
   it('colors the columns by role from the agreed palette', () => {
     const { colors } = collect();
     expect(colors.has(tw('text-emerald-600').color)).toBe(true); // positive
     expect(colors.has(tw('text-destructive').color)).toBe(true); // negative
+  });
+
+  it('gives the target footer the accent brand-fill (blue-100) band — and carries no num pill', () => {
+    const { bgs } = collect();
+    expect(bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // footer accent band (Card footerTone)
+    // In light the footer fill (blue-100) is a distinct band, not the pale panel soft (blue-50).
+    expect(tw('bg-brand-fill').backgroundColor).not.toBe(tw('bg-brand-soft').backgroundColor);
   });
 
   it('does not leak the old bespoke palette hexes', () => {

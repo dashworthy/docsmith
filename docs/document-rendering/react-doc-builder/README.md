@@ -1,6 +1,6 @@
 # React document builder
 
-**A React 18 + native-Tailwind library for authoring documents as hand-written JSX and rendering them to a standalone HTML file and to PDF — one HTML source of truth, printed to PDF by headless Chrome, with light/dark chosen at generation time and no runtime JS in the output.**
+**A React 18 library for authoring documents as hand-written JSX and rendering them to PDF with [`@react-pdf/renderer`](https://react-pdf.org), styled to vanilla [ShadCN](https://ui.shadcn.com) design tokens via [`react-pdf-tailwind`](https://github.com/Kaldarmaa/react-pdf-tailwind), with light/dark chosen at render time.**
 
 Lives in [`builder/`](../../../builder). End-user usage (authoring a doc, running the CLI) is in [`builder/README.md`](../../../builder/README.md); this doc is the architecture and the invariants a future change must respect.
 
@@ -8,31 +8,37 @@ Lives in [`builder/`](../../../builder). End-user usage (authoring a doc, runnin
 
 ## 🌟 Overview (plain-language)
 
-You write a document as a React component tree — a `Doc` root wrapping `Cover`, `Section`, `Callout`, `Table`, `CompareCard`, `CodeBlock`, `Mermaid`, and the rest of a fixed **component library**. The builder renders that tree to a single HTML file, and — when you ask for PDF — prints that same HTML with headless Chrome. The HTML is the **source of truth**; the PDF is never a separate render, only a print of the HTML, so the two always agree.
+You write a document as a React component tree — a `PdfDoc` root wrapping `Cover`, `Section`, `Callout`, `Table`, `CompareCard`, `CodeBlock`, `Mermaid`, and the rest of a fixed **component library**. `@react-pdf/renderer` lays that tree out into a paginated PDF directly — there is no HTML, no browser page-layout, no print step. The PDF is the only output.
 
 Two ideas carry the whole design:
 
-- **The token module is the only way components reach color.** Every component colors itself through `t.bg.*` / `t.text.* `/ `t.border.*` / `t.font.*` — strings like `bg-[var(--surface)]` that are *native* Tailwind arbitrary utilities reading a CSS variable. The exact hex lives once in `theme/palette.ts`, emitted as `:root` (light) and `[data-theme=dark]` (dark) custom properties. Baking `data-theme` on `<html>` at generation time picks the palette; nothing in the output toggles it. This is why there is **no `tailwind.config` customization** — the config carries only its `content` glob.
-- **Everything dynamic is pre-rendered, so the output runs no JavaScript.** Code blocks are highlighted by **Shiki** and mermaid diagrams are rendered to inline **SVG** (and recolored by shape) at *generation* time, not in the browser that opens the file. A `CodeBlock` or `Mermaid` component emits only a marker `<div>`; a generation **pass** finds that marker and swaps in the finished HTML.
+- **Components reach color through one styling boundary, and it speaks vanilla ShadCN.** Every component calls `useTw()` — a theme-bound class→style resolver — and writes ShadCN semantic Tailwind classes (`bg-card`, `text-foreground`, `border-border`, `rounded-lg`, …). `react-pdf-tailwind`'s `createTw` turns those into the pt-based style objects react-pdf wants. The exact token hexes live once in `theme/palette.ts` as the `SHADCN` map (the canonical slate default, resolved HSL→hex); **`SHADCN` is the sole source of color**. Retuning toward a custom look happens there and nowhere else.
+- **Light/dark is a per-render token selection, not a CSS toggle.** react-pdf has no CSS variables and `react-pdf-tailwind` has no `dark:` variant, so a document is rendered twice — once per theme — and `PdfDoc` builds the resolver from `SHADCN.light` or `SHADCN.dark` for that render. Nothing in the PDF toggles; the theme is baked in.
 
-Worked example — generating the demo to a dark PDF:
+Worked example — rendering the configurator doc to a dark PDF:
 
 ```bash
 cd builder
-node --import tsx src/generate/cli.ts src/docs/demo.tsx --theme dark --format pdf --out demo.pdf
+node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark --out configurator.pdf
 ```
 
-`generate()` renders `demo.tsx` to static markup, runs the pre-render passes (Shiki, then mermaid via the shared Chrome), inlines the built Tailwind CSS into the HTML skeleton, writes the HTML to a temp file, and prints it to `demo.pdf`. For `--format html` the same HTML is written directly to `--out` and no browser is touched.
+A PDF doc module default-exports a builder `(theme) => <PdfDoc …>`, so one authored document renders in either theme. The CLI imports the module, awaits the builder (it may be async — see the asset pre-pass below), and hands the element to `renderToFile`.
 
 ```mermaid
 flowchart LR
-  JSX[doc .tsx] --> RSM[renderToStaticMarkup]
-  RSM --> P1[prerenderCode - Shiki]
-  P1 --> P2[prerenderMermaid - Chrome to SVG]
-  P2 --> ASM[assembleHtml - inline Tailwind + theme]
-  ASM --> H[(standalone .html)]
-  H -->|format=pdf| PDF[(PDF via Puppeteer print)]
+  JSX[doc .pdf.tsx] --> B["builder(theme)"]
+  B --> A[pre-compute assets: Shiki tokens + mermaid PNGs]
+  A --> EL["<PdfDoc> element tree"]
+  EL --> R["renderToFile (@react-pdf/renderer)"]
+  R --> PDF[(.pdf)]
 ```
+
+### Why assets are pre-computed
+
+react-pdf renders **synchronously** and embeds only primitives (`View`, `Text`, `Image`), so anything that needs async work or that react-pdf can't lay out is computed up front, in the doc builder, before the tree is handed to the renderer:
+
+- **Code** — `highlightCode()` runs [Shiki](https://shiki.style) and returns tokenized lines (content + hex per span) plus the theme's bg/fg. `CodeBlock` lays those out as mono `<Text>` runs; the Shiki theme's own colors are kept (they are tuned together for contrast, orthogonal to the ShadCN palette), framed by the ShadCN `Card`.
+- **Mermaid** — `rasterizeMermaid()` renders a chart in headless Chrome (themed from `SHADCN[theme]`), screenshots it to a transparent high-DPI PNG, and returns a data URI. `Mermaid` embeds it as an `<Image>`. **Chrome is used only to bake the diagram image — never for page layout.**
 
 ## 🛠 Technical reference
 
@@ -40,56 +46,69 @@ flowchart LR
 
 | Area | Unit | Responsibility |
 |---|---|---|
-| Theme values | `src/theme/palette.ts` | Single source of exact hex (`PALETTE.light`/`.dark`), `FONTS`, `TokenName`. Nothing else holds a color. |
-| Theme surface | `src/theme/tokens.ts` | `t.bg/text/border/font` (arbitrary-utility strings), `cx()` join, `cssVar()` escape hatch (inline/SVG), `themeStyleBlock()` (`:root` + `[data-theme=dark]` + body font). |
-| HTML skeleton | `src/generate/html.ts` | `assembleHtml()` wraps body markup into one `<!doctype html>` doc (theme, fonts `<link>`, theme block, inlined Tailwind). Defines the `Pass` / `PassCtx` contract. |
-| Orchestrator | `src/generate/cli.ts` | `generate()` composes the pass list uniformly via `reduce`; CLI entry + `parseArgs`. `pdf` branch fails loudly when no Chrome. |
-| Tailwind build | `src/generate/tailwind.ts` | `buildTailwindCss()` shells the Tailwind CLI (scans the `content` glob), returns the CSS to inline. |
-| Chrome | `src/generate/chrome.ts` | `findChrome()` — env → standard install paths → puppeteer's bundled Chromium, or `null`. |
-| PDF | `src/generate/pdf.ts` | `renderPdf()` — Puppeteer print with the fixed `page.pdf` settings; render-gate = `networkidle0` + `document.fonts.ready`. |
-| Code pass | `src/generate/prerenderCode.ts` | `prerenderCode: Pass` — replaces each `<div data-code>` with Shiki HTML. Browserless. |
-| Diagram pass | `src/generate/prerenderMermaid.ts` | `prerenderMermaid: Pass` — renders each `<div data-mermaid>` to SVG in the shared Chrome and recolors nodes by shape. |
-| Shared util | `src/generate/htmlEntities.ts` | `unescapeHtml()` — undoes React's text escaping before a pass hands source to Shiki/mermaid. |
-| Components | `src/components/*.tsx` | The presentational library (see `builder/README.md` for the full list). Color only through `t.*`. |
+| Token values | `src/theme/palette.ts` | `SHADCN.light`/`.dark` — the vanilla ShadCN slate tokens as hex, and `ShadcnToken`. The sole source of color. |
+| Styling boundary | `src/pdf/theme.ts` | `shadcnConfig(theme)` → the `react-pdf-tailwind` config; `TwProvider`/`useTw()` carry a theme-bound `tw` via context. Also registers fonts, and holds page geometry (`PAGE`, `CONTENT_HEIGHT`). |
+| Document root | `src/pdf/components/PdfDoc.tsx` | Builds `createTw(shadcnConfig(theme))` once, provides it via `TwProvider`, and sets the `<Page>` ground/ink to the `background`/`foreground` tokens. |
+| Components | `src/pdf/components/*.tsx` | The presentational library (see `builder/README.md` for the full list). Color only through `useTw()`. |
+| Render | `src/pdf/renderPdf.ts` | `renderPdfToFile()` — `@react-pdf/renderer`'s `renderToFile`; react-pdf paginates itself, no browser. |
+| CLI | `src/pdf/cli.ts` | `generatePdf()` imports a `*.pdf.tsx` builder, awaits it (assets pre-computed), renders; `parsePdfArgs` + CLI entry. |
+| Code asset | `src/pdf/highlightCode.ts` | `highlightCode()` → `HighlightedCode` (Shiki tokens + theme bg/fg). Async; run in the doc builder. |
+| Diagram asset | `src/pdf/rasterizeMermaid.ts` | `rasterizeMermaid()` → `RasterDiagram` (PNG data URI + aspect). Themes mermaid from `SHADCN[theme]`. Async; needs Chrome. |
+| Chrome | `src/pdf/chrome.ts` | `findChrome()` — env → standard install paths → puppeteer's bundled Chromium, or `null`. |
 
-### The pass contract
+### The styling boundary (`useTw`)
 
-A **pre-render pass** is the uniform seam every marker-replacement shares:
+Components never see the engine, the points units, or which theme is active:
 
-```ts
-type PassCtx = { chrome: string | null };
-type Pass = (bodyHtml: string, theme: 'light' | 'dark', ctx: PassCtx) => Promise<string>;
+```tsx
+const tw = useTw();
+<View style={tw('bg-card border border-border rounded-lg px-4 py-3')}>
+  <Text style={tw('text-sm font-semibold text-foreground')}>{title}</Text>
+</View>
 ```
 
-Each pass owns its own marker loop internally; the generator only composes a list (`[prerenderCode, prerenderMermaid]`) and never contains a pass's find-and-replace logic. To add a generation-time transform, write a `Pass` and append it to that list — nothing else changes.
+`PdfDoc` builds the resolver once per render (`useMemo(() => createTw(shadcnConfig(theme)), [theme])`) and provides it; every component calls `useTw()`. Mixed raw style is fine where `react-pdf-tailwind` can't express something (the display/mono font family, exact letter-spacing, a deterministic alignment offset) — components pass an array `[tw('…'), { …raw }]`.
+
+### The `fg-*` class convention (a forced library divergence)
+
+`react-pdf-tailwind` reads the **last** hyphen segment of a class as a shade and does not honour a color's `DEFAULT`. A *string* color resolves the bare utility (`bg-card`) but never `card-foreground`; an *object* color resolves its shades (`text-card-foreground`) but not the bare base. The two are mutually exclusive for one key. So:
+
+- **Base tokens are flat strings** — `bg-card`, `bg-muted`, `bg-primary`, `text-foreground`, `border-border`, … all resolve, vanilla.
+- **Surface-foreground tokens live as shades of one `fg` color** — ShadCN's `text-muted-foreground` is written **`text-fg-muted`** here (likewise `text-fg-primary`, `text-fg-secondary`, `text-fg-destructive`). Values are exactly vanilla ShadCN; only the foreground *class spelling* diverges, forced by the library.
+
+This is why the dependency is pinned to **`react-pdf-tailwind@2.3.0`** (Tailwind-v3-based): v3.0.0 is Tailwind-v4-based and rejects `theme.extend.colors` semantic classes (`bg-card` → "Invalid class").
+
+### The role palette (semantic gaps ShadCN lacks)
+
+Vanilla ShadCN ships only `default` and `destructive` as semantic colors. Where a component needs more (callout variants, compare-card columns, flow tones, key-box rules), it fills the gap from a fixed role palette: **negative/caution → `destructive`**, **warning → Tailwind `amber`**, **positive/tip → Tailwind `emerald`**, **note/info → `primary`**. These saturated mid-tones read on both the light and dark ground. Because `react-pdf-tailwind` has no `dark:`, components avoid fixed soft tints (e.g. `emerald-50`) that would glare in dark; filled "soft" surfaces use the theme-swapped `muted` token and carry the role in a border, stroke, or title instead (the Callout Alert and KeyBox do this).
 
 ### Per-shape mermaid recolor
 
-`prerenderMermaid` keys off mermaid's `.label-container` element to give every diagram the same shape→role mapping: `rect` = process (accent), `polygon` = decision (warning), `path`/cylinder = data store (positive), `circle`/`ellipse` = terminal (neutral); edges/arrows stay neutral. Fills use the **soft** role tint with a saturated stroke and dark-ink labels, so one node-text color stays legible across every shape (the terminal's neutral fill can't share a legible text color with a saturated one). Colors come from `PALETTE[theme]`.
+`rasterizeMermaid` keys off mermaid's `.label-container` element to give every diagram the same shape→role mapping: `rect` = process (`primary`), `polygon` = decision (amber), `path`/cylinder = data store (emerald), `circle`/`ellipse` = terminal (muted-foreground). Nodes share the theme-swapped `muted` fill and carry their role in the stroke; base vars (edges, text, clusters) come from `SHADCN[theme]`. Because the diagram is rasterized once per theme, it can use the theme's own resolved tokens directly.
 
 ### Boundaries & invariants
 
-- **Components never hold a raw color, var name, or arbitrary-utility syntax** — only `t.*` (and `cssVar()` where a class can't reach, e.g. an inline SVG fill). Retuning a hue or renaming a var edits only `theme/`; no component changes.
-- **No `tailwind.config` customization** — `theme:{}`, `plugins:[]`, `content` glob only. The palette is CSS variables, not a Tailwind color extension.
-- **The output carries no runtime JS.** No `<script>`, no event handlers. `prerenderMermaid` initializes mermaid with `securityLevel: 'antiscript'` so a chart can't inject one.
-- **PDF requires Chrome; HTML does not.** `generate()`'s `pdf` branch throws an actionable error when `findChrome()` is null rather than dereferencing it. `findChrome()` resolving Chrome is also what the mermaid pass needs — so it is resolved for both formats (a diagram must render whichever format is asked).
-- **The HTML is self-contained but for fonts.** Tailwind CSS, code, and diagrams are inlined; the only network dependency is the Google Fonts `<link>`.
+- **Components never hold a raw color or reach `SHADCN` directly** — only `useTw()` + ShadCN semantic classes. Retuning a hue edits only `theme/palette.ts`; no component changes.
+- **`SHADCN` is the single source of color.** There is no other palette, no CSS variables, no `tailwind.config` color extension.
+- **Light/dark is resolved per render**, not toggled. A document is rendered once per theme; `PdfDoc` selects the token set. Nothing in the output is theme-reactive.
+- **PDF layout never touches a browser.** `@react-pdf/renderer` paginates from the primitive tree. Chrome (`findChrome()`) is needed only to rasterize mermaid diagrams; a doc with no mermaid needs no Chrome.
+- **Async work happens in the doc builder, before render.** react-pdf render is synchronous — Shiki highlighting and mermaid rasterization are awaited up front and embedded as data.
 
 ## 🚀 Development & testing
 
 ```bash
 cd builder
-npm install            # one-time; puppeteer downloads its own Chromium
-npm test               # vitest — component render + generation + pass tests
+npm install            # one-time; puppeteer downloads its own Chromium (for mermaid)
+npm test               # vitest — component token + render tests
 npm run typecheck      # tsc --noEmit
 ```
 
-Generate and eyeball all four outputs (rasterize the PDFs to inspect):
+Render and eyeball both themes (rasterize the PDFs to inspect):
 
 ```bash
-node --import tsx src/generate/cli.ts src/docs/demo.tsx --theme light --format pdf --out /tmp/d-lt.pdf
-node --import tsx src/generate/cli.ts src/docs/demo.tsx --theme dark  --format pdf --out /tmp/d-dk.pdf
-pdftoppm -png -r 110 /tmp/d-lt.pdf /tmp/lt   # needs poppler
+node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme light --out /tmp/c-lt.pdf
+node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark  --out /tmp/c-dk.pdf
+pdftoppm -png -r 110 /tmp/c-lt.pdf /tmp/lt   # needs poppler
 ```
 
-`src/docs/demo.tsx` exercises every component and is the fixture the generation tests and the visual parity check run against.
+`src/docs/configurator.pdf.tsx` exercises every component (including four mermaid diagrams) and is the fixture the render checks run against.

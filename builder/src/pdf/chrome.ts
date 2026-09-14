@@ -1,7 +1,7 @@
-// Chrome/Chromium discovery for the PDF pipeline. Tries, in order: the two puppeteer/Chrome env
-// overrides, the standard install paths on macOS/Linux/Windows (ported from md2pdf.mjs), and
-// finally the Chromium puppeteer downloaded for itself. Returns the first that exists on disk, or
-// null when none is found — the caller decides what a null means (the PDF branch fails loudly).
+// Chrome/Chromium discovery for the PDF pipeline (mermaid rasterization). Tries, in order: the two
+// puppeteer/Chrome env overrides, the standard install paths on macOS/Linux/Windows, and finally the
+// Chromium puppeteer downloaded for itself. Returns the first that exists on disk, or null when none
+// is found — the caller decides what a null means (mermaid rasterization fails loudly).
 
 import { existsSync } from 'node:fs';
 import puppeteer from 'puppeteer';

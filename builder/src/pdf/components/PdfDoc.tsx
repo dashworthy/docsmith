@@ -1,16 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { Document, Page, StyleSheet } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
-import {
-  FONT,
-  PAGE,
-  ThemeProvider,
-  TwProvider,
-  paletteFor,
-  registerFonts,
-  shadcnConfig,
-  type PdfTheme,
-} from '../theme.js';
+import { FONT, PAGE, TYPE, TwProvider, registerFonts, shadcnConfig, type PdfTheme } from '../theme.js';
 
 /**
  * The react-pdf document root. Unlike the HTML path (where a headless-Chrome print leaves the
@@ -29,28 +20,26 @@ export function PdfDoc({
   children: ReactNode;
 }): JSX.Element {
   registerFonts();
-  const c = paletteFor(theme);
   const tw = useMemo(() => createTw(shadcnConfig(theme)), [theme]);
   const styles = StyleSheet.create({
     page: {
-      backgroundColor: c.ground,
-      color: c.ink,
+      // The page ground + base ink are the vanilla ShadCN `background` / `foreground` tokens.
+      backgroundColor: tw('bg-background').backgroundColor,
+      color: tw('text-foreground').color,
       fontFamily: FONT.sans,
-      fontSize: 10.5,
+      fontSize: TYPE.body,
       lineHeight: 1.5,
       paddingVertical: PAGE.paddingV,
       paddingHorizontal: PAGE.paddingH,
     },
   });
   return (
-    <ThemeProvider value={c}>
-      <TwProvider value={tw}>
-        <Document title={title}>
-          <Page size="A4" style={styles.page}>
-            {children}
-          </Page>
-        </Document>
-      </TwProvider>
-    </ThemeProvider>
+    <TwProvider value={tw}>
+      <Document title={title}>
+        <Page size="A4" style={styles.page}>
+          {children}
+        </Page>
+      </Document>
+    </TwProvider>
   );
 }

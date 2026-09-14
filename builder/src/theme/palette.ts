@@ -1,59 +1,9 @@
-// Exact color and font values, transcribed once from the "Harvest × Bloom Parity"
-// reference artifact. This module is the single source of truth for the palette: retuning a
-// hex or renaming a role changes it here and nowhere else. Component code never sees these
-// values — it reaches color only through the typed token module in tokens.ts, which turns
-// these into CSS custom properties.
-
-export const PALETTE = {
-  light: {
-    ground: '#f5f6f9',
-    surface: '#ffffff',
-    surface2: '#eef0f5',
-    ink: '#171b22',
-    ink2: '#4a5462',
-    ink3: '#79828f',
-    border: '#e0e4ea',
-    borderStrong: '#cdd3dc',
-    accent: '#4b52d4',
-    accentSoft: '#e9eafb',
-    positive: '#0f7a5a',
-    positiveSoft: '#d9f2e8',
-    negative: '#b83f36',
-    negativeSoft: '#f7e2df',
-    warning: '#a76d12',
-    warningSoft: '#f8eeda',
-  },
-  dark: {
-    ground: '#0c0f15',
-    surface: '#141922',
-    surface2: '#1b212c',
-    ink: '#e7eaef',
-    ink2: '#a7b0bd',
-    ink3: '#79828f',
-    border: '#242c38',
-    borderStrong: '#333d4c',
-    accent: '#838af6',
-    accentSoft: '#23253f',
-    positive: '#34c99a',
-    positiveSoft: '#103028',
-    negative: '#e2685e',
-    negativeSoft: '#341c1a',
-    warning: '#dca34a',
-    warningSoft: '#33280f',
-  },
-} as const;
-
-/** A palette role — the shared key set of both themes. */
-export type TokenName = keyof typeof PALETTE.light;
-
-// ── Vanilla ShadCN token palette ────────────────────────────────────────────
+// The vanilla ShadCN token palette — the single source of truth for color in the PDF component set.
 // The canonical ShadCN default theme (slate base), transcribed from its `globals.css`
-// `:root`/`.dark` custom properties and resolved from HSL to hex (react-pdf parses hex
-// reliably; it has no CSS variables). This is the sole color source for the react-pdf
-// component set — components reach these through the `tw()` styling boundary (see
-// `pdf/theme.ts`), never directly. Kept deliberately vanilla: retuning toward a custom look
-// happens here and nowhere else. Coexists with the bespoke `PALETTE` above only until the
-// last `usePalette()` consumer is migrated, then `PALETTE`/`TokenName` are removed.
+// `:root`/`.dark` custom properties and resolved from HSL to hex (react-pdf parses hex reliably; it
+// has no CSS variables). Components reach these through the `tw()` styling boundary (see
+// `pdf/theme.ts`), never directly. Kept deliberately vanilla: retuning toward a custom look happens
+// here and nowhere else.
 
 /** A ShadCN semantic design token — the shared key set of both themes. */
 export type ShadcnToken =
@@ -69,30 +19,37 @@ export type ShadcnToken =
 
 export const SHADCN: { light: Record<ShadcnToken, string>; dark: Record<ShadcnToken, string> } = {
   light: {
-    background: '#ffffff',
+    // A deliberately retuned neutral ramp (still all Tailwind slate) so light mode reads as a
+    // grounded surface rather than flat white: a light grey **ground** (slate-100), white **cards**
+    // framed off it by a **border** (slate-300, defined enough to carry the card edge on its own),
+    // and **muted** (slate-200) for the recessed bands / panels / chips that sit on white surfaces.
+    background: '#f1f5f9', // slate-100 — the page ground
     foreground: '#020817',
-    card: '#ffffff',
+    card: '#ffffff', // white — framed off the ground by the slate-300 border
     'card-foreground': '#020817',
     popover: '#ffffff',
     'popover-foreground': '#020817',
     primary: '#0f172a',
     'primary-foreground': '#f8fafc',
-    secondary: '#f1f5f9',
+    secondary: '#e2e8f0', // slate-200
     'secondary-foreground': '#0f172a',
-    muted: '#f1f5f9',
-    'muted-foreground': '#64748b',
-    accent: '#f1f5f9',
+    muted: '#e2e8f0', // slate-200 — recessed bands on white surfaces
+    'muted-foreground': '#475569', // slate-600 — a darker muted body (the artifact's ink-2), so
+    // secondary text reads as considered ink rather than washing out to grey
+    accent: '#e2e8f0', // slate-200
     'accent-foreground': '#0f172a',
     destructive: '#ef4444',
     'destructive-foreground': '#f8fafc',
-    border: '#e2e8f0',
-    input: '#e2e8f0',
+    border: '#cbd5e1', // slate-300 — a defined card frame against the grey ground
+    input: '#cbd5e1',
     ring: '#020817',
   },
   dark: {
     background: '#020817',
     foreground: '#f8fafc',
-    card: '#020817',
+    // Lifted card (slate-900) so surfaces read as raised off the near-black ground, rather than
+    // vanishing into it — the dark-mode counterpart to the off-white light ground above.
+    card: '#0f172a',
     'card-foreground': '#f8fafc',
     popover: '#020817',
     'popover-foreground': '#f8fafc',
@@ -106,15 +63,50 @@ export const SHADCN: { light: Record<ShadcnToken, string>; dark: Record<ShadcnTo
     'accent-foreground': '#f8fafc',
     destructive: '#7f1d1d',
     'destructive-foreground': '#f8fafc',
-    border: '#1e293b',
-    input: '#1e293b',
+    border: '#334155', // slate-700 — a defined card frame against the near-black ground
+    input: '#334155',
     ring: '#cbd5e1',
   },
 } as const;
 
-/** Font stacks, exposed as CSS variables (`--font-sans` / `--font-mono` / `--font-display`). */
-export const FONTS = {
-  sans: "'IBM Plex Sans',system-ui,sans-serif",
-  mono: "'IBM Plex Mono',ui-monospace,monospace",
-  display: "'Familjen Grotesk',system-ui,sans-serif",
+/**
+ * Semantic accent roles ShadCN's slate palette doesn't carry — layered on top of `SHADCN` to give
+ * callouts, section eyebrows, key boxes, and inline highlights a colored identity again. Every value
+ * is drawn straight from Tailwind's own default color scales (blue / emerald / amber / red), never
+ * a bespoke hue, so the accent stays inside the Tailwind palette.
+ *
+ * Each role is `{ ink, soft }` with an optional `fill`, theme-swapped: `ink` is the saturated
+ * mid-tone for text, a left accent bar, or a border (Tailwind's 600 in light, 400 in dark — legible
+ * on both the page and its own soft fill); `soft` is the pale tinted surface behind it (blue's 50
+ * in light, the 950 tint in dark, so it never glares on the near-black ground the way a fixed light
+ * tint would) — it backs the KeyBox and Phase panels.
+ *
+ * `fill` is the card footer band tint, tuned per ground. In light it is a soft blue-100 — a gentle
+ * step above the pale blue-50 panels, so the footer still reads as its own band. In dark it matches
+ * `soft`, the blue-950 panels, so the footer sits quiet against the near-black card and stands apart
+ * only by its divider (a dashed vs. solid top border). It stays a separate token from `soft`
+ * precisely so the footer can diverge from the panels per theme like this. Only `brand` carries
+ * `fill` today.
+ */
+export type Role = 'brand' | 'pos' | 'warn' | 'neg';
+
+export const ROLE: {
+  light: Record<Role, { ink: string; soft: string; fill?: string }>;
+  dark: Record<Role, { ink: string; soft: string; fill?: string }>;
+} = {
+  light: {
+    // A pale blue panel fill (soft, -50) with a soft blue-100 footer `fill` — a gentle step above the
+    // pale panels so the footer still reads as its own band — and a medium blue ink (-600) for the
+    // left bar / title.
+    brand: { ink: '#2563eb', soft: '#eff6ff', fill: '#dbeafe' }, // blue-600 / blue-50 / blue-100
+    pos: { ink: '#059669', soft: '#d1fae5' }, // emerald-600 / emerald-100
+    warn: { ink: '#d97706', soft: '#fef3c7' }, // amber-600 / amber-100
+    neg: { ink: '#dc2626', soft: '#fee2e2' }, // red-600 / red-100
+  },
+  dark: {
+    brand: { ink: '#60a5fa', soft: '#172554', fill: '#172554' }, // blue-400 / blue-950 / blue-950 (footer = panels)
+    pos: { ink: '#34d399', soft: '#022c22' }, // emerald-400 / emerald-950
+    warn: { ink: '#fbbf24', soft: '#451a03' }, // amber-400 / amber-950
+    neg: { ink: '#f87171', soft: '#450a0a' }, // red-400 / red-950
+  },
 } as const;
