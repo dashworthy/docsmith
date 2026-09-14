@@ -43,15 +43,17 @@ describe('Phases (ShadCN tokens)', () => {
       ]}
     />,
   );
-  it('fills the sequence chip with primary and the parallel chip with muted', () => {
-    expect(p.bgs.has(tw('bg-primary').backgroundColor)).toBe(true);
-    expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(p.colors.has(tw('text-fg-primary').color)).toBe(true);
+  it('gives each phase an accent-soft number column — blue for sequential, emerald for parallel', () => {
+    expect(p.bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true); // sequential column
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true); // sequential number
+    expect(p.bgs.has(tw('bg-pos-soft').backgroundColor)).toBe(true); // parallel column
+    expect(p.colors.has(tw('text-pos-ink').color)).toBe(true); // parallel number
   });
-  it('titles in foreground, bodies in muted; no old soft-fill hex', () => {
+  it('sits on a bordered white card — foreground titles, muted bodies', () => {
+    expect(p.bgs.has(tw('bg-card').backgroundColor)).toBe(true);
+    expect(p.borders.has(tw('border-border').borderColor)).toBe(true);
     expect(p.colors.has(tw('text-foreground').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
-    expect(p.bgs.has('#e9eafb')).toBe(false); // accentSoft
   });
 });
 
@@ -79,8 +81,8 @@ describe('Flow (tone = destructive/emerald on a muted lane)', () => {
 
 describe('QList (ShadCN tokens)', () => {
   const p = paint(<QList items={['first?', 'second?']} />);
-  it('markers in primary, bodies in muted; no old accent hex', () => {
-    expect(p.colors.has(tw('text-primary').color)).toBe(true);
+  it('markers in blue, bodies in muted; no old accent hex', () => {
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
     expect(p.colors.has('#4b52d4')).toBe(false);
   });

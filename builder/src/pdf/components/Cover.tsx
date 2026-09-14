@@ -50,8 +50,11 @@ export function Cover({
               <Text
                 key={i}
                 style={[
-                  tw('bg-background border border-border text-foreground rounded-full'),
-                  { fontSize: 8.5, paddingVertical: 3, paddingHorizontal: 9 },
+                  tw('bg-card border border-border text-foreground rounded-full'),
+                  // lineHeight:1 collapses the font's built-in leading so the glyphs sit in a
+                  // tight box the symmetric-ish padding can actually center; paddingTop edges
+                  // paddingBottom to sit the x-height on the pill's centerline.
+                  { fontSize: 8.5, lineHeight: 1, paddingTop: 4, paddingBottom: 3.5, paddingHorizontal: 9 },
                 ]}
               >
                 {chip}

@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import { Document, Page, StyleSheet } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
-import { FONT, PAGE, TwProvider, registerFonts, shadcnConfig, type PdfTheme } from '../theme.js';
+import { FONT, PAGE, TYPE, TwProvider, registerFonts, shadcnConfig, type PdfTheme } from '../theme.js';
 
 /**
  * The react-pdf document root. Unlike the HTML path (where a headless-Chrome print leaves the
@@ -27,7 +27,7 @@ export function PdfDoc({
       backgroundColor: tw('bg-background').backgroundColor,
       color: tw('text-foreground').color,
       fontFamily: FONT.sans,
-      fontSize: 10.5,
+      fontSize: TYPE.body,
       lineHeight: 1.5,
       paddingVertical: PAGE.paddingV,
       paddingHorizontal: PAGE.paddingH,

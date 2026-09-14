@@ -40,15 +40,15 @@ function badgeStyle(node: ReactElement): Record<string, unknown> {
   return flat(n.props.style);
 }
 
-describe('Badge (vanilla ShadCN variants)', () => {
-  it('neutral = secondary, accent = default(primary), negative = destructive', () => {
+describe('Badge (ShadCN + role variants)', () => {
+  it('neutral = secondary, accent = soft blue, negative = destructive', () => {
     const neu = badgeStyle(<Badge role="neutral">n</Badge>);
     expect(neu.backgroundColor).toBe(tw('bg-secondary').backgroundColor);
     expect(neu.color).toBe(tw('text-fg-secondary').color);
 
     const acc = badgeStyle(<Badge role="accent">a</Badge>);
-    expect(acc.backgroundColor).toBe(tw('bg-primary').backgroundColor);
-    expect(acc.color).toBe(tw('text-fg-primary').color);
+    expect(acc.backgroundColor).toBe(tw('bg-brand-soft').backgroundColor);
+    expect(acc.color).toBe(tw('text-brand-ink').color);
 
     expect(badgeStyle(<Badge role="negative">x</Badge>).backgroundColor).toBe(tw('bg-destructive').backgroundColor);
   });
@@ -63,9 +63,9 @@ describe('Badge (vanilla ShadCN variants)', () => {
 
 describe('Table (ShadCN tokens)', () => {
   const p = paint(<Table head={['A', 'B']} rows={[['1', '2'], ['3', '4']]} />);
-  it('has a muted header band with muted-foreground headers', () => {
+  it('has a muted header band with blue-accented headers', () => {
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true);
-    expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true);
   });
   it('zebras on card + muted and rules rows with the border token', () => {
     expect(p.bgs.has(tw('bg-card').backgroundColor)).toBe(true);

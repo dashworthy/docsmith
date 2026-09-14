@@ -9,7 +9,7 @@ import { Font } from '@react-pdf/renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { SHADCN } from '../theme/palette.js';
+import { SHADCN, ROLE } from '../theme/palette.js';
 
 const require = createRequire(import.meta.url);
 
@@ -31,6 +31,41 @@ export const FONT = {
   sans: 'Inter',
   mono: 'IBM Plex Mono',
   display: 'Inter',
+} as const;
+
+/**
+ * The one type scale for the whole document, in PDF points. Sizes live here (not scattered as magic
+ * numbers across components) so the doc reads at one consistent scale and a change is a single edit.
+ * Anchored on the reference `SourceCard` body (9.5) and the parity artifact's ratios (section title
+ * ~1.5×, deck / card body ~0.9×, eyebrow ~0.72× the body).
+ */
+export const TYPE = {
+  /** Section headline. */
+  sectionTitle: 15,
+  /** Section deck / secondary line under a headline. */
+  deck: 8.5,
+  /** Base page body (the `Page` default). */
+  body: 9.5,
+  /** A card's mono header-band title (the shared `Card` header). */
+  cardTitle: 9.5,
+  /** Muted body text inside a card. */
+  cardBody: 9,
+  /** Mono uppercase section eyebrow / kicker. */
+  eyebrow: 7,
+  /** Compare-card column labels. */
+  colLabel: 7.5,
+  /** Mermaid caption band. */
+  caption: 8,
+  /** Table header row. */
+  tableHeader: 8.5,
+  /** Table body cells. */
+  tableCell: 9,
+  /** QList `Q1`/`Q2` mono marker. */
+  qMarker: 7,
+  /** Phase big display numeral. */
+  phaseNum: 15,
+  /** Phase title. */
+  phaseTitle: 9.5,
 } as const;
 
 let registered = false;
@@ -77,8 +112,15 @@ export const PAGE = {
 /** Usable content height between the top and bottom page padding. */
 export const CONTENT_HEIGHT = PAGE.height - PAGE.paddingV * 2;
 
-/** The vertical midpoint of the content area — half the usable height. */
-export const HALF_CONTENT = CONTENT_HEIGHT / 2;
+/**
+ * The minimum content-height that must remain below a section headline for it to start on the
+ * current page; below this, react-pdf breaks before the headline and pushes it to the next page.
+ * Two-fifths (40%) of the usable height — moderate orphan control: a headline is bumped to the next
+ * page when it would otherwise start in the bottom two-fifths, keeping a reasonable run of body
+ * beneath a headline without leaving pages half-empty. Consumed by `Section`'s header block as its
+ * `minPresenceAhead`.
+ */
+export const HEADLINE_MIN_PRESENCE = CONTENT_HEIGHT * 0.4;
 
 export type PdfTheme = 'light' | 'dark';
 
@@ -111,6 +153,7 @@ export type Tw = ReturnType<typeof createTw>;
  */
 function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, string>> {
   const c = SHADCN[theme];
+  const r = ROLE[theme];
   return {
     background: c.background,
     foreground: c.foreground,
@@ -134,6 +177,14 @@ function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, s
       accent: c['accent-foreground'],
       destructive: c['destructive-foreground'],
     },
+    // Semantic accent roles (Tailwind blue/emerald/amber/red, theme-swapped) as object colors so
+    // `text-brand-ink`, `bg-brand-soft`, `border-brand-ink`, … resolve. See ROLE in palette.ts.
+    // brand also carries `fill` (the footer band tint — a soft blue-100 in light, blue-950 in dark)
+    // → `bg-brand-fill` for the card footer band. See ROLE in palette.ts for why the two differ.
+    brand: { ink: r.brand.ink, soft: r.brand.soft, ...(r.brand.fill ? { fill: r.brand.fill } : {}) },
+    pos: { ink: r.pos.ink, soft: r.pos.soft },
+    warn: { ink: r.warn.ink, soft: r.warn.soft },
+    neg: { ink: r.neg.ink, soft: r.neg.soft },
   };
 }
 

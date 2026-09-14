@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { useTw } from '../theme.js';
+import { TYPE, useTw } from '../theme.js';
 import { Elevated, RADIUS } from './surface.js';
 
 /** A row of equal-width panels (they stretch to a shared height on the cross axis). */
@@ -27,8 +27,8 @@ export function Panel({ title, children }: { title: string; children: ReactNode 
           },
         ]}
       >
-        <Text style={[tw('text-foreground'), { fontWeight: 600, fontSize: 11, marginBottom: 5 }]}>{title}</Text>
-        <Text style={[tw('text-fg-muted'), { fontSize: 9.5 }]}>{children}</Text>
+        <Text style={[tw('text-foreground'), { fontWeight: 600, fontSize: TYPE.cardTitle, marginBottom: 5 }]}>{title}</Text>
+        <Text style={[tw('text-fg-muted'), { fontSize: TYPE.cardBody }]}>{children}</Text>
       </View>
     </Elevated>
   );
