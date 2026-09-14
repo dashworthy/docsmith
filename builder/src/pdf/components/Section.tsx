@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { Text, View } from '@react-pdf/renderer';
-import { FONT, HALF_CONTENT, usePalette } from '../theme.js';
+import { FONT, HEADLINE_MIN_PRESENCE, TYPE, useTw } from '../theme.js';
 import { Eyebrow } from './prose.js';
 
-/** A section: an accent kicker, a display title, an optional muted deck, then the section body. */
+/** A section: a primary kicker, a display title, an optional muted deck, then the section body. */
 export function Section({
   eyebrow,
   title,
@@ -15,8 +15,8 @@ export function Section({
   deck?: string;
   children: ReactNode;
 }): JSX.Element {
-  const c = usePalette();
-  // Presentation rule: a headline must not start below the 50% line of the page.
+  const tw = useTw();
+  // Presentation rule: a headline must not start in the bottom two-fifths (40%) of the page (moderate orphan control).
   //
   // react-pdf's `shouldBreak` only honors `minPresenceAhead` when the node (a) does NOT itself
   // split across the break (`!shouldSplit`) and (b) has a previous sibling in the same parent
@@ -25,24 +25,20 @@ export function Section({
   // (which precede it) rather than the first child of a section wrapper. We therefore render the
   // section as a Fragment: the header and the body flow as siblings among the document's top-level
   // children, so react-pdf can break *before* the header and push it to the next page when fewer
-  // than `HALF_CONTENT` points remain below it.
+  // than `HEADLINE_MIN_PRESENCE` points (two-fifths of the content height) remain below it.
   return (
     <>
-      <View wrap={false} minPresenceAhead={HALF_CONTENT} style={{ marginTop: 22 }}>
+      <View wrap={false} minPresenceAhead={HEADLINE_MIN_PRESENCE} style={{ marginTop: 22 }}>
         <Eyebrow>{eyebrow}</Eyebrow>
         <Text
-          style={{
-            fontFamily: FONT.display,
-            fontSize: 17,
-            fontWeight: 700,
-            lineHeight: 1.2,
-            color: c.ink,
-            marginBottom: deck ? 5 : 10,
-          }}
+          style={[
+            tw('text-foreground'),
+            { fontFamily: FONT.display, fontSize: TYPE.sectionTitle, fontWeight: 700, lineHeight: 1.2, marginBottom: deck ? 5 : 10 },
+          ]}
         >
           {title}
         </Text>
-        {deck && <Text style={{ color: c.ink3, marginBottom: 10 }}>{deck}</Text>}
+        {deck && <Text style={[tw('text-fg-muted mb-2.5'), { fontSize: TYPE.deck }]}>{deck}</Text>}
       </View>
       {children}
     </>

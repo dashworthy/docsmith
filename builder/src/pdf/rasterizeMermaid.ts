@@ -7,9 +7,14 @@
 import puppeteer from 'puppeteer';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { findChrome } from '../generate/chrome.js';
-import { PALETTE } from '../theme/palette.js';
+import { findChrome } from './chrome.js';
+import { SHADCN } from '../theme/palette.js';
 import type { PdfTheme } from './theme.js';
+
+// Saturated role colors for diagram shapes — the agreed role palette (vanilla ShadCN has no such
+// semantic colors). Mid-tones that read on both the light and dark ground.
+const AMBER = '#d97706'; // amber-600 — warning
+const EMERALD = '#059669'; // emerald-600 — positive
 
 const MERMAID_JS_PATH = fileURLToPath(
   new URL('../../node_modules/mermaid/dist/mermaid.min.js', import.meta.url),
@@ -20,45 +25,49 @@ function loadMermaidJs(): string {
   return mermaidJs;
 }
 
-/** Per-shape node colors: soft fill + saturated stroke, one role per shape (matches the HTML path). */
+/**
+ * Per-shape node colors: a muted ShadCN fill with a saturated role stroke, one role per shape.
+ * Vanilla ShadCN has no soft-tint tokens, so (as with the KeyBox/Callout components) nodes share the
+ * theme-swapped `muted` fill and carry their role in the stroke.
+ */
 function shapeColors(theme: PdfTheme) {
-  const p = PALETTE[theme];
+  const c = SHADCN[theme];
   return {
-    process: { fill: p.accentSoft, stroke: p.accent },
-    decision: { fill: p.warningSoft, stroke: p.warning },
-    datastore: { fill: p.positiveSoft, stroke: p.positive },
-    terminal: { fill: p.surface2, stroke: p.ink3 },
+    process: { fill: c.muted, stroke: c.primary }, // note/info → primary
+    decision: { fill: c.muted, stroke: AMBER }, // warning → amber
+    datastore: { fill: c.muted, stroke: EMERALD }, // positive → emerald
+    terminal: { fill: c.muted, stroke: c['muted-foreground'] }, // neutral
   };
 }
 
-/** mermaid `base`-theme variables sourced from the palette so diagrams match the doc. */
+/** mermaid `base`-theme variables sourced from the ShadCN tokens so diagrams match the doc. */
 function mermaidVars(theme: PdfTheme) {
-  const p = PALETTE[theme];
+  const c = SHADCN[theme];
   return {
     darkMode: theme === 'dark',
     background: 'transparent',
-    fontFamily: "'IBM Plex Sans', system-ui, sans-serif",
-    primaryColor: p.accentSoft,
-    primaryBorderColor: p.accent,
-    primaryTextColor: p.ink,
-    mainBkg: p.accentSoft,
-    nodeBorder: p.accent,
-    nodeTextColor: p.ink,
-    secondaryColor: p.positiveSoft,
-    secondaryBorderColor: p.positive,
-    secondaryTextColor: p.ink,
-    tertiaryColor: p.warningSoft,
-    tertiaryBorderColor: p.warning,
-    tertiaryTextColor: p.ink,
-    lineColor: p.ink3,
-    textColor: p.ink2,
-    clusterBkg: p.surface2,
-    clusterBorder: p.borderStrong,
-    edgeLabelBackground: p.surface,
-    titleColor: p.ink,
-    noteBkgColor: p.warningSoft,
-    noteBorderColor: p.warning,
-    noteTextColor: p.ink,
+    fontFamily: "'Inter', system-ui, sans-serif",
+    primaryColor: c.muted,
+    primaryBorderColor: c.primary,
+    primaryTextColor: c.foreground,
+    mainBkg: c.muted,
+    nodeBorder: c.primary,
+    nodeTextColor: c.foreground,
+    secondaryColor: c.muted,
+    secondaryBorderColor: EMERALD,
+    secondaryTextColor: c.foreground,
+    tertiaryColor: c.muted,
+    tertiaryBorderColor: AMBER,
+    tertiaryTextColor: c.foreground,
+    lineColor: c['muted-foreground'],
+    textColor: c['muted-foreground'],
+    clusterBkg: c.muted,
+    clusterBorder: c.border,
+    edgeLabelBackground: c.background,
+    titleColor: c.foreground,
+    noteBkgColor: c.muted,
+    noteBorderColor: AMBER,
+    noteTextColor: c.foreground,
   };
 }
 
