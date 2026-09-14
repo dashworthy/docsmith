@@ -11,7 +11,7 @@ PDF is the only output — react-pdf paginates the document itself, with no HTML
 page-layout step. (Headless Chrome is used only to rasterize mermaid diagrams into images.)
 
 For the architecture and the invariants a change must respect, see the feature doc:
-[`docs/document-rendering/react-doc-builder/README.md`](../docs/document-rendering/react-doc-builder/README.md).
+[`docs/document-rendering/react-doc-builder/README.md`](../../docs/document-rendering/react-doc-builder/README.md).
 
 ## Requirements
 
