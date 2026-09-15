@@ -21,11 +21,10 @@ export function Muted({ children }: { children: ReactNode }): JSX.Element {
 }
 
 /**
- * A small mono, uppercase, letter-spaced kicker. Defaults to a neutral grey (Tailwind slate-500 —
- * the nearest to the parity artifact's `ink-3`), which reads as a quiet structural label rather than
- * competing with the blue accent; a role-colored eyebrow passes an explicit `color`. The mono
- * family and exact letter-spacing are raw style — react-pdf-tailwind resolves neither from our token
- * config.
+ * A small mono, uppercase, letter-spaced kicker. Defaults to the brand ink (blue-600 light /
+ * blue-400 dark) — the same accent as the table `th` labels — so structural kickers read in one
+ * consistent blue; a role-colored eyebrow passes an explicit `color`. The mono family and exact
+ * letter-spacing are raw style — react-pdf-tailwind resolves neither from our token config.
  */
 export function Eyebrow({ children, color }: { children: ReactNode; color?: string }): JSX.Element {
   const tw = useTw();
@@ -33,7 +32,7 @@ export function Eyebrow({ children, color }: { children: ReactNode; color?: stri
     <Text
       style={[
         tw('font-medium uppercase'),
-        { fontFamily: FONT.mono, fontSize: TYPE.eyebrow, letterSpacing: 1, lineHeight: 1, marginBottom: 3, color: color ?? tw('text-slate-500').color },
+        { fontFamily: FONT.mono, fontSize: TYPE.eyebrow, letterSpacing: 1, lineHeight: 1, marginBottom: 3, color: color ?? tw('text-brand-ink').color },
       ]}
     >
       {children}

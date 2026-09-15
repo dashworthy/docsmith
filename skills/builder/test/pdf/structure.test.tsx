@@ -57,11 +57,11 @@ describe('Section (ShadCN tokens)', () => {
       <P>kids</P>
     </Section>,
   );
-  it('titles in foreground, decks in muted, eyebrow in neutral grey (slate-500)', () => {
+  it('titles in foreground, decks in muted, eyebrow in brand ink (blue accent)', () => {
     expect(p.colors.has(tw('text-foreground').color)).toBe(true);
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
-    expect(p.colors.has(tw('text-slate-500').color)).toBe(true); // neutral eyebrow
-    expect(p.colors.has(tw('text-brand-ink').color)).toBe(false); // no longer blue
+    expect(p.colors.has(tw('text-brand-ink').color)).toBe(true); // eyebrow now shares the table-th blue
+    expect(p.colors.has(tw('text-slate-500').color)).toBe(false); // no longer the neutral grey
   });
   it('does not leak the old bespoke accent hex', () => {
     expect(p.colors.has('#4b52d4')).toBe(false);

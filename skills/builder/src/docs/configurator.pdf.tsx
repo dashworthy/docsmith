@@ -9,7 +9,6 @@ import {
   Section,
   P,
   B,
-  Badge,
   Table,
   CompareCard,
   SourceCard,
@@ -223,8 +222,8 @@ export default async (theme: PdfTheme) => {
         </P>
         <P>
           Each product on the <B>current page</B> is then “dressed up” for display — a picture, a price, and a
-          unit so it can be added to the cart. To stay fast, the list is paged{' '}
-          <Badge role="accent">12 at a time</Badge>, and only that page's products are enriched.
+          unit so it can be added to the cart. To stay fast, the list is paged <B>12 at a time</B>, and only
+          that page's products are enriched.
         </P>
         <PanelGrid>
           <Panel title="Pictures">

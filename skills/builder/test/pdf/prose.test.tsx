@@ -25,9 +25,9 @@ describe('prose primitives (ShadCN tokens)', () => {
     expect(leafStyle(<Muted>x</Muted>).color).toBe(tw('text-fg-muted').color);
   });
 
-  it('Eyebrow defaults to a neutral grey (slate-500), not the blue accent', () => {
-    expect(leafStyle(<Eyebrow>x</Eyebrow>).color).toBe(tw('text-slate-500').color);
-    expect(leafStyle(<Eyebrow>x</Eyebrow>).color).not.toBe(tw('text-brand-ink').color);
+  it('Eyebrow defaults to the brand ink (blue accent), matching the table th labels', () => {
+    expect(leafStyle(<Eyebrow>x</Eyebrow>).color).toBe(tw('text-brand-ink').color);
+    expect(leafStyle(<Eyebrow>x</Eyebrow>).color).not.toBe(tw('text-slate-500').color);
   });
 
   it('Eyebrow honours an explicit role-color override', () => {

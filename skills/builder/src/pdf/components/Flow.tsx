@@ -52,7 +52,7 @@ export function Flow({ lanes }: { lanes: Lane[] }): JSX.Element {
               const st = step.tone ? TONE[step.tone] : null;
               return (
                 <View key={j} style={tw('flex-row items-center gap-1.5')}>
-                  {j > 0 && <Text style={tw('text-fg-muted')}>→</Text>}
+                  {j > 0 && <Text style={[tw('text-fg-muted'), { fontFamily: FONT.mono }]}>→</Text>}
                   <Text
                     style={[
                       tw(st ? `bg-card border ${st.border} ${st.text} rounded` : 'bg-card border border-border text-fg-muted rounded'),
