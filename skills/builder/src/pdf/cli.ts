@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { ReactElement } from 'react';
 import { renderPdfToFile } from './renderPdf.js';
-import type { PdfTheme } from './theme.js';
+import { parseTheme, type PdfTheme } from './theme.js';
 
 export interface PdfGenerateOptions {
   /** Path to the PDF doc module (`.pdf.tsx`), resolved against the cwd. */
@@ -42,10 +42,7 @@ export function parsePdfArgs(argv: string[]): PdfGenerateOptions {
   const docModule = positional[0];
   const out = flags.out;
   if (!docModule || !out) throw new Error(USAGE);
-  const theme = flags.theme ?? 'light';
-  if (theme !== 'light' && theme !== 'dark') {
-    throw new Error(`--theme must be "light" or "dark" (got "${theme}")`);
-  }
+  const theme = parseTheme(flags.theme ?? 'light');
   return { docModule, theme, out };
 }
 

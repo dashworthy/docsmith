@@ -24,7 +24,7 @@ For the architecture and the invariants a change must respect, see the feature d
 ## Setup
 
 ```bash
-cd builder
+cd skills/builder
 npm install
 ```
 

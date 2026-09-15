@@ -38,10 +38,10 @@ skill drives it: it scaffolds a per-render working directory, authors the docume
 To drive the builder directly:
 
 ```bash
-# one-time, in the skill's package
-cd skills/builder && npm install
+# one-time: install the builder package's deps (subshell keeps cwd at the project root)
+(cd skills/builder && npm install)
 
-# author a doc at .docsmith/<run>/pdf.tsx (default-exports (theme) => <PdfDoc …>),
+# from the project root: author .docsmith/<run>/pdf.tsx (default-exports (theme) => <PdfDoc …>),
 # then render both themes into that dir:
 node --import tsx skills/builder/src/pdf/render.ts .docsmith/<run>
 # → .docsmith/<run>/pdf-light.pdf  and  .docsmith/<run>/pdf-dark.pdf
