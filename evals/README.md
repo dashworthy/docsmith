@@ -14,14 +14,21 @@ Three fixture-driven cases, in two tiers:
 
 ## Run the free tier (steering + guardrail)
 
-Deterministic graders only — no render, no LLM judge:
+Deterministic graders only — no LLM judge, so no judge cost:
 
 ```bash
-claude plugin eval . --tag smoke --allow-tools Write
+cd skills/builder && npm install   # one-time: builder deps (+ bundled Chromium for mermaid)
+cd -                               # back to the plugin root
+claude plugin eval . --tag smoke --allow-tools Write Bash
 ```
 
-`Write` is granted so Claude can author the `pdf.tsx`; `Bash` is deliberately withheld, so these
-cases author but never render — fast, and free of any LLM-judge cost.
+`Write` **and** `Bash` are granted so Claude runs the skill's real workflow (author → render) —
+with only `Write`, Claude fires the skill but can't complete its setup/render steps and ends up
+authoring nothing. The graders only check what Claude **authored** (the skill fired, the `pdf.tsx`
+imports `@docsmith/builder`, uses `KeyBox` not `Callout`, wires mermaid through `Mermaid`), so
+these cases pass on authoring alone and never invoke the paid LLM judge. Authoring happens before
+the render step, so a case still passes even if the render can't finish (e.g. no browser for the
+mermaid case).
 
 ## Run the paid tier (real render + page-quality judge)
 
@@ -37,13 +44,13 @@ without-plugin baseline arm and roughly halve the cost while iterating.
 
 ## Prerequisites
 
-- **Node ≥ 18** and the builder deps installed (`cd skills/builder && npm install`) — only for the
-  paid render tier.
-- **A Chromium-family browser** — only for the render tier's mermaid diagram (auto-detected, or set
-  `CHROME_PATH` / `PUPPETEER_EXECUTABLE_PATH`). puppeteer's bundled Chromium from `npm install`
-  suffices.
-- **poppler** (`brew install poppler`) — provides `pdftoppm`, used to rasterize the page the judge
-  looks at.
+- **Node ≥ 18** and the builder deps installed (`cd skills/builder && npm install`) — both tiers run
+  the skill's render workflow.
+- **A Chromium-family browser** — for any case whose doc has a mermaid diagram (auto-detected, or set
+  `CHROME_PATH` / `PUPPETEER_EXECUTABLE_PATH`); puppeteer's bundled Chromium from `npm install`
+  suffices. The authoring graders pass without it, but the render step won't finish.
+- **poppler** (`brew install poppler`) — provides `pdftoppm`; needed **only for the paid tier**,
+  which rasterizes the page the judge looks at.
 - **`claude` authenticated** — every `claude plugin eval` run spawns real Claude runs.
 
 ## Notes
