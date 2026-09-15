@@ -1,2 +1,3 @@
+schema_version: "1.0"
 context:
   add_dirs: [fixtures]
