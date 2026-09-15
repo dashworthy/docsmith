@@ -7,3 +7,6 @@ node_modules/
 # Generated output / previews
 *.pdf
 *.png
+
+# Transient skill-eval run results (fixtures + evals.json are tracked; run outputs are not)
+skills/*-workspace/
