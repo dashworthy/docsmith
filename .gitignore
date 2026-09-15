@@ -1,9 +1,8 @@
 # Node
 node_modules/
 
-# Downloaded browser libraries (fetched on first run into scripts/vendor/)
-skills/*/scripts/vendor/*
-!skills/*/scripts/vendor/.gitkeep
+# Per-run PDF working directories authored + rendered by the docsmith:builder skill
+.docsmith/
 
 # Generated output / previews
 *.pdf

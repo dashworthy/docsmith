@@ -2,13 +2,13 @@
 
 **A React 18 library for authoring documents as hand-written JSX and rendering them to PDF with [`@react-pdf/renderer`](https://react-pdf.org), styled to vanilla [ShadCN](https://ui.shadcn.com) design tokens via [`react-pdf-tailwind`](https://github.com/Kaldarmaa/react-pdf-tailwind), with light/dark chosen at render time.**
 
-Lives in [`builder/`](../../../builder). End-user usage (authoring a doc, running the CLI) is in [`builder/README.md`](../../../builder/README.md); this doc is the architecture and the invariants a future change must respect.
+Lives in [`skills/builder/`](../../../skills/builder) (the `docsmith:builder` skill owns the package). End-user usage (authoring a doc, running the CLI) is in [`skills/builder/README.md`](../../../skills/builder/README.md); this doc is the architecture and the invariants a future change must respect.
 
 ---
 
 ## 🌟 Overview (plain-language)
 
-You write a document as a React component tree — a `PdfDoc` root wrapping `Cover`, `Section`, `Callout`, `Table`, `CompareCard`, `CodeBlock`, `Mermaid`, and the rest of a fixed **component library**. `@react-pdf/renderer` lays that tree out into a paginated PDF directly — there is no HTML, no browser page-layout, no print step. The PDF is the only output.
+You write a document as a React component tree — a `PdfDoc` root wrapping `Cover`, `Section`, `KeyBox`, `Table`, `CompareCard`, `CodeBlock`, `Mermaid`, and the rest of a fixed **component library**. `@react-pdf/renderer` lays that tree out into a paginated PDF directly — there is no HTML, no browser page-layout, no print step. The PDF is the only output.
 
 Two ideas carry the whole design:
 
@@ -18,7 +18,7 @@ Two ideas carry the whole design:
 Worked example — rendering the configurator doc to a dark PDF:
 
 ```bash
-cd builder
+cd skills/builder
 node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark --out configurator.pdf
 ```
 
@@ -49,7 +49,7 @@ react-pdf renders **synchronously** and embeds only primitives (`View`, `Text`, 
 | Token values | `src/theme/palette.ts` | `SHADCN.light`/`.dark` — the vanilla ShadCN slate tokens as hex, and `ShadcnToken`. The sole source of color. |
 | Styling boundary | `src/pdf/theme.ts` | `shadcnConfig(theme)` → the `react-pdf-tailwind` config; `TwProvider`/`useTw()` carry a theme-bound `tw` via context. Also registers fonts, and holds page geometry (`PAGE`, `CONTENT_HEIGHT`). |
 | Document root | `src/pdf/components/PdfDoc.tsx` | Builds `createTw(shadcnConfig(theme))` once, provides it via `TwProvider`, and sets the `<Page>` ground/ink to the `background`/`foreground` tokens. |
-| Components | `src/pdf/components/*.tsx` | The presentational library (see `builder/README.md` for the full list). Color only through `useTw()`. |
+| Components | `src/pdf/components/*.tsx` | The presentational library (see `skills/builder/README.md` for the full list). Color only through `useTw()`. |
 | Render | `src/pdf/renderPdf.ts` | `renderPdfToFile()` — `@react-pdf/renderer`'s `renderToFile`; react-pdf paginates itself, no browser. |
 | CLI | `src/pdf/cli.ts` | `generatePdf()` imports a `*.pdf.tsx` builder, awaits it (assets pre-computed), renders; `parsePdfArgs` + CLI entry. |
 | Code asset | `src/pdf/highlightCode.ts` | `highlightCode()` → `HighlightedCode` (Shiki tokens + theme bg/fg). Async; run in the doc builder. |
@@ -80,7 +80,7 @@ This is why the dependency is pinned to **`react-pdf-tailwind@2.3.0`** (Tailwind
 
 ### The role palette (semantic gaps ShadCN lacks)
 
-Vanilla ShadCN ships only `default` and `destructive` as semantic colors. Where a component needs more (callout variants, compare-card columns, flow tones, key-box rules), it fills the gap from a fixed role palette: **negative/caution → `destructive`**, **warning → Tailwind `amber`**, **positive/tip → Tailwind `emerald`**, **note/info → `primary`**. These saturated mid-tones read on both the light and dark ground. Because `react-pdf-tailwind` has no `dark:`, components avoid fixed soft tints (e.g. `emerald-50`) that would glare in dark; filled "soft" surfaces use the theme-swapped `muted` token and carry the role in a border, stroke, or title instead (the Callout Alert and KeyBox do this).
+Vanilla ShadCN ships only `default` and `destructive` as semantic colors. Where a component needs more (callout variants, compare-card columns, flow tones, key-box rules), it fills the gap from a fixed role palette: **negative/caution → `destructive`**, **warning → Tailwind `amber`**, **positive/tip → Tailwind `emerald`**, **note/info → `primary`**. These saturated mid-tones read on both the light and dark ground. Because `react-pdf-tailwind` has no `dark:`, components avoid fixed soft tints (e.g. `emerald-50`) that would glare in dark; filled "soft" surfaces use the theme-swapped `muted` token and carry the role in a border, stroke, or title instead (the KeyBox does this).
 
 ### Per-shape mermaid recolor
 
@@ -97,7 +97,7 @@ Vanilla ShadCN ships only `default` and `destructive` as semantic colors. Where 
 ## 🚀 Development & testing
 
 ```bash
-cd builder
+cd skills/builder
 npm install            # one-time; puppeteer downloads its own Chromium (for mermaid)
 npm test               # vitest — component token + render tests
 npm run typecheck      # tsc --noEmit

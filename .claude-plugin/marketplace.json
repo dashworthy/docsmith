@@ -1,6 +1,6 @@
 {
   "name": "docsmith",
-  "description": "docsmith plugin marketplace — turn Markdown documentation into polished PDFs",
+  "description": "docsmith plugin marketplace — author polished PDFs from JSX with a ShadCN-styled React component library",
   "owner": {
     "name": "Andrew Leach",
     "email": "7387639+andyleach@users.noreply.github.com"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "docsmith",
-      "description": "Convert Markdown docs into print-ready PDFs with mermaid diagrams rendered as vector cards, nothing running off the page.",
+      "description": "Author print-ready PDFs from hand-written JSX with a ShadCN-styled React component library (@react-pdf/renderer), light/dark, mermaid diagrams as real vector cards, nothing running off the page.",
       "version": "1.0.0",
       "source": ".",
       "author": {

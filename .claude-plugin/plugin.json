@@ -1,6 +1,6 @@
 {
   "name": "docsmith",
-  "description": "Convert Markdown documentation into polished, print-ready PDFs: mermaid diagrams render as crisp vector cards (coloured title bar, tinted background, caption), tables and code never overflow the page, and there is no browser header/footer. Use when exporting a README or Markdown doc to PDF, or rendering a doc whose mermaid diagrams must appear as real diagrams.",
+  "description": "Author polished, print-ready PDFs from a source document by composing hand-written JSX with the @docsmith/builder component library — styled to vanilla ShadCN tokens (light/dark), rendered via @react-pdf/renderer, with mermaid diagrams as real vector cards and nothing running off the page. Ships the docsmith:builder skill. Use when making a designed/branded PDF, exporting a README or doc to PDF, or rendering a doc whose mermaid diagrams must appear as real diagrams.",
   "version": "1.0.0",
   "author": {
     "name": "Andrew Leach",
@@ -8,13 +8,13 @@
   },
   "license": "MIT",
   "keywords": [
-    "markdown",
     "pdf",
+    "react-pdf",
+    "jsx",
+    "shadcn",
     "mermaid",
     "diagrams",
     "documentation",
-    "export",
-    "puppeteer",
-    "print"
+    "export"
   ]
 }
