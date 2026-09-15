@@ -7,3 +7,6 @@ node_modules/
 # Generated output / previews
 *.pdf
 *.png
+
+# claude plugin eval run output (reports + per-run artifacts)
+evals/results/
