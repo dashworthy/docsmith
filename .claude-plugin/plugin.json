@@ -1,7 +1,7 @@
 {
   "name": "docsmith",
-  "description": "Author polished, print-ready PDFs from a source document by composing hand-written JSX with the @docsmith/builder component library — styled to vanilla ShadCN tokens (light/dark), rendered via @react-pdf/renderer, with mermaid diagrams as real vector cards and nothing running off the page. Ships the docsmith:builder skill. Use when making a designed/branded PDF, exporting a README or doc to PDF, or rendering a doc whose mermaid diagrams must appear as real diagrams.",
-  "version": "1.0.0",
+  "description": "Author polished, print-ready PDFs from a source document by composing hand-written JSX with the @docsmith/builder component library \u2014 styled to vanilla ShadCN tokens (light/dark), rendered via @react-pdf/renderer, with mermaid diagrams as real vector cards and nothing running off the page. Ships the docsmith:builder skill. Use when making a designed/branded PDF, exporting a README or doc to PDF, or rendering a doc whose mermaid diagrams must appear as real diagrams.",
+  "version": "1.1.0",
   "author": {
     "name": "Andrew Leach",
     "email": "7387639+andyleach@users.noreply.github.com"

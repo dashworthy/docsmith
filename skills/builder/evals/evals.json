@@ -1,0 +1,80 @@
+{
+  "skill_name": "builder",
+  "evals": [
+    {
+      "id": 0,
+      "name": "plain-readme",
+      "prompt": "Can you turn the README at evals/fixtures/plain-readme.md into a nice PDF I can share with the team? It's the readme for our parqet CLI tool. No diagrams in it, just headings, an options table, and a couple of code blocks.",
+      "expected_output": "A designed A4 PDF in both light and dark themes rendered from the parqet README: a cover from the title, sectioned prose, the options table styled, and the install/usage code blocks syntax-highlighted. No content runs off the page.",
+      "files": [
+        "evals/fixtures/plain-readme.md"
+      ],
+      "assertions": [
+        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
+        "No content is clipped or runs off the page edge on any page, in either theme.",
+        "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
+        "The options/flags table renders as a real styled table with all its rows and columns intact.",
+        "The install and usage code blocks render as syntax-highlighted code blocks (monospaced, distinct from body text).",
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+      ]
+    },
+    {
+      "id": 1,
+      "name": "mermaid-spec",
+      "prompt": "I need to export our webhook delivery design spec to a polished PDF for the architecture review. The doc is at evals/fixtures/mermaid-spec.md and it has two mermaid diagrams (a flowchart and a sequence diagram) that absolutely need to show up as real diagrams, not code blocks.",
+      "expected_output": "A designed A4 PDF in both themes where both mermaid diagrams render as actual vector diagrams fully inside their cards (nothing clipped), the prose is sectioned, and the retry/backoff content reads cleanly. No overflow in either theme.",
+      "files": [
+        "evals/fixtures/mermaid-spec.md"
+      ],
+      "assertions": [
+        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
+        "No content is clipped or runs off the page edge on any page, in either theme.",
+        "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
+        "The delivery flowchart appears as an actual rendered diagram (nodes and arrows), not as a code/text block and not a blank box.",
+        "The sequence diagram appears as an actual rendered diagram (participants and messages), not as code and not blank.",
+        "Both diagrams sit fully inside their cards/containers with nothing clipped at the card or page edge.",
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "rich-designed",
+      "prompt": "Make this payments migration decision brief look really sharp as a PDF \u2014 it's going to leadership. It's at evals/fixtures/rich-designed.md. There's a recommendation, a comparison of three options, a side-by-side table, some risks, and a phased rollout plan. Use whatever design elements make it look professional.",
+      "expected_output": "A designed A4 PDF in both themes that reaches for the richer components where they fit: e.g. the option comparison as compare/panel cards, the recommendation/risk callouts as key boxes, badges for status, the rollout as a phase sequence, and the side-by-side as a styled table. Looks designed, not just formatted markdown. No overflow.",
+      "files": [
+        "evals/fixtures/rich-designed.md"
+      ],
+      "assertions": [
+        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
+        "No content is clipped or runs off the page edge on any page, in either theme.",
+        "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
+        "The three options (in-house, Stripe, PayPal) are presented as visually distinct cards or panels, not just plain paragraphs.",
+        "The recommendation and/or risks are surfaced as styled callouts/key-boxes, not buried in body text.",
+        "The four-step rollout plan is presented as a phase/step sequence treatment, not a plain numbered list.",
+        "The side-by-side dimensions table renders as a styled comparison table with all five rows.",
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "long-multipage",
+      "prompt": "Please render evals/fixtures/long-guide.md as a PDF. It's our Orders service onboarding guide \u2014 pretty long, lots of sections. I want it to paginate nicely across pages without weird huge gaps or anything getting cut off.",
+      "expected_output": "A multi-page designed A4 PDF in both themes that paginates cleanly: sections flow across pages with no content clipped at page edges and no mostly-empty pages / large gaps. Consistent styling throughout both themes.",
+      "files": [
+        "evals/fixtures/long-guide.md"
+      ],
+      "assertions": [
+        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
+        "No content is clipped or runs off the page edge on any page, in either theme.",
+        "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
+        "The document spans multiple pages (at least 3).",
+        "Pagination is tight: no mostly-empty pages or large vertical gaps between sections.",
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+      ]
+    }
+  ]
+}

@@ -1,15 +1,17 @@
 {
   "name": "@docsmith/builder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "React document builder — renders hand-written JSX docs to PDF via @react-pdf/renderer, styled to vanilla ShadCN tokens through react-pdf-tailwind.",
+  "description": "React document builder \u2014 renders hand-written JSX docs to PDF via @react-pdf/renderer, styled to vanilla ShadCN tokens through react-pdf-tailwind.",
   "exports": {
     ".": "./src/pdf/index.ts"
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "gallery": "node --import tsx src/pdf/gallery.ts --open",
+    "gallery:watch": "node --import tsx src/pdf/gallery.ts --watch --open"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
