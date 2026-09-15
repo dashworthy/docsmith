@@ -4,7 +4,6 @@ import TestRenderer from 'react-test-renderer';
 import { createTw } from 'react-pdf-tailwind';
 import { Cover } from '../../src/pdf/components/Cover.js';
 import { Section } from '../../src/pdf/components/Section.js';
-import { Footer } from '../../src/pdf/components/Footer.js';
 import { P } from '../../src/pdf/components/prose.js';
 import { shadcnConfig, TwProvider } from '../../src/pdf/theme.js';
 
@@ -68,13 +67,3 @@ describe('Section (ShadCN tokens)', () => {
   });
 });
 
-describe('Footer (ShadCN tokens)', () => {
-  const p = paint(<Footer lines={['gen from spec', 'ref x']} />);
-  it('rules off with the ShadCN border and mutes the lines', () => {
-    expect(p.borders.has(tw('border-border').borderColor)).toBe(true);
-    expect(p.colors.has(tw('text-fg-muted').color)).toBe(true);
-  });
-  it('does not leak the old muted-ink hex', () => {
-    expect(p.colors.has('#79828f')).toBe(false); // ink3
-  });
-});

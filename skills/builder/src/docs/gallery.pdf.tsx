@@ -15,7 +15,8 @@ import {
   Cover,
   CoverPage,
   Section,
-  Footer,
+  Subhead,
+  Toc,
   P,
   B,
   Muted,
@@ -87,7 +88,7 @@ export default async (theme: PdfTheme) => {
           tags={['Design system', 'react-pdf', 'light + dark']}
           meta={[
             { label: 'Author', value: 'Andrew Leach' },
-            { label: 'Version', value: '0.3.0' },
+            { label: 'Version', value: '0.4.0' },
             { label: 'Date', value: '2026-09-15' },
             { label: 'Status', value: 'Draft' },
           ]}
@@ -100,6 +101,21 @@ export default async (theme: PdfTheme) => {
         title="Component Gallery"
         lede="Every component in the library, rendered once so you can eyeball the whole set in both themes."
         chips={['light + dark', 'manual test', 'not a real doc']}
+      />
+
+      {/* Structure: Toc — a table of contents with dotted leaders + page numbers. */}
+      <Toc
+        title="Contents"
+        items={[
+          { title: 'Prose & inline', page: 2 },
+          { title: 'Badges, tables, legend', page: 2 },
+          { title: 'Cards & panels', page: 3 },
+          { title: 'KeyBox roles', page: 3, level: 1 },
+          { title: 'Sequencing', page: 4 },
+          { title: 'Metrics', page: 5 },
+          { title: 'Data & spec', page: 6 },
+          { title: 'Editorial', page: 7 },
+        ]}
       />
 
       {/* Prose: P, B, Muted, Eyebrow */}
@@ -195,8 +211,9 @@ export default async (theme: PdfTheme) => {
         <Mermaid diagram={seq} title="Sequence" caption="A minimal request/response exchange." />
       </Section>
 
-      {/* Metrics: StatGrid, Meter */}
+      {/* Metrics: StatGrid, Meter — split by Subhead subsection headings */}
       <Section eyebrow="Metrics" title="Stats & meters" deck="StatGrid (KPI tiles) and Meter (progress bars).">
+        <Subhead title="Headline KPIs" deck="The metric tiles that open a report." />
         <StatGrid
           items={[
             { label: 'Throughput', value: '12.4k', delta: '8.1% WoW', trend: 'up' },
@@ -205,6 +222,7 @@ export default async (theme: PdfTheme) => {
             { label: 'Coverage', value: '91%', delta: '2 pts', trend: 'up' },
           ]}
         />
+        <Subhead title="Utilization" deck="Progress meters for the same run." />
         <Meter
           items={[
             { label: 'Line coverage', value: 91, role: 'positive' },
@@ -220,7 +238,7 @@ export default async (theme: PdfTheme) => {
         <DefList
           title="Build metadata"
           rows={[
-            { term: 'version', value: '0.3.0' },
+            { term: 'version', value: '0.4.0' },
             { term: 'commit', value: '3392cd4 (main)' },
             { term: 'runtime', value: 'Node 20 · react-pdf 4.9' },
             { term: 'themes', value: 'light + dark' },
@@ -266,9 +284,6 @@ export default async (theme: PdfTheme) => {
           items={['ShadCN UI — design tokens and component conventions.', '@react-pdf/renderer — the PDF layout engine used here.']}
         />
       </Section>
-
-      {/* Structure: Footer — shown here only to exercise the component (document provenance, never tool branding). */}
-      <Footer lines={['Component gallery — manual test fixture', 'Provenance lines go here, not tool branding.']} />
     </PdfDoc>
   );
 };

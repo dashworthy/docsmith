@@ -81,11 +81,12 @@ coerced. To produce both themes, run the command twice with `--theme light` and 
 
 ## Component library
 
-- **Structure:** `PdfDoc` (root — owns theme, fonts, page), `Cover` (title band), `Section`
-  (eyebrow + title + deck), `Footer`.
+- **Structure:** `PdfDoc` (root — owns theme, fonts, page, optional full-bleed `cover`), `Cover`
+  (title band) / `CoverPage` (full-page hero), `Section` (eyebrow + title + deck), `Subhead`
+  (subsection heading), `Toc` (table of contents). No page footers — see SKILL.md.
 - **Prose:** `P`, `B`, `Muted`, `Eyebrow`.
 - **Inline & tables:** `Badge`, `Table`, `Legend`.
-- **Cards & panels:** `CompareCard` (header band + two role columns + target footer), `SourceCard`,
+- **Cards & panels:** `CompareCard` (header band + two role columns + target band), `SourceCard`,
   `PanelGrid` / `Panel`, `KeyBox`.
 - **Sequencing:** `Phases`, `Flow` (lanes + step chips).
 - **Lists:** `QList` (numbered questions), `NonGoals` (struck items).
