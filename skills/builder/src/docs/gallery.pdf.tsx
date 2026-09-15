@@ -88,7 +88,7 @@ export default async (theme: PdfTheme) => {
           tags={['Design system', 'react-pdf', 'light + dark']}
           meta={[
             { label: 'Author', value: 'Andrew Leach' },
-            { label: 'Version', value: '0.3.0' },
+            { label: 'Version', value: '0.4.0' },
             { label: 'Date', value: '2026-09-15' },
             { label: 'Status', value: 'Draft' },
           ]}
@@ -238,7 +238,7 @@ export default async (theme: PdfTheme) => {
         <DefList
           title="Build metadata"
           rows={[
-            { term: 'version', value: '0.3.0' },
+            { term: 'version', value: '0.4.0' },
             { term: 'commit', value: '3392cd4 (main)' },
             { term: 'runtime', value: 'Node 20 · react-pdf 4.9' },
             { term: 'themes', value: 'light + dark' },
