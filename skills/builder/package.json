@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "React document builder — renders hand-written JSX docs to PDF via @react-pdf/renderer, styled to vanilla ShadCN tokens through react-pdf-tailwind.",
+  "exports": {
+    ".": "./src/pdf/index.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

@@ -3,3 +3,6 @@ dist
 *.html
 *.pdf
 *.png
+
+# Transient doc modules staged by the render wrapper (src/pdf/render.ts)
+src/docs/__render_*.pdf.tsx
