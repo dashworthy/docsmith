@@ -1,24 +1,24 @@
 # docsmith
 
-A Claude Code plugin (and single-plugin marketplace) that turns Markdown documentation
-into **polished, print-ready PDFs** — a designed visual system with web fonts, a cover page,
-callouts, badges and styled tables, and `mermaid` diagrams rendered as crisp vector "cards"
-that never run off the page.
+A Claude Code plugin (and single-plugin marketplace) that turns a source document into a
+**polished, print-ready PDF** — you author the document as hand-written JSX from a fixed component
+library, and it renders to PDF with [`@react-pdf/renderer`](https://react-pdf.org), styled to
+vanilla [ShadCN](https://ui.shadcn.com) design tokens, with **light and dark chosen at render time**
+and `mermaid` diagrams rendered as real vector cards that never run off the page.
 
-It ships one skill, **`rendering-markdown-to-pdf`**, plus the Node script that does the work.
+It ships one skill, **`docsmith:builder`**, which owns the React document builder
+([`@docsmith/builder`](skills/builder/README.md)) and drives the authoring workflow.
 
 ## What you get
 
-- **A designed theme** (default) — design tokens, IBM Plex + Familjen Grotesk fonts, an
-  artifact-style **doc title hero** from YAML frontmatter (accent rule, kicker, big title,
-  label/value metadata), **section headers** (accent kicker + title + deck), GitHub-style
-  **admonition callouts**, inline **badges/pills**, and accent-header **tables**.
-- **Real diagrams, not code** — every ```mermaid fence renders as selectable vector art, in a
-  titled card with a coloured header (`blue` default; `green` / `slate` / `purple`), a tinted
-  background, and an optional caption.
-- **Nothing off the page** — wide diagrams scale to fit; tables and code wrap; pages fill
-  instead of leaving big gaps.
-- **Clean output** — A4, no date/URL/page-number band.
+- **A designed system** — a cover band from the doc's title, sectioned prose, ShadCN-styled
+  admonition callouts (`KeyBox`), inline badges, tables, comparison / panel / key-box cards, phase
+  and flow sequences, and syntax-highlighted code — all re-themed from one token set.
+- **Real diagrams, not code** — every mermaid chart renders as selectable vector art in a titled
+  card with a caption. Chrome is used **only** to rasterize the diagram image, never for page layout.
+- **Light and dark** — the same authored document renders once per theme; nothing in the PDF toggles.
+- **Nothing off the page** — `@react-pdf/renderer` paginates the primitive tree itself, no browser
+  print step.
 
 ## Install
 
@@ -31,60 +31,65 @@ In Claude Code:
 
 ## Use
 
-Ask Claude to "make a designed PDF of this README" (or any `.md`), and the skill drives the
-script. To run it directly:
+Ask Claude to "make a designed PDF of this README" (or any document), and the `docsmith:builder`
+skill drives it: it scaffolds a per-render working directory, authors the document as a
+`*.pdf.tsx` module from the component library, and renders both themes.
+
+To drive the builder directly:
 
 ```bash
-# one-time, in the skill's script folder
-npm install --prefix skills/rendering-markdown-to-pdf/scripts
+# one-time: install the builder package's deps (subshell keeps cwd at the project root)
+(cd skills/builder && npm install)
 
-# convert (designed/dark by default)
-node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md
-node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md out.pdf --mode light --accent green
-node skills/rendering-markdown-to-pdf/scripts/md2pdf.mjs README.md out.pdf --design plain
+# from the project root: author .docsmith/<run>/pdf.tsx (default-exports (theme) => <PdfDoc …>),
+# then render both themes into that dir:
+node --import tsx skills/builder/src/pdf/render.ts .docsmith/<run>
+# → .docsmith/<run>/pdf-light.pdf  and  .docsmith/<run>/pdf-dark.pdf
 ```
 
-The designed theme has a **dark** and a **light** mode (both full-bleed), a component
-library modeled on a real Claude design artifact — callouts, badges, reference cards,
-comparison cards, phase lists, flow lanes, panels, key boxes, legend, custom lists — and a
-**decision matrix** of when to use each in
-[`references/ui-elements.md`](skills/rendering-markdown-to-pdf/references/ui-elements.md).
-Any 2-column table auto-renders as reference cards.
+A document imports the component library from the bare specifier `@docsmith/builder`:
+
+```tsx
+import { PdfDoc, Cover, Section, P, KeyBox, CodeBlock, Mermaid, Footer,
+         highlightCode, rasterizeMermaid, type PdfTheme } from '@docsmith/builder';
+
+export default async (theme: PdfTheme) => {
+  const setup = await highlightCode('npm install', 'bash', theme);       // async assets
+  const flow  = await rasterizeMermaid('flowchart LR\n A --> B', theme);  // pre-computed up front
+  return (
+    <PdfDoc theme={theme} title="My Document">
+      <Cover eyebrow="Spec · 2026-09-15" title="My Document" lede="One line under the title." />
+      <Section eyebrow="Overview" title="What this is">
+        <P>Body copy.</P>
+        <KeyBox role="positive" title="Tip">A tip in the positive role.</KeyBox>
+        <CodeBlock code={setup} />
+        <Mermaid diagram={flow} title="Flow" caption="A to B." />
+      </Section>
+      <Footer lines={['Generated by @docsmith/builder']} />
+    </PdfDoc>
+  );
+};
+```
 
 ### Requirements
+
 - **Node ≥ 18**
-- **A local Chrome / Chromium / Edge** (auto-detected; or set `CHROME_PATH`).
-  `puppeteer-core` ships no browser of its own, so install is small.
-- **poppler** (`brew install poppler`) is optional — only for rasterizing pages to preview
-  the result while iterating.
+- **A Chromium-family browser** — only if a document uses `Mermaid` (auto-detected, or set
+  `CHROME_PATH` / `PUPPETEER_EXECUTABLE_PATH`). A doc with no diagrams needs no browser.
+- **poppler** (`brew install poppler`) is optional — only for rasterizing pages to preview the
+  result while iterating.
 
-The `marked`/`mermaid` libraries download themselves into `scripts/vendor/` on first run; the
-designed theme also fetches its fonts from Google Fonts at render time.
+Fonts (Inter + IBM Plex Mono) are bundled and embedded in the PDF — no network needed to render.
 
-## Authoring for the designed theme
+## Learn more
 
-Plain-Markdown-compatible conventions, all optional:
-
-```yaml
----
-title: My Guide
-subtitle: One line under the title.
-eyebrow: Engineering spec · 2026-09-10
-author: Andrew Leach
-status: Approved
-version: 1.0
-chips: [Extra · one, Another]
----
-```
-
-- **Callouts:** `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]`
-- **Badges:** `[[New]]`, `[[accent:New]]`, `[[positive:Stable]]`, `[[warning:Beta]]`, `[[negative:Old]]`
-- **Eyebrow above a heading:** `<!-- eyebrow: The headline -->`
-- **Diagram card title/caption:** `<!-- figure: Title | Caption -->` before a ```mermaid fence
-
-See [`skills/rendering-markdown-to-pdf/SKILL.md`](skills/rendering-markdown-to-pdf/SKILL.md)
-for the full workflow and [the troubleshooting notes](skills/rendering-markdown-to-pdf/references/troubleshooting.md)
-for design rationale and gotchas.
+- The skill workflow, component catalog, and verification protocol:
+  [`skills/builder/SKILL.md`](skills/builder/SKILL.md) and its
+  [`references/`](skills/builder/references/).
+- The package reference (component list, styling boundary, CLI):
+  [`skills/builder/README.md`](skills/builder/README.md).
+- The architecture and the invariants a change must respect:
+  [`docs/document-rendering/react-doc-builder/README.md`](docs/document-rendering/react-doc-builder/README.md).
 
 ## License
 

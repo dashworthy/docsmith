@@ -124,6 +124,14 @@ export const HEADLINE_MIN_PRESENCE = CONTENT_HEIGHT * 0.4;
 
 export type PdfTheme = 'light' | 'dark';
 
+/** Validate a raw `--theme` value, rejecting anything but `light`/`dark` rather than coercing it. */
+export function parseTheme(value: string): PdfTheme {
+  if (value !== 'light' && value !== 'dark') {
+    throw new Error(`--theme must be "light" or "dark" (got "${value}")`);
+  }
+  return value;
+}
+
 // ── ShadCN styling boundary (react-pdf-tailwind) ─────────────────────────────
 // Components reach styling through one primitive: `useTw()`, a theme-bound class→style
 // resolver provided once by `PdfDoc`. They write ShadCN semantic Tailwind classes
