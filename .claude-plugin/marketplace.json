@@ -9,7 +9,7 @@
     {
       "name": "docsmith",
       "description": "Author print-ready PDFs from hand-written JSX with a ShadCN-styled React component library (@react-pdf/renderer), light/dark, mermaid diagrams as real vector cards, nothing running off the page.",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "source": ".",
       "author": {
         "name": "Andrew Leach",
