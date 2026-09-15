@@ -41,7 +41,7 @@ so the whole document re-themes from one token set.
 ```tsx
 // src/docs/mydoc.pdf.tsx
 import {
-  PdfDoc, Cover, Section, P, Callout, CodeBlock, Mermaid, Footer,
+  PdfDoc, Cover, Section, P, KeyBox, CodeBlock, Mermaid, Footer,
   highlightCode, rasterizeMermaid, type PdfTheme,
 } from '../pdf/index.js';
 
@@ -56,7 +56,7 @@ export default async (theme: PdfTheme) => {
              chips={['v1', 'Approved']} />
       <Section eyebrow="Overview" title="What this is" deck="A short deck under the title.">
         <P>Body copy…</P>
-        <Callout role="tip">A tip in the positive role.</Callout>
+        <KeyBox role="positive" title="Tip">A tip in the positive role.</KeyBox>
         <CodeBlock code={snippet} />
         <Mermaid diagram={flow} title="Flow" caption="Start to store." />
       </Section>
@@ -85,8 +85,7 @@ coerced. To produce both themes, run the command twice with `--theme light` and 
 - **Structure:** `PdfDoc` (root — owns theme, fonts, page), `Cover` (title band), `Section`
   (eyebrow + title + deck), `Footer`.
 - **Prose:** `P`, `B`, `Muted`, `Eyebrow`.
-- **Inline & tables:** `Callout` (note/tip/important/warning/caution — a ShadCN Alert), `Badge`,
-  `Table`, `Legend`.
+- **Inline & tables:** `Badge`, `Table`, `Legend`.
 - **Cards & panels:** `CompareCard` (header band + two role columns + target footer), `SourceCard`,
   `PanelGrid` / `Panel`, `KeyBox`.
 - **Sequencing:** `Phases`, `Flow` (lanes + step chips).
