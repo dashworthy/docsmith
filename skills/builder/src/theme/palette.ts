@@ -91,20 +91,18 @@ export const SHADCN: { light: Record<ShadcnToken, string>; dark: Record<ShadcnTo
 export type Role = 'brand' | 'pos' | 'warn' | 'neg';
 
 export const ROLE: {
-  light: Record<Role, { ink: string; soft: string; fill?: string }>;
-  dark: Record<Role, { ink: string; soft: string; fill?: string }>;
+  light: Record<Role, { ink: string; soft: string }>;
+  dark: Record<Role, { ink: string; soft: string }>;
 } = {
   light: {
-    // A pale blue panel fill (soft, -50) with a soft blue-100 footer `fill` — a gentle step above the
-    // pale panels so the footer still reads as its own band — and a medium blue ink (-600) for the
-    // left bar / title.
-    brand: { ink: '#2563eb', soft: '#eff6ff', fill: '#dbeafe' }, // blue-600 / blue-50 / blue-100
+    // A pale blue panel fill (soft, -50) and a medium blue ink (-600) for the left bar / title.
+    brand: { ink: '#2563eb', soft: '#eff6ff' }, // blue-600 / blue-50
     pos: { ink: '#059669', soft: '#d1fae5' }, // emerald-600 / emerald-100
     warn: { ink: '#d97706', soft: '#fef3c7' }, // amber-600 / amber-100
     neg: { ink: '#dc2626', soft: '#fee2e2' }, // red-600 / red-100
   },
   dark: {
-    brand: { ink: '#60a5fa', soft: '#172554', fill: '#172554' }, // blue-400 / blue-950 / blue-950 (footer = panels)
+    brand: { ink: '#60a5fa', soft: '#172554' }, // blue-400 / blue-950
     pos: { ink: '#34d399', soft: '#022c22' }, // emerald-400 / emerald-950
     warn: { ink: '#fbbf24', soft: '#451a03' }, // amber-400 / amber-950
     neg: { ink: '#f87171', soft: '#450a0a' }, // red-400 / red-950

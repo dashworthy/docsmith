@@ -54,10 +54,10 @@ describe('Mermaid (ShadCN tokens)', () => {
   const p = paint(
     <Mermaid diagram={{ dataUri: 'data:image/png;base64,AAAA', aspect: 1.5 }} title="Flow" caption="how it flows" />,
   );
-  it('bands in muted header + shared mono blue title, brand-fill caption footer', () => {
+  it('bands in muted header + shared mono blue title, brand-soft caption footer', () => {
     expect(p.bgs.has(tw('bg-muted').backgroundColor)).toBe(true); // header band
     expect(p.bgs.has(tw('bg-card').backgroundColor)).toBe(true); // image body
-    expect(p.bgs.has(tw('bg-brand-fill').backgroundColor)).toBe(true); // caption footer (unified fill)
+    expect(p.bgs.has(tw('bg-brand-soft').backgroundColor)).toBe(true); // caption footer (unified fill)
     expect(p.borders.has(tw('border-border').borderColor)).toBe(true);
     expect(p.colors.has(tw('text-brand-ink').color)).toBe(true); // shared Card mono header title
     expect(p.colors.has(tw('text-fg-muted').color)).toBe(true); // caption text

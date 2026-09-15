@@ -13,18 +13,25 @@ import { FONT, PAGE, TYPE, TwProvider, registerFonts, shadcnConfig, type PdfThem
 export function PdfDoc({
   theme,
   title,
+  cover,
   children,
 }: {
   theme: PdfTheme;
   title: string;
+  /**
+   * An optional full-bleed cover rendered as its own dedicated first `<Page>` — no page inset, so a
+   * `CoverPage`'s tinted hero bleeds to the paper edge. Content `children` start on the page after.
+   */
+  cover?: ReactNode;
   children: ReactNode;
 }): JSX.Element {
   registerFonts();
   const tw = useMemo(() => createTw(shadcnConfig(theme)), [theme]);
+  const ground = tw('bg-background').backgroundColor;
   const styles = StyleSheet.create({
     page: {
       // The page ground + base ink are the vanilla ShadCN `background` / `foreground` tokens.
-      backgroundColor: tw('bg-background').backgroundColor,
+      backgroundColor: ground,
       color: tw('text-foreground').color,
       fontFamily: FONT.sans,
       fontSize: TYPE.body,
@@ -32,10 +39,24 @@ export function PdfDoc({
       paddingVertical: PAGE.paddingV,
       paddingHorizontal: PAGE.paddingH,
     },
+    // The cover page carries no inset — the cover fills it corner to corner and paints its own ground.
+    coverPage: {
+      backgroundColor: ground,
+      color: tw('text-foreground').color,
+      fontFamily: FONT.sans,
+      fontSize: TYPE.body,
+      lineHeight: 1.5,
+      padding: 0,
+    },
   });
   return (
     <TwProvider value={tw}>
       <Document title={title}>
+        {cover && (
+          <Page size="A4" style={styles.coverPage}>
+            {cover}
+          </Page>
+        )}
         <Page size="A4" style={styles.page}>
           {children}
         </Page>

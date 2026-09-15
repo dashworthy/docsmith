@@ -9,9 +9,11 @@
 // Like any pdf.tsx it default-exports an async builder (theme) => <PdfDoc …>; the async assets
 // (Shiki code, rasterized mermaid) are awaited up front because react-pdf renders synchronously.
 
+import { View } from '@react-pdf/renderer';
 import {
   PdfDoc,
   Cover,
+  CoverPage,
   Section,
   Footer,
   P,
@@ -32,6 +34,17 @@ import {
   NonGoals,
   CodeBlock,
   Mermaid,
+  StatGrid,
+  Meter,
+  DefList,
+  Timeline,
+  Matrix,
+  Quote,
+  Checklist,
+  Byline,
+  Banner,
+  References,
+  Ref,
   highlightCode,
   rasterizeMermaid,
   type PdfTheme,
@@ -63,8 +76,25 @@ export default async (theme: PdfTheme) => {
   ]);
 
   return (
-    <PdfDoc theme={theme} title="Component Gallery">
-      {/* Structure: Cover */}
+    <PdfDoc
+      theme={theme}
+      title="Component Gallery"
+      cover={
+        <CoverPage
+          eyebrow="@docsmith/builder · title page"
+          title="The Elaborate Cover"
+          subtitle="A full-bleed title page — a tinted hero with an accent bar, an oversized display title, tag chips, and a divided metadata strip pinned to the foot."
+          tags={['Design system', 'react-pdf', 'light + dark']}
+          meta={[
+            { label: 'Author', value: 'Andrew Leach' },
+            { label: 'Version', value: '0.3.0' },
+            { label: 'Date', value: '2026-09-15' },
+            { label: 'Status', value: 'Draft' },
+          ]}
+        />
+      }
+    >
+      {/* Structure: Cover (simple, inline). The elaborate CoverPage is the full-bleed `cover` above. */}
       <Cover
         eyebrow="@docsmith/builder · gallery"
         title="Component Gallery"
@@ -83,11 +113,14 @@ export default async (theme: PdfTheme) => {
 
       {/* Inline & tables: Badge (all roles), Table, Legend */}
       <Section eyebrow="Inline & tables" title="Badges, tables, legend" deck="Badge (every role), Table, Legend.">
-        <P>
-          Badges: <Badge>neutral</Badge> <Badge role="accent">accent</Badge>{' '}
-          <Badge role="positive">positive</Badge> <Badge role="negative">negative</Badge>{' '}
+        <P>Badges:</P>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 2 }}>
+          <Badge>neutral</Badge>
+          <Badge role="accent">accent</Badge>
+          <Badge role="positive">positive</Badge>
+          <Badge role="negative">negative</Badge>
           <Badge role="warning">warning</Badge>
-        </P>
+        </View>
         <Table
           head={['Flag', 'Default', 'Description']}
           rows={[
@@ -160,6 +193,78 @@ export default async (theme: PdfTheme) => {
         <CodeBlock code={code} />
         <Mermaid diagram={flow} title="Flowchart" caption="A request path, cached or fetched." />
         <Mermaid diagram={seq} title="Sequence" caption="A minimal request/response exchange." />
+      </Section>
+
+      {/* Metrics: StatGrid, Meter */}
+      <Section eyebrow="Metrics" title="Stats & meters" deck="StatGrid (KPI tiles) and Meter (progress bars).">
+        <StatGrid
+          items={[
+            { label: 'Throughput', value: '12.4k', delta: '8.1% WoW', trend: 'up' },
+            { label: 'p95 latency', value: '82ms', delta: '5ms', trend: 'down' },
+            { label: 'Error rate', value: '0.3%', delta: 'flat', trend: 'flat' },
+            { label: 'Coverage', value: '91%', delta: '2 pts', trend: 'up' },
+          ]}
+        />
+        <Meter
+          items={[
+            { label: 'Line coverage', value: 91, role: 'positive' },
+            { label: 'Budget spent', value: 68, role: 'accent', display: '$68k / $100k' },
+            { label: 'Error budget burn', value: 82, role: 'warning' },
+            { label: 'Disk used', value: 96, role: 'negative' },
+          ]}
+        />
+      </Section>
+
+      {/* Data: DefList, Matrix, Timeline */}
+      <Section eyebrow="Data & spec" title="Definitions, matrix, timeline" deck="DefList, Matrix (feature grid), Timeline.">
+        <DefList
+          title="Build metadata"
+          rows={[
+            { term: 'version', value: '0.3.0' },
+            { term: 'commit', value: '3392cd4 (main)' },
+            { term: 'runtime', value: 'Node 20 · react-pdf 4.9' },
+            { term: 'themes', value: 'light + dark' },
+          ]}
+        />
+        <Matrix
+          columns={['Capability', 'Free', 'Pro', 'Team']}
+          highlight={2}
+          rows={[
+            ['PDF export', true, true, true],
+            ['Dark theme', false, true, true],
+            ['Mermaid vectors', false, true, true],
+            ['Seats', '1', '5', 'Unlimited'],
+          ]}
+        />
+        <Timeline
+          items={[
+            { time: 'Week 1', title: 'Shadow', body: 'Mirror every payout in test mode.', role: 'neutral' },
+            { time: 'Week 2', title: 'Canary', body: 'Route 5% of real traffic.', role: 'accent' },
+            { time: 'Week 3', title: 'Ramp', body: 'Expand to 100% while watching.', role: 'positive' },
+          ]}
+        />
+      </Section>
+
+      {/* Editorial: Quote, Checklist, Banner, Byline, References */}
+      <Section eyebrow="Editorial" title="Quote, checklist, banner" deck="Quote, Checklist, Banner, Byline, References.">
+        <Quote by="Design principle">Complexity that cannot be hidden should at least be labeled the same way everywhere.</Quote>
+        <Checklist
+          items={[
+            { text: 'Tokens wired to shadcn palette', done: true },
+            { text: 'Both themes verified', done: true },
+            { text: 'Ship the release notes', done: false },
+          ]}
+        />
+        <Banner role="warning" title="Heads up">
+          The dark-theme soft fills are role tokens — never hardcode a light tint.
+        </Banner>
+        <Byline name="Andrew Leach" role="Maintainer" date="2026-09-15" />
+        <P>
+          The builder mirrors ShadCN tokens<Ref n={1} /> and renders through react-pdf<Ref n={2} />.
+        </P>
+        <References
+          items={['ShadCN UI — design tokens and component conventions.', '@react-pdf/renderer — the PDF layout engine used here.']}
+        />
       </Section>
 
       {/* Structure: Footer — shown here only to exercise the component (document provenance, never tool branding). */}

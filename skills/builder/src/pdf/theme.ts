@@ -66,6 +66,10 @@ export const TYPE = {
   phaseNum: 15,
   /** Phase title. */
   phaseTitle: 9.5,
+  /** Stat/KPI tile big value (display numeral). */
+  statValue: 20,
+  /** Pull-quote display text. */
+  quote: 13,
 } as const;
 
 let registered = false;
@@ -187,9 +191,7 @@ function shadcnColors(theme: PdfTheme): Record<string, string | Record<string, s
     },
     // Semantic accent roles (Tailwind blue/emerald/amber/red, theme-swapped) as object colors so
     // `text-brand-ink`, `bg-brand-soft`, `border-brand-ink`, … resolve. See ROLE in palette.ts.
-    // brand also carries `fill` (the footer band tint — a soft blue-100 in light, blue-950 in dark)
-    // → `bg-brand-fill` for the card footer band. See ROLE in palette.ts for why the two differ.
-    brand: { ink: r.brand.ink, soft: r.brand.soft, ...(r.brand.fill ? { fill: r.brand.fill } : {}) },
+    brand: { ink: r.brand.ink, soft: r.brand.soft },
     pos: { ink: r.pos.ink, soft: r.pos.soft },
     warn: { ink: r.warn.ink, soft: r.warn.soft },
     neg: { ink: r.neg.ink, soft: r.neg.soft },
