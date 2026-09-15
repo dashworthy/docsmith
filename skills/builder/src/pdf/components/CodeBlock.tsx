@@ -1,5 +1,5 @@
 import { Text, View } from '@react-pdf/renderer';
-import { FONT } from '../theme.js';
+import { FONT, TYPE } from '../theme.js';
 import { Card, RADIUS } from './surface.js';
 import type { HighlightedCode } from '../highlightCode.js';
 
@@ -43,7 +43,7 @@ export function CodeBlock({ code }: { code: HighlightedCode }): JSX.Element {
     <Card radius={RADIUS.md} style={{ marginBottom: 10 }}>
       <View style={{ backgroundColor: code.bg, padding: 12 }}>
         {code.lines.map((line, i) => (
-          <Text key={i} style={{ fontFamily: FONT.mono, fontSize: 8.5, lineHeight: 1.5, color: code.fg }}>
+          <Text key={i} style={{ fontFamily: FONT.mono, fontSize: TYPE.code, lineHeight: 1.45, color: code.fg }}>
             {line.length > 0 ? (
               preserveIndent(line).map((tok, j) => (
                 <Text key={j} style={{ color: tok.color }}>

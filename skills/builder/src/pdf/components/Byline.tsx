@@ -23,7 +23,7 @@ function autoInitials(name: string): string {
 
 /**
  * An author byline — a round brand-soft avatar chip with initials, a semibold name, an optional
- * muted role line, and an optional right-aligned date kicker. For cover blocks and footers. The
+ * muted role line, and an optional right-aligned date kicker. For cover blocks and author credits. The
  * chip uses the brand soft/ink pair so it reads as a quiet accent, not a loud fill, in either theme.
  */
 export function Byline({ name, role, initials, date }: BylineProps): JSX.Element {

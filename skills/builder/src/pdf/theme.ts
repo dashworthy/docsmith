@@ -42,6 +42,10 @@ export const FONT = {
 export const TYPE = {
   /** Section headline. */
   sectionTitle: 15,
+  /** Subsection heading (h3) inside a section body. */
+  subhead: 11.5,
+  /** Mono code-block body — compact so listings take less vertical room. */
+  code: 7.5,
   /** Section deck / secondary line under a headline. */
   deck: 8.5,
   /** Base page body (the `Page` default). */
