@@ -38,7 +38,7 @@ Two rules cut across everything:
 
 | Component | Props | Use it for |
 |---|---|---|
-| `Badge` | `{ role?: 'neutral'\|'accent'\|'positive'\|'negative'\|'warning'; children }` | An inline pill inside prose — a status/label (`12 at a time`, `Beta`). Default `neutral`. |
+| `Badge` | `{ role?: 'neutral'\|'accent'\|'positive'\|'negative'\|'warning'; children }` | A block-level status/label pill (`12 at a time`, `Beta`), for a badge row or beside a heading — **not** inside a `<P>` (react-pdf drops its fill/box-model mid-sentence, so it renders as invisible text). For emphasis inside prose use `<B>`. Default `neutral`. |
 | `Table` | `{ head: string[]; rows: string[][] }` | Genuinely tabular data — a class→responsibility grid, a field list. Both columns short-ish. |
 | `Legend` | `{ items: { role: 'accent'\|'positive'\|'negative'\|'warning'\|'neutral'; label: string }[] }` | A key explaining what the role tints mean, when a doc leans on them heavily. |
 

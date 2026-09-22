@@ -10,7 +10,7 @@
         "evals/fixtures/plain-readme.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
@@ -28,7 +28,7 @@
         "evals/fixtures/mermaid-spec.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
@@ -47,7 +47,7 @@
         "evals/fixtures/rich-designed.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
@@ -67,7 +67,7 @@
         "evals/fixtures/long-guide.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
