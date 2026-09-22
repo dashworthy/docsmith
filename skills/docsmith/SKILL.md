@@ -92,7 +92,8 @@ cover (`CoverPage`'s `meta` strip or `Cover`'s chips), not a footer.
 
 **Which component for what** — the full catalog, each with its props and a decision matrix of when
 to reach for it, is in **[references/authoring.md](references/authoring.md)**. The fixture
-`src/docs/configurator.pdf.tsx` exercises every component and is worth skimming as a worked example.
+`src/docs/gallery.pdf.tsx` exercises every component and is worth skimming as a worked example
+(render it with `npm run gallery`).
 
 ### 3. Render both themes
 

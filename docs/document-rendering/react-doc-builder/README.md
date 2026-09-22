@@ -15,11 +15,11 @@ Two ideas carry the whole design:
 - **Components reach color through one styling boundary, and it speaks vanilla ShadCN.** Every component calls `useTw()` — a theme-bound class→style resolver — and writes ShadCN semantic Tailwind classes (`bg-card`, `text-foreground`, `border-border`, `rounded-lg`, …). `react-pdf-tailwind`'s `createTw` turns those into the pt-based style objects react-pdf wants. The exact token hexes live once in `theme/palette.ts` as the `SHADCN` map (the canonical slate default, resolved HSL→hex); **`SHADCN` is the sole source of color**. Retuning toward a custom look happens there and nowhere else.
 - **Light/dark is a per-render token selection, not a CSS toggle.** react-pdf has no CSS variables and `react-pdf-tailwind` has no `dark:` variant, so a document is rendered twice — once per theme — and `PdfDoc` builds the resolver from `SHADCN.light` or `SHADCN.dark` for that render. Nothing in the PDF toggles; the theme is baked in.
 
-Worked example — rendering the configurator doc to a dark PDF:
+Worked example — rendering the component gallery to a dark PDF:
 
 ```bash
 cd skills/docsmith
-node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark --out configurator.pdf
+node --import tsx src/pdf/cli.ts src/docs/gallery.pdf.tsx --theme dark --out gallery.pdf
 ```
 
 A PDF doc module default-exports a builder `(theme) => <PdfDoc …>`, so one authored document renders in either theme. The CLI imports the module, awaits the builder (it may be async — see the asset pre-pass below), and hands the element to `renderToFile`.
@@ -115,9 +115,9 @@ npm run typecheck      # tsc --noEmit
 Render and eyeball both themes (rasterize the PDFs to inspect):
 
 ```bash
-node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme light --out /tmp/c-lt.pdf
-node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark  --out /tmp/c-dk.pdf
+node --import tsx src/pdf/cli.ts src/docs/gallery.pdf.tsx --theme light --out /tmp/c-lt.pdf
+node --import tsx src/pdf/cli.ts src/docs/gallery.pdf.tsx --theme dark  --out /tmp/c-dk.pdf
 pdftoppm -png -r 110 /tmp/c-lt.pdf /tmp/lt   # needs poppler
 ```
 
-`src/docs/configurator.pdf.tsx` exercises every component (including four mermaid diagrams) and is the fixture the render checks run against.
+`src/docs/gallery.pdf.tsx` exercises every component (including mermaid diagrams) and is the fixture the render checks run against.
