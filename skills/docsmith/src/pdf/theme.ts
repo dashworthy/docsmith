@@ -144,8 +144,7 @@ export function parseTheme(value: string): PdfTheme {
 // Components reach styling through one primitive: `useTw()`, a theme-bound class→style
 // resolver provided once by `PdfDoc`. They write ShadCN semantic Tailwind classes
 // (`bg-card`, `text-muted-foreground`, `border`, `rounded-lg`, …) and never see the engine,
-// the points units, or which theme is active — all hidden here. See
-// `.engineering/<run>/signal/interface-styling-theme.md` for the shape's rationale.
+// the points units, or which theme is active — all hidden here.
 
 /** react-pdf-tailwind config for a theme — the thing `createTw` consumes. */
 type TwConfig = Parameters<typeof createTw>[0];

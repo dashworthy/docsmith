@@ -1,5 +1,5 @@
 {
-  "skill_name": "builder",
+  "skill_name": "docsmith",
   "evals": [
     {
       "id": 0,
@@ -10,13 +10,13 @@
         "evals/fixtures/plain-readme.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
         "The options/flags table renders as a real styled table with all its rows and columns intact.",
         "The install and usage code blocks render as syntax-highlighted code blocks (monospaced, distinct from body text).",
-        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/docsmith' with no relative imports or local asset files."
       ]
     },
     {
@@ -28,14 +28,14 @@
         "evals/fixtures/mermaid-spec.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
         "The delivery flowchart appears as an actual rendered diagram (nodes and arrows), not as a code/text block and not a blank box.",
         "The sequence diagram appears as an actual rendered diagram (participants and messages), not as code and not blank.",
         "Both diagrams sit fully inside their cards/containers with nothing clipped at the card or page edge.",
-        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/docsmith' with no relative imports or local asset files."
       ]
     },
     {
@@ -47,7 +47,7 @@
         "evals/fixtures/rich-designed.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
@@ -55,7 +55,7 @@
         "The recommendation and/or risks are surfaced as styled callouts/key-boxes, not buried in body text.",
         "The four-step rollout plan is presented as a phase/step sequence treatment, not a plain numbered list.",
         "The side-by-side dimensions table renders as a styled comparison table with all five rows.",
-        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/docsmith' with no relative imports or local asset files."
       ]
     },
     {
@@ -67,13 +67,13 @@
         "evals/fixtures/long-guide.md"
       ],
       "assertions": [
-        "Both a light and a dark PDF were produced (two distinct theme variants).",
+        "A light-theme PDF is produced by default (dark is opt-in — produced only when the reader asks for one).",
         "Each PDF is a valid, non-empty PDF that opens and has at least one page.",
         "No content is clipped or runs off the page edge on any page, in either theme.",
         "Output looks intentionally designed (cover/title treatment, clear section hierarchy, consistent styling) rather than a raw markdown dump.",
         "The document spans multiple pages (at least 3).",
         "Pagination is tight: no mostly-empty pages or large vertical gaps between sections.",
-        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/builder' with no relative imports or local asset files."
+        "[with_skill only] The authored pdf.tsx imports only from '@docsmith/docsmith' with no relative imports or local asset files."
       ]
     }
   ]

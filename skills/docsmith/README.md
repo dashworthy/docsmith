@@ -1,4 +1,4 @@
-# @docsmith/builder
+# @docsmith/docsmith
 
 A React document builder. You author a document as hand-written JSX using a library of predesigned
 components, and the builder renders it to **PDF** with [`@react-pdf/renderer`](https://react-pdf.org).
@@ -24,46 +24,22 @@ For the architecture and the invariants a change must respect, see the feature d
 ## Setup
 
 ```bash
-cd skills/builder
+cd skills/docsmith
 npm install
 ```
 
 ## Authoring a document
 
-A PDF doc module (`*.pdf.tsx`) **default-exports a builder** `(theme) => <PdfDoc …>`, so one
-authored document renders in either theme. The builder may be **async**: because react-pdf renders
-synchronously, anything async — Shiki code highlighting (`highlightCode`) and mermaid rasterization
-(`rasterizeMermaid`) — is awaited up front and the result passed to the component as data.
+A PDF doc module (`*.pdf.tsx`) **default-exports a builder** `(theme) => <PdfDoc …>`, so one authored
+document renders in either theme. Because react-pdf renders synchronously, async assets — Shiki code
+highlighting (`highlightCode`) and mermaid rasterization (`rasterizeMermaid`) — are awaited up front
+and passed to the components as data. Components reach color only through the `useTw()` boundary
+(ShadCN classes), never raw hex, so the whole document re-themes from one token set.
 
-Components reach color only through the `useTw()` styling boundary (ShadCN classes), never raw hex,
-so the whole document re-themes from one token set.
-
-```tsx
-// src/docs/mydoc.pdf.tsx
-import {
-  PdfDoc, Cover, Section, P, KeyBox, CodeBlock, Mermaid,
-  highlightCode, rasterizeMermaid, type PdfTheme,
-} from '../pdf/index.js';
-
-export default async (theme: PdfTheme) => {
-  // Pre-compute async assets before building the tree.
-  const snippet = await highlightCode('const x = 1;', 'ts', theme);
-  const flow = await rasterizeMermaid('flowchart LR\n  A[Start] --> B[(Store)]', theme);
-
-  return (
-    <PdfDoc theme={theme} title="My Document">
-      <Cover eyebrow="Spec · 2026-09-10" title="My Document" lede="One line under the title."
-             chips={['v1', 'Approved']} />
-      <Section eyebrow="Overview" title="What this is" deck="A short deck under the title.">
-        <P>Body copy…</P>
-        <KeyBox role="positive" title="Tip">A tip in the positive role.</KeyBox>
-        <CodeBlock code={snippet} />
-        <Mermaid diagram={flow} title="Flow" caption="Start to store." />
-      </Section>
-    </PdfDoc>
-  );
-};
-```
+Import the component library by the bare specifier `@docsmith/docsmith` (an in-package doc under
+`src/docs/` imports it relatively as `../pdf/index.js`). For the component catalog, the when-to-use
+matrix, and a worked example, see [references/authoring.md](references/authoring.md) and the
+`src/docs/gallery.pdf.tsx` fixture.
 
 ## Rendering output
 

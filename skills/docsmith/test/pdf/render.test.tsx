@@ -8,17 +8,17 @@ import { fileURLToPath } from 'node:url';
 
 // The render wrapper is exercised through its REAL entrypoint — `node --import tsx render.ts <run-dir>` —
 // as a subprocess, not by calling renderRun() under vitest. The seam being proved is Node+tsx rendering
-// an authored doc that lives OUTSIDE the package and imports the bare `@docsmith/builder`: the wrapper
+// an authored doc that lives OUTSIDE the package and imports the bare `@docsmith/docsmith`: the wrapper
 // stages the doc inside the package's src tree so that import self-references via `exports` and react-pdf
 // resolves correctly. vitest's own resolver would not reproduce that path faithfully, so the test drives
 // the true runtime path end to end.
 
 const run = promisify(execFile);
-const PKG_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..'); // test/pdf/ -> skills/builder
+const PKG_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..'); // test/pdf/ -> skills/docsmith
 const RENDER = resolve(PKG_ROOT, 'src/pdf/render.ts');
 
 // A .docsmith/<run>/pdf.tsx that imports the builder by the bare specifier the wrapper must resolve.
-const DOC = `import { PdfDoc, Cover } from '@docsmith/builder';
+const DOC = `import { PdfDoc, Cover } from '@docsmith/docsmith';
 export default (theme) => (
   <PdfDoc theme={theme} title="t">
     <Cover eyebrow="e" title="t" />

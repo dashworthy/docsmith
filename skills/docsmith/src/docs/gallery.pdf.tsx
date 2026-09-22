@@ -1,4 +1,4 @@
-// Component gallery — a manual-testing document that exercises EVERY @docsmith/builder component
+// Component gallery — a manual-testing document that exercises EVERY @docsmith/docsmith component
 // in one place, with each one labeled, so you can render it and eyeball how the whole library looks
 // in both themes after a change. This is not a real doc; it's a visual test fixture.
 //
@@ -82,7 +82,7 @@ export default async (theme: PdfTheme) => {
       title="Component Gallery"
       cover={
         <CoverPage
-          eyebrow="@docsmith/builder · title page"
+          eyebrow="@docsmith/docsmith · title page"
           title="The Elaborate Cover"
           subtitle="A full-bleed title page — a tinted hero with an accent bar, an oversized display title, tag chips, and a divided metadata strip pinned to the foot."
           tags={['Design system', 'react-pdf', 'light + dark']}
@@ -97,7 +97,7 @@ export default async (theme: PdfTheme) => {
     >
       {/* Structure: Cover (simple, inline). The elaborate CoverPage is the full-bleed `cover` above. */}
       <Cover
-        eyebrow="@docsmith/builder · gallery"
+        eyebrow="@docsmith/docsmith · gallery"
         title="Component Gallery"
         lede="Every component in the library, rendered once so you can eyeball the whole set in both themes."
         chips={['light + dark', 'manual test', 'not a real doc']}

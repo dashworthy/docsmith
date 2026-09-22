@@ -7,7 +7,7 @@ both themes to images and read them before claiming success.
 
 ```bash
 # render both themes (from step 3 of the skill)
-node --import tsx "$SKILL/src/pdf/render.ts" "$PROJECT/.docsmith/<run>"
+cd "$SKILL" && node --import tsx src/pdf/render.ts "$PROJECT/.docsmith/<run>"
 
 # rasterize to PNGs to inspect (needs poppler: brew install poppler)
 pdftoppm -png -r 110 "$PROJECT/.docsmith/<run>/pdf-light.pdf" /tmp/lt

@@ -14,6 +14,7 @@ export function PdfDoc({
   theme,
   title,
   cover,
+  frontMatter,
   children,
 }: {
   theme: PdfTheme;
@@ -23,6 +24,12 @@ export function PdfDoc({
    * `CoverPage`'s tinted hero bleeds to the paper edge. Content `children` start on the page after.
    */
   cover?: ReactNode;
+  /**
+   * Optional front-matter (e.g. a `Toc`) rendered on its own inset `<Page>` between the cover and the
+   * body. Kept out of `children` so it reads as an unnumbered front-matter page — the body's own page
+   * numbering starts on the first content page after it.
+   */
+  frontMatter?: ReactNode;
   children: ReactNode;
 }): JSX.Element {
   registerFonts();
@@ -55,6 +62,11 @@ export function PdfDoc({
         {cover && (
           <Page size="A4" style={styles.coverPage}>
             {cover}
+          </Page>
+        )}
+        {frontMatter && (
+          <Page size="A4" style={styles.page}>
+            {frontMatter}
           </Page>
         )}
         <Page size="A4" style={styles.page}>

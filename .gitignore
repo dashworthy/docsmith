@@ -1,7 +1,7 @@
 # Node
 node_modules/
 
-# Per-run PDF working directories authored + rendered by the docsmith:builder skill
+# Per-run PDF working directories authored + rendered by the docsmith:docsmith skill
 .docsmith/
 
 # Generated output / previews
