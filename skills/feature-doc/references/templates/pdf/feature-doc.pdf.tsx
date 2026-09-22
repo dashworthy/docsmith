@@ -12,25 +12,18 @@
 //   $PROJECT/.docsmith/<YYYY-MM-DD>-<slug>/       (e.g. .docsmith/2026-09-22-billing-api/)
 // One-time, install the builder deps:  cd "${CLAUDE_PLUGIN_ROOT}/skills/docsmith" && npm install
 //
-// BEFORE FILLING — map the feature from the SOURCE, not from memory:
-//   • Entry points (controllers, commands, endpoints), the core services, and their dependencies.
-//   • The data model (entities, ownership, invariants) — enough for a real ER diagram.
-//   • The process flow from trigger to result — enough for a real pipeline diagram.
-//   • The wire contract (request/response, config payloads) and the class carrying each responsibility.
-//   • The edge cases / failure modes the code actually handles, and how the feature is tested.
-//   A target's own README is a source to verify against the code, not gospel.
-// THEME — ask the reader light or dark (default light) before rendering, and render only the
-//   chosen theme unless they ask for both.
+// Fill discipline + how to map the feature from source: see feature-doc/SKILL.md steps 1-2
+// (read the real code; describe what it does — don't invent; every diagram models the real system).
+// THEME — render light by default; offer the reader a dark copy and render --theme dark only if
+//   they want one.
 //
 // This file COMPILES AND RENDERS AS-IS (with placeholder copy) so you can preview the structure
-// before filling it. Discipline:
-//   • Describe what the code ACTUALLY does — read the target, don't invent behavior.
-//   • Every diagram is real: an architecture flow, an ER model, a request pipeline — not decoration.
-//   • Code/payload samples are verbatim or faithfully representative; keep them small enough to read.
+// before filling it. Template mechanics:
 //   • The ToC lives in `frontMatter` (an UNNUMBERED page). Page numbers start at 1 on the first body
 //     section; fill the ToC's `page` values on a SECOND pass (render once, read where each lands).
 //   • Replace every `<...>` angle placeholder and TODO line, or delete the line. Drop any OPTIONAL
-//     section the feature doesn't need — a shorter true doc beats a padded one.
+//     section the feature doesn't need — a shorter true doc beats a padded one. When you drop a
+//     section, delete its matching row from the TOC array too, or the ToC points at a missing section.
 //   • Render the chosen theme and LOOK at the PDF before claiming done (docsmith:docsmith step 4).
 // -----------------------------------------------------------------------------------------------
 

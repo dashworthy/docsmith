@@ -46,16 +46,17 @@ To drive the builder directly:
 # one-time: install the builder package's deps (subshell keeps cwd at the project root)
 (cd skills/docsmith && npm install)
 
-# from the project root: author .docsmith/<run>/pdf.tsx (default-exports (theme) => <PdfDoc …>),
-# then render both themes into that dir:
-node --import tsx skills/docsmith/src/pdf/render.ts .docsmith/<run>
+# author .docsmith/<run>/pdf.tsx (default-exports (theme) => <PdfDoc …>), then render both themes
+# into that dir (run from the skill dir so tsx + the package resolve; pass the run dir absolute):
+RUN="$PWD/.docsmith/<run>"
+(cd skills/docsmith && node --import tsx src/pdf/render.ts "$RUN")
 # → .docsmith/<run>/pdf-light.pdf  and  .docsmith/<run>/pdf-dark.pdf
 ```
 
 A document imports the component library from the bare specifier `@docsmith/docsmith`:
 
 ```tsx
-import { PdfDoc, Cover, Section, P, KeyBox, CodeBlock, Mermaid, Footer,
+import { PdfDoc, Cover, Section, P, KeyBox, CodeBlock, Mermaid,
          highlightCode, rasterizeMermaid, type PdfTheme } from '@docsmith/docsmith';
 
 export default async (theme: PdfTheme) => {

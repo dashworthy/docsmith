@@ -16,8 +16,9 @@ Two rules cut across everything:
 
 | Component | Props | Use it for |
 |---|---|---|
-| `PdfDoc` | `{ theme: PdfTheme; title: string; children }` | The root. Wraps the whole document; owns theme, fonts, page. Exactly one, outermost. |
-| `Cover` | `{ eyebrow: string; title: string; lede?: string; chips?: string[] }` | The title band — the document's hero. `eyebrow` = mono kicker, `chips` = metadata pills. One, first. |
+| `PdfDoc` | `{ theme: PdfTheme; title: string; cover?: ReactNode; frontMatter?: ReactNode; children }` | The root. Wraps the whole document; owns theme, fonts, page. Exactly one, outermost. `cover` renders as a full-bleed first page (pass a `CoverPage`); `frontMatter` renders as an inset unnumbered page after the cover (pass a `Toc`); the body page's numbering starts after it. |
+| `Cover` | `{ eyebrow: string; title: string; lede?: string; chips?: string[] }` | The title band — the document's hero, composed as a **child** of `PdfDoc` for a simple doc. `eyebrow` = mono kicker, `chips` = metadata pills. One, first. |
+| `CoverPage` | `{ eyebrow: string; title: string; subtitle?: string; tags?: string[]; meta?: {label; value}[]; accent?: Role }` | A full-bleed **dedicated cover page** with a title block and a divided metadata foot strip — pass it to `PdfDoc`'s `cover` prop (not as a child) for a full document like a feature-doc. Use `Cover` instead when you only want an inline title band. |
 | `Section` | `{ eyebrow: string; title: string; deck?: string; children }` | A top-level section: accent kicker + display title + optional muted deck, then body. The backbone of the doc. |
 | `Subhead` | `{ title: string; deck?: string; rule?: boolean }` | An h3 subsection heading inside a `Section` body — a bold title over an optional hairline rule, with an optional muted line. Splits a long section into named runs. |
 | `Toc` | `{ title?: string; items: { title; page?; level? }[] }` | A table of contents: entries with dotted leaders to right-aligned page numbers; `level > 0` indents a sub-entry. |
