@@ -1,4 +1,4 @@
-# @docsmith/builder
+# @docsmith/docsmith
 
 A React document builder. You author a document as hand-written JSX using a library of predesigned
 components, and the builder renders it to **PDF** with [`@react-pdf/renderer`](https://react-pdf.org).
@@ -24,7 +24,7 @@ For the architecture and the invariants a change must respect, see the feature d
 ## Setup
 
 ```bash
-cd skills/builder
+cd skills/docsmith
 npm install
 ```
 

@@ -2,7 +2,7 @@
 
 **A React 18 library for authoring documents as hand-written JSX and rendering them to PDF with [`@react-pdf/renderer`](https://react-pdf.org), styled to vanilla [ShadCN](https://ui.shadcn.com) design tokens via [`react-pdf-tailwind`](https://github.com/Kaldarmaa/react-pdf-tailwind), with light/dark chosen at render time.**
 
-Lives in [`skills/builder/`](../../../skills/builder) (the `docsmith:builder` skill owns the package). End-user usage (authoring a doc, running the CLI) is in [`skills/builder/README.md`](../../../skills/builder/README.md); this doc is the architecture and the invariants a future change must respect.
+Lives in [`skills/docsmith/`](../../../skills/docsmith) (the `docsmith:docsmith` skill owns the package). End-user usage (authoring a doc, running the CLI) is in [`skills/docsmith/README.md`](../../../skills/docsmith/README.md); this doc is the architecture and the invariants a future change must respect.
 
 ---
 
@@ -18,7 +18,7 @@ Two ideas carry the whole design:
 Worked example — rendering the configurator doc to a dark PDF:
 
 ```bash
-cd skills/builder
+cd skills/docsmith
 node --import tsx src/pdf/cli.ts src/docs/configurator.pdf.tsx --theme dark --out configurator.pdf
 ```
 
@@ -49,10 +49,10 @@ react-pdf renders **synchronously** and embeds only primitives (`View`, `Text`, 
 | Token values | `src/theme/palette.ts` | `SHADCN.light`/`.dark` — the vanilla ShadCN slate tokens as hex, and `ShadcnToken`. The sole source of color. |
 | Styling boundary | `src/pdf/theme.ts` | `shadcnConfig(theme)` → the `react-pdf-tailwind` config; `TwProvider`/`useTw()` carry a theme-bound `tw` via context. Also registers fonts, holds page geometry (`PAGE`, `CONTENT_HEIGHT`), and exposes `parseTheme()` (the shared `--theme` validator). |
 | Document root | `src/pdf/components/PdfDoc.tsx` | Builds `createTw(shadcnConfig(theme))` once, provides it via `TwProvider`, and sets the `<Page>` ground/ink to the `background`/`foreground` tokens. |
-| Components | `src/pdf/components/*.tsx` | The presentational library (see `skills/builder/README.md` for the full list). Color only through `useTw()`. |
+| Components | `src/pdf/components/*.tsx` | The presentational library (see `skills/docsmith/README.md` for the full list). Color only through `useTw()`. |
 | Render | `src/pdf/renderPdf.ts` | `renderPdfToFile()` — `@react-pdf/renderer`'s `renderToFile`; react-pdf paginates itself, no browser. |
 | CLI (per theme) | `src/pdf/cli.ts` | `generatePdf({docModule, theme, out})` imports a `*.pdf.tsx` builder, awaits it (assets pre-computed), renders one theme; `parsePdfArgs` + CLI entry. |
-| Run wrapper | `src/pdf/render.ts` | `renderRun({runDir, themes?})` — renders a `.docsmith/<run>/pdf.tsx` to `<run>/pdf-light.pdf` + `<run>/pdf-dark.pdf` (both themes by default), reusing `generatePdf`; the `render <run-dir>` CLI. The `docsmith:builder` skill's authoring entry point. |
+| Run wrapper | `src/pdf/render.ts` | `renderRun({runDir, themes?})` — renders a `.docsmith/<run>/pdf.tsx` to `<run>/pdf-light.pdf` + `<run>/pdf-dark.pdf` (both themes by default), reusing `generatePdf`; the `render <run-dir>` CLI. The `docsmith:docsmith` skill's authoring entry point. |
 | Code asset | `src/pdf/highlightCode.ts` | `highlightCode()` → `HighlightedCode` (Shiki tokens + theme bg/fg). Async; run in the doc builder. |
 | Diagram asset | `src/pdf/rasterizeMermaid.ts` | `rasterizeMermaid()` → `RasterDiagram` (PNG data URI + aspect). Themes mermaid from `SHADCN[theme]`. Async; needs Chrome. |
 | Chrome | `src/pdf/chrome.ts` | `findChrome()` — env → standard install paths → puppeteer's bundled Chromium, or `null`. |
@@ -60,9 +60,9 @@ react-pdf renders **synchronously** and embeds only primitives (`View`, `Text`, 
 ### Two rendering entry points
 
 - **Per theme — `cli.ts`.** `node --import tsx src/pdf/cli.ts <doc.pdf.tsx> --theme light|dark --out <path>` renders one in-package doc module to one PDF. This is the low-level entry the render checks use against `src/docs/*.pdf.tsx`.
-- **A whole run — `render.ts`.** `node --import tsx src/pdf/render.ts <run-dir> [--theme light|dark]` is the `docsmith:builder` skill's authoring entry point. A document is authored **outside** the package, in the invoking project at `.docsmith/<run>/pdf.tsx` (importing the bare `@docsmith/builder`), and the wrapper renders **both** themes into that run dir as `pdf-light.pdf` / `pdf-dark.pdf`.
+- **A whole run — `render.ts`.** `node --import tsx src/pdf/render.ts <run-dir> [--theme light|dark]` is the `docsmith:docsmith` skill's authoring entry point. A document is authored **outside** the package, in the invoking project at `.docsmith/<run>/pdf.tsx` (importing the bare `@docsmith/docsmith`), and the wrapper renders **both** themes into that run dir as `pdf-light.pdf` / `pdf-dark.pdf`.
 
-Because `node --import tsx` only applies the package's JSX runtime and module resolution to files under the tsconfig `include` (`src`/`test`), the wrapper **stages a temp copy of the authored doc under `src/docs/`**, renders it there — where its bare `@docsmith/builder` import resolves by **package self-reference** (the `exports` field) — and removes the copy in a `finally`. The authored file never learns where the package lives; it names only the stable specifier.
+Because `node --import tsx` only applies the package's JSX runtime and module resolution to files under the tsconfig `include` (`src`/`test`), the wrapper **stages a temp copy of the authored doc under `src/docs/`**, renders it there — where its bare `@docsmith/docsmith` import resolves by **package self-reference** (the `exports` field) — and removes the copy in a `finally`. The authored file never learns where the package lives; it names only the stable specifier.
 
 ### The styling boundary (`useTw`)
 
@@ -101,12 +101,12 @@ Vanilla ShadCN ships only `default` and `destructive` as semantic colors. Where 
 - **Light/dark is resolved per render**, not toggled. A document is rendered once per theme; `PdfDoc` selects the token set. Nothing in the output is theme-reactive.
 - **PDF layout never touches a browser.** `@react-pdf/renderer` paginates from the primitive tree. Chrome (`findChrome()`) is needed only to rasterize mermaid diagrams; a doc with no mermaid needs no Chrome.
 - **Async work happens in the doc builder, before render.** react-pdf render is synchronous — Shiki highlighting and mermaid rasterization are awaited up front and embedded as data.
-- **The authored doc names only `@docsmith/builder`, never a package path.** The `exports` field (`"." → ./src/pdf/index.ts`) is what makes that bare import legitimate by self-reference, and the `render` wrapper stages the doc under `src/docs/` to render it there — do not remove `exports`, and keep the staging inside the tsconfig `include`. An authored `pdf.tsx` must be self-contained: only `@docsmith/builder`, no relative imports or local asset files (assets are inlined via `highlightCode`/`rasterizeMermaid`), because staging moves the file away from its own directory.
+- **The authored doc names only `@docsmith/docsmith`, never a package path.** The `exports` field (`"." → ./src/pdf/index.ts`) is what makes that bare import legitimate by self-reference, and the `render` wrapper stages the doc under `src/docs/` to render it there — do not remove `exports`, and keep the staging inside the tsconfig `include`. An authored `pdf.tsx` must be self-contained: only `@docsmith/docsmith`, no relative imports or local asset files (assets are inlined via `highlightCode`/`rasterizeMermaid`), because staging moves the file away from its own directory.
 
 ## 🚀 Development & testing
 
 ```bash
-cd skills/builder
+cd skills/docsmith
 npm install            # one-time; puppeteer downloads its own Chromium (for mermaid)
 npm test               # vitest — component token + render tests
 npm run typecheck      # tsc --noEmit

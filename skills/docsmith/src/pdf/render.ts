@@ -7,9 +7,9 @@
 // JSX runtime and module resolution to files under the tsconfig `include` (`src`/`test`); a doc
 // rendered in place gets the classic JSX transform and mis-resolves react-pdf's transitive subpath
 // exports. So the wrapper copies the doc to a temp file under `src/docs/` and renders it there, where
-// the doc's bare `@docsmith/builder` import resolves by package self-reference (the `exports` field)
+// the doc's bare `@docsmith/docsmith` import resolves by package self-reference (the `exports` field)
 // and react-pdf lays out correctly. The staged copy is removed after each render. The authored file
-// never moves and never learns where the package lives — it names the stable `@docsmith/builder`
+// never moves and never learns where the package lives — it names the stable `@docsmith/docsmith`
 // specifier and nothing else.
 
 import { resolve } from 'node:path';

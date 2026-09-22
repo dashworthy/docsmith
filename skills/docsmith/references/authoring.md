@@ -1,6 +1,6 @@
 # Authoring reference — components & when to use each
 
-Every component you compose a `pdf.tsx` from, imported from `@docsmith/builder`. Props are shown as
+Every component you compose a `pdf.tsx` from, imported from `@docsmith/docsmith`. Props are shown as
 their TypeScript shape. The fixture `src/docs/configurator.pdf.tsx` uses all of them against real
 content — read it as a worked example.
 

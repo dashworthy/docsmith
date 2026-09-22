@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "docsmith",
-      "description": "Author print-ready PDFs from hand-written JSX with a ShadCN-styled React component library (@react-pdf/renderer), light/dark, mermaid diagrams as real vector cards, nothing running off the page.",
-      "version": "1.2.0",
+      "description": "Author print-ready PDFs from hand-written JSX with a ShadCN-styled React component library (@react-pdf/renderer), light/dark, mermaid diagrams as real vector cards, nothing running off the page. Ships docsmith:docsmith (the builder) and docsmith:feature-doc (feature/architecture handoffs).",
+      "version": "2.0.0",
       "source": ".",
       "author": {
         "name": "Andrew Leach",
