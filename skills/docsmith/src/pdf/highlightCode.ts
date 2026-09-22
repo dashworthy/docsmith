@@ -7,7 +7,10 @@ import { getHighlighter, type Highlighter } from 'shiki';
 import type { PdfTheme } from './theme.js';
 
 const THEME = { light: 'github-light', dark: 'github-dark' } as const;
-const LANGS = ['typescript', 'javascript', 'tsx', 'jsx', 'json', 'bash', 'html', 'css', 'markdown'];
+const LANGS = [
+  'typescript', 'javascript', 'tsx', 'jsx', 'json', 'bash', 'html', 'css', 'markdown',
+  'php', 'yaml',
+];
 
 /** One highlighted span: its text and hex color. */
 export interface CodeToken {
