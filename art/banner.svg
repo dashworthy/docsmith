@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-label="docsmith — your document, forged into a print-ready PDF">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="0%" r="70%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#0EA5E9" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0B1120" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0 L0 0 0 48" fill="none" stroke="#1E293B" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="400" fill="#0B1120"/>
+  <rect width="1200" height="400" fill="url(#grid)" opacity="0.5"/>
+  <rect width="1200" height="400" fill="url(#glow)"/>
+
+  <!-- JSX braces block (the authored blueprint) -->
+  <g fill="none" stroke="#94A3B8" stroke-width="2.5" opacity="0.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M840 164 q-14 0 -14 14 v14 q0 8 -10 13 q10 5 10 13 v14 q0 14 14 14"/>
+    <path d="M978 164 q14 0 14 14 v14 q0 8 10 13 q-10 5 -10 13 v14 q0 14 -14 14"/>
+  </g>
+  <g stroke="#94A3B8" stroke-width="2.2" opacity="0.5" stroke-linecap="round">
+    <line x1="858" y1="184" x2="900" y2="184"/>
+    <line x1="866" y1="200" x2="924" y2="200"/>
+    <line x1="866" y1="216" x2="912" y2="216"/>
+    <line x1="858" y1="232" x2="896" y2="232"/>
+  </g>
+
+  <!-- arrow: authored, then rendered -->
+  <g fill="none" stroke="url(#accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="1000" y1="205" x2="1024" y2="205"/>
+    <path d="M1017 199 l9 6 l-9 6"/>
+  </g>
+
+  <!-- rendered page (accent) -->
+  <g fill="#0EA5E9" fill-opacity="0.07" stroke="url(#accent)" stroke-width="3" stroke-linejoin="round">
+    <rect x="1032" y="150" width="72" height="110" rx="8"/>
+  </g>
+  <rect x="1044" y="164" width="48" height="10" rx="2" fill="url(#accent)"/>
+  <g stroke="url(#accent)" stroke-width="2.4" opacity="0.85">
+    <line x1="1044" y1="190" x2="1092" y2="190"/>
+    <line x1="1044" y1="202" x2="1092" y2="202"/>
+    <line x1="1044" y1="214" x2="1076" y2="214"/>
+  </g>
+  <rect x="1044" y="228" width="48" height="20" rx="4" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.7"/>
+  <circle cx="915" cy="150" r="4.5" fill="#6EE7B7"/>
+
+  <!-- wordmark -->
+  <text x="72" y="255" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="100" font-weight="800" letter-spacing="-0.04em" fill="url(#accent)">docsmith</text>
+  <text x="76" y="296" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="24" font-weight="400" fill="#94A3B8">Your document, forged into a print-ready PDF.</text>
+
+  <!-- crafted-by foot -->
+  <text x="1180" y="344" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="9" font-weight="800" font-style="italic" letter-spacing="0.02em" fill="#94A3B8">CRAFTED BY</text>
+  <text x="1180" y="362" text-anchor="end" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="20" font-weight="900" font-style="italic" letter-spacing="-0.07em"><tspan fill="#F1F5F9">DASH</tspan><tspan fill="#CBD5E1">WORTHY</tspan></text>
+</svg>
