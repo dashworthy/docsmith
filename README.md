@@ -1,3 +1,5 @@
+<p align="center"><img src="art/banner.svg" alt="docsmith — your document, forged into a print-ready PDF" width="100%"></p>
+
 # docsmith
 
 A Claude Code plugin (and single-plugin marketplace) that turns a source document into a
