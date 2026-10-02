@@ -14,7 +14,8 @@ It ships two skills:
   ([`@docsmith/docsmith`](skills/docsmith/README.md)) and drives the authoring workflow.
 - **`docsmith:feature-doc`** — turns a target (a bundle, module, directory, or named feature) into a
   designed feature / architecture handoff by filling a structured template, then rendering it through
-  `docsmith:docsmith` (or emitting portable Markdown).
+  `docsmith:docsmith` (or emitting portable Markdown). Prose follows ASD-STE100 Simplified Technical
+  English, checked by a bundled lint (`skills/feature-doc/scripts/ste-lint.mjs`).
 
 ## What you get
 

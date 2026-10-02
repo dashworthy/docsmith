@@ -14,6 +14,8 @@
 //
 // Fill discipline + how to map the feature from source: see feature-doc/SKILL.md steps 1-2
 // (read the real code; describe what it does — don't invent; every diagram models the real system).
+// STE — write all prose in ASD-STE100 Simplified Technical English (references/ste-writing-rules.md),
+//   then run scripts/ste-lint.mjs on the filled pdf.tsx until it reports 0 errors (SKILL.md step 3).
 // THEME — render light by default; offer the reader a dark copy and render --theme dark only if
 //   they want one.
 //
@@ -183,8 +185,8 @@ export default async (theme: PdfTheme) => {
         deck="TODO — one line: the mental model a newcomer should leave with."
       >
         <P>
-          TODO — two or three sentences describing what the feature does and why it exists, in plain
-          language. No jargon the reader hasn't met yet. Use <B>bold</B> for a term you then reuse.
+          TODO — two or three sentences: what the feature does and why it exists. Use plain words.
+          Define each term before you use it. Use <B>bold</B> for a term you then reuse.
         </P>
         <PanelGrid>
           <Panel title="Core concept A">
@@ -265,8 +267,8 @@ export default async (theme: PdfTheme) => {
           ]}
         />
         <KeyBox role="warning" title="A behavior that isn't obvious">
-          TODO — e.g. what happens on a missing/invalid value: does it fail closed, default, or widen
-          results? Delete this box if there's no such gotcha.
+          TODO — e.g. what happens when a value is absent or not valid: does it fail closed, use a
+          default, or widen the results? Delete this box if there's no such gotcha.
         </KeyBox>
       </Section>
 
@@ -316,13 +318,13 @@ export default async (theme: PdfTheme) => {
       >
         <P>
           TODO — state the caps and defaults as <Badge role="accent">values</Badge> and say which are
-          configurable vs fixed. Delete this section if the feature has none worth noting.
+          configurable vs fixed. Delete this section if the feature has no important limits.
         </P>
         <CompareCard
           title="Two modes / scopes that behave differently"
           a={{ role: 'positive', label: 'Mode A', items: ['<trait>', '<trait>'] }}
           b={{ role: 'warning', label: 'Mode B', items: ['<trait>', '<trait>'] }}
-          target="TODO — the one-line takeaway distinguishing them."
+          target="TODO — one line: the difference that matters."
         />
       </Section>
 

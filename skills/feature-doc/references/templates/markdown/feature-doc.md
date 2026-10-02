@@ -6,6 +6,8 @@
   step. There is NO render and NO run directory — you copy this file, fill it, and you are done.
 
   How to map the feature from source + the fill discipline: see feature-doc/SKILL.md steps 1-2.
+  Write all prose in ASD-STE100 Simplified Technical English (references/ste-writing-rules.md), then
+  run scripts/ste-lint.mjs on the filled file until it reports 0 errors (SKILL.md step 3).
 
   TEMPLATE MECHANICS:
     • Copy this file to where the doc belongs (a repo path, a wiki page, or $RUNDIR beside a PDF).
@@ -31,8 +33,8 @@
 
 ## Plain-language overview
 
-<A few plain-language paragraphs: what this feature is for, who uses it, and the problem it solves —
-readable by someone who has never seen the code.>
+<Two or three short paragraphs: what this feature is for, who uses it, and the problem it solves.
+Write for a reader who does not know the code.>
 
 ## Architecture at a glance
 
@@ -111,17 +113,17 @@ flowchart TD
 <The edge cases and failure modes the code actually handles — and what it does in each.>
 
 - **<edge case>** — <what the code does>.
-- **<failure mode>** — <how it is handled / surfaced>.
+- **<failure mode>** — <what the code does, and the signal it gives>.
 
 ## Limits & configuration
 
 <Hard limits, tunables, and configuration knobs. Delete if none.>
 
-- **<limit or setting>** — <value / meaning>.
+- **<limit or configuration key>** — <value, and what it controls>.
 
 ## Testing
 
-<How this feature is tested and how to run those tests.>
+<Which tests cover this feature, and how to run them.>
 
 ```bash
 # TODO: how to run this feature's tests
